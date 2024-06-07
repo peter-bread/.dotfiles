@@ -56,3 +56,9 @@ Managing my dotfiles.
 ## How `bootstrap.sh` works
 
 <!--TODO: finish writing `bootstrap.sh` and explain it here-->
+
+
+<!--TODO: all planned todos-->
+## TODO
+
+- put nvim config into its own submodule
