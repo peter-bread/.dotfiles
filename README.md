@@ -25,11 +25,13 @@ Managing my dotfiles.
 ./
 ├── nvim/
 │   └── .config/
-│       ├── starship.toml
 │       └── nvim/
 │           ├── init.lua
 │           ├── lua/
 │           └── ...
+├── starship/
+│   └── .config/
+│       └── starship.toml
 ├── zsh/
 │   ├── .zprofile
 │   ├── .zshrc
