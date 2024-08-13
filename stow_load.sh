@@ -3,9 +3,6 @@
 # TODO: add support for $XDG_CONFIG_HOME etc
 # TODO: add logic to attempt to use newer versions of bash
 
-# TODO: work out how to account for dotfiles not in `$HOME`,
-# e.g. `~/Developer/peter-bread/.gitconfig`
-
 # stow target directory. this is where symlinks will be.
 stow_target_dir="$HOME"
 
