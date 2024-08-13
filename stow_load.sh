@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # TODO: add support for $XDG_CONFIG_HOME etc
-# TODO: add logic to attempt to use newer versions of bash
 
 # stow target directory. this is where symlinks will be.
 stow_target_dir="$HOME"
