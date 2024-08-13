@@ -1,8 +1,6 @@
 # .dotfiles
 
-
 Managing my dotfiles.
-
 
 ## File Structure
 
@@ -18,7 +16,6 @@ Managing my dotfiles.
 | 1     | category                                      | `nvim`, `zsh`, `tmux`               |
 | 2     | this will be symlinked into `$HOME` directory | `.config/`, `.zshrc`, `.tmux.conf`  |
 | 3...  | these are sub files/folders also symlinked    | `init.lua`, `starship.sh`, `kitty/` |
-
 
 ```text
 0   1   2   3...
@@ -88,6 +85,7 @@ maps to:
 <!--TODO: finish writing `bootstrap.sh` and explain it here-->
 
 <!--TODO: all planned todos-->
+
 ## TODO
 
 - put nvim config into its own submodule
