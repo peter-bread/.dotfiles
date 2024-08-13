@@ -2,6 +2,13 @@
 
 Managing my dotfiles.
 
+<!--toc:start-->
+
+- [File Structure](#file-structure)
+- [Setup](#setup)
+- [TODO](#todo)
+<!--toc:end-->
+
 ## File Structure
 
 ```text
@@ -79,6 +86,8 @@ maps to:
 ## Setup
 
 1. Run `bootstrap.sh`.
+
+<!--toc:ignore-->
 
 ## How `bootstrap.sh` works
 
