@@ -2,6 +2,10 @@
 
 Managing my dotfiles.
 
+<!--toc:ignore-->
+
+## Contents
+
 <!--toc:start-->
 
 - [File Structure](#file-structure)
