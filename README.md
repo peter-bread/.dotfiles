@@ -21,12 +21,12 @@ Managing my dotfiles.
     └── TO BE IN TARGET DIR
 ```
 
-| Level | Meaning                                       | Examples                            |
-| ----- | --------------------------------------------- | ----------------------------------- |
-| 0     | root                                          | n/a                                 |
-| 1     | category                                      | `nvim`, `zsh`, `tmux`               |
-| 2     | this will be symlinked into `$HOME` directory | `.config/`, `.zshrc`, `.tmux.conf`  |
-| 3...  | these are sub files/folders also symlinked    | `init.lua`, `starship.sh`, `kitty/` |
+| Level | Meaning                                       | Examples                                |
+| ----- | --------------------------------------------- | --------------------------------------- |
+| 0     | root                                          | n/a                                     |
+| 1     | category                                      | `editor`, `shell`, `terminal-emulators` |
+| 2     | this will be symlinked into `$HOME` directory | `.config/`, `.zshrc`, `.tmux.conf`      |
+| 3...  | these are sub files/folders also symlinked    | `init.lua`, `starship.sh`, `kitty/`     |
 
 ```text
 0   1   2   3...
