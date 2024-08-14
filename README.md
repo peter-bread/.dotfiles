@@ -31,33 +31,28 @@ Managing my dotfiles.
 ```text
 0   1   2   3...
 ./
-├── nvim/
+├── editor/
 │   └── .config/
 │       └── nvim/
 │           ├── init.lua
 │           ├── lua/
 │           └── ...
-├── starship/
-│   └── .config/
-│       └── starship.toml
-├── zsh/
+├── shell/
+│   ├── .config/
+│   │   ├── tmux/
+│   │   │   └── tmux.conf
+│   │   └── starship.toml
 │   ├── .zprofile
 │   ├── .zshrc
 │   └── .zshrc.d/
 │       ├── starship.sh
 │       └── ...
-├── tmux/
-│   └── .tmux.conf
-├── kitty/
+├── terminal-emulators/
 │   └── .config/
-│       └── kitty/
-│           └── kitty.conf
-├── alacritty/
-│   └── .config/
-│       └── alacritty/
-│           └── alacritty.toml
-├── wezterm/
-│   └── .config/
+│       ├── kitty/
+│       │   └── kitty.conf
+│       ├── alacritty/
+│       │   └── alacritty.toml
 │       └── wezterm/
 │           └── wezterm.lua
 ...
