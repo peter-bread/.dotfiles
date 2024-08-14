@@ -62,7 +62,6 @@ maps to:
 
 ```text
 ~/
-├── .tmux.conf
 ├── .zprofile
 ├── .zshrc
 ├── .zshrc.d/
@@ -74,6 +73,8 @@ maps to:
     │   ├── init.lua
     │   ├── lua/
     │   └── ...
+    ├── tmux/
+    │   └── tmux.conf
     ├── kitty/
     │   └── kitty.conf
     ├── alacritty/
