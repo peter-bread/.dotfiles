@@ -98,7 +98,7 @@ maps to:
 ## TODO
 
 - put nvim config into its own submodule
-- add commands:
+- add commands to wrap around stow:
   - `dotfiles load <category>`
   - `dotfiles unload <category>`
   - `dotfiles load --all`
