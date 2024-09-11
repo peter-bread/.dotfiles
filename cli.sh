@@ -68,7 +68,10 @@ dotfiles() {
       (
         cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
-          if [[ $arg != ".git" && $arg != "install" ]]; then
+          if [[ $arg == ".git" || $arg == "install" ]]; then
+            printf "Invalid directory to stow: '%s'.\n" "$arg"
+            printf "Skipping...\n"
+          else
             printf "stowing %s\n" "$arg"
             if stow -t "$HOME" -S "$arg"; then
               printf "stowed %s successfully\n" "$arg"
@@ -107,7 +110,10 @@ dotfiles() {
       (
         cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
-          if [[ "$arg" != ".git" && $arg != "install" ]]; then
+          if [[ "$arg" == ".git" || $arg == "install" ]]; then
+            printf "Invalid directory to unstow: '%s'.\n" "$arg"
+            printf "Skipping...\n"
+          else
             printf "unstowing %s\n" "$arg"
             if stow -t "$HOME" -D "$arg"; then
               printf "unstowed %s successfully\n" "$arg"
