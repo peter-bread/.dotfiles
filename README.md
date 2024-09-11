@@ -96,11 +96,3 @@ maps to:
 <!--TODO: all planned todos-->
 
 ## TODO
-
-- put nvim config into its own submodule
-- add commands to wrap around stow:
-  - `dotfiles load <category>`
-  - `dotfiles unload <category>`
-  - `dotfiles load --all`
-  - `dotfiles unload --all`
-  - `dotfiles rename <old-name> <new-name>`
