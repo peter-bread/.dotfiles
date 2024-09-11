@@ -40,8 +40,8 @@ dotfiles() {
   local command="$1"
   shift
 
-  # loading
-  if [[ "$command" == "load" ]]; then
+  case "$command" in
+  load)
 
     # ensure an arg is passed in
     if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
@@ -76,10 +76,9 @@ dotfiles() {
     fi
 
     return 0
-  fi
+    ;;
 
-  # unloading
-  if [[ "$command" == "unload" ]]; then
+  unload)
 
     # ensure an arg is passed in
     if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
@@ -114,10 +113,10 @@ dotfiles() {
     fi
 
     return 0
-  fi
+    ;;
 
-  # reload
-  if [[ "$command" == "reload" ]]; then
+  reload)
+
     if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
       printf "Prune and create symlinks.\n\n"
       printf "usage: dotfiles reload (<category>... | --all)\n"
@@ -135,10 +134,9 @@ dotfiles() {
     fi
 
     return 0
-  fi
+    ;;
 
-  # rename
-  if [[ "$command" == "rename" ]]; then
+  rename)
 
     if [[ -z "$1" || -z "$2" || $1 == "-h" || "$1" == "--help" ]]; then
       printf "Rename file and update symlinks.\n\n"
@@ -174,10 +172,9 @@ dotfiles() {
     printf "Successfully renamed %s to %s and re-stowed all dotfiles.\n" "$old_name" "$new_name"
 
     return 0
-  fi
+    ;;
 
-  # cd
-  if [[ "$command" == "cd" ]]; then
+  cd)
 
     # help
     if [[ $1 == "-h" || "$1" == "--help" ]]; then
@@ -195,10 +192,13 @@ dotfiles() {
     cd "$DOTFILES_DIR" || return 1
 
     return 0
-  fi
+    ;;
 
-  # unknown command
-  printf "dotfiles: '%s' is not a dotfiles command. See 'dotfiles --help'.\n" "$command"
-  return 1
+  *)
+
+    printf "dotfiles: '%s' is not a dotfiles command. See 'dotfiles --help'.\n" "$command"
+    return 1
+    ;;
+  esac
 
 }
