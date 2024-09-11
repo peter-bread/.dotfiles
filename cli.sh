@@ -171,6 +171,7 @@ dotfiles() {
   # cd
   if [[ "$command" == "cd" ]]; then
     cd "$DOTFILES_DIR" || return 1
+    return 0
   fi
 
 }
