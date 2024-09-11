@@ -18,69 +18,52 @@ Managing my dotfiles.
 ```text
 ./
 └── category
-    └── TO BE IN TARGET DIR
+    └── TO BE SYMLINKED
 ```
 
-| Level | Meaning                                       | Examples                                |
-| ----- | --------------------------------------------- | --------------------------------------- |
-| 0     | root                                          | n/a                                     |
-| 1     | category                                      | `editor`, `shell`, `terminal-emulators` |
-| 2     | this will be symlinked into `$HOME` directory | `.config/`, `.zshrc`, `.tmux.conf`      |
-| 3...  | these are sub files/folders also symlinked    | `init.lua`, `starship.sh`, `kitty/`     |
+<!-- markdownlint-disable MD013 -->
+
+| Level | Meaning                                     | Examples                            |
+| ----- | ------------------------------------------- | ----------------------------------- |
+| 0     | root                                        | n/a                                 |
+| 1     | category                                    | `zsh`, `wezterm`, `tmux`            |
+| 2     | this will be symlinked by an install script | `zshrc`, `wezterm.lua`, `tmux.conf` |
+| 3...  | these are sub files/folders also symlinked  |                                     |
+
+<!-- markdownlint-restore -->
+
+Actual config files are split into categories. The symlinking is handled by the
+scripts in the `install/` directory. These scripts are invoked by the master `install.sh`
+script. They can also be invoked manually using the `dotfiles` command.
 
 ```text
 0   1   2   3...
 ./
-├── editor/
-│   └── .config/
-│       └── nvim/
-│           ├── init.lua
-│           ├── lua/
-│           └── ...
-├── shell/
-│   ├── .config/
-│   │   ├── tmux/
-│   │   │   └── tmux.conf
-│   │   └── starship.toml
-│   ├── .zprofile
-│   ├── .zshrc
-│   └── .zshrc.d/
-│       ├── starship.sh
-│       └── ...
-├── terminal-emulators/
-│   └── .config/
-│       ├── kitty/
-│       │   └── kitty.conf
-│       ├── alacritty/
-│       │   └── alacritty.toml
-│       └── wezterm/
-│           └── wezterm.lua
-...
-```
-
-maps to:
-
-```text
-~/
-├── .zprofile
-├── .zshrc
-├── .zshrc.d/
-│   ├── starship.sh
-│   └── ...
-└── .config/
-    ├── starship.toml
-    ├── nvim/
-    │   ├── init.lua
-    │   ├── lua/
-    │   └── ...
-    ├── tmux/
-    │   └── tmux.conf
-    ├── kitty/
-    │   └── kitty.conf
-    ├── alacritty/
-    │   └── alacritty.toml
-    └── wezterm/
-        └── wezterm.lua
+├── zsh/
+│   ├── zshrc
+│   ├── zprofile
+│   ├── zshrc.d/
+│   │   ├── xyz.sh
+│   │   └── ...
+│   └── zshenv
+├── tmux/
+│   ├── tmux.conf
+├── starship/
+│   └── starship.toml
+├── kitty/
+│   └── kitty.conf
+├── alacritty/
+│   └── alacritty.toml
+├── wezterm/
+│   └── wezterm.lua
+├── install/
+│   ├── install-zsh.sh
+│   ├── install-tmux.sh
+│   ├── install-kitty.sh
+│   ├── install-alacritty.sh
+│   ├── install-wezterm.sh
+│   └── install-starship.sh
+└── install.sh
 ```
 
 ## Setup
@@ -96,3 +79,5 @@ maps to:
 <!--TODO: all planned todos-->
 
 ## TODO
+
+- create uninstall scripts
