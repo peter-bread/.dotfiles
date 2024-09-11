@@ -57,7 +57,7 @@ dotfiles() {
 
         find "$DOTFILES" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           dirname=$(basename "$dir") # get the base name (e.g. $HOME/.dotfiles/nvim => nvim)
-          if [ "$dirname" != ".git" ]; then
+          if [[ "$dirname" != ".git" && $dirname != "install" ]]; then
             printf "stowing %s...\n" "$dirname"
             stow -t "$HOME" -S "$dirname" # stow the directory into the parent of dotfiles dir
             printf "stowed %s successfully\n" "$dirname"
@@ -68,9 +68,11 @@ dotfiles() {
       (
         cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
-          printf "stowing %s\n" "$arg"
-          if stow -t "$HOME" -S "$arg"; then
-            printf "stowed %s successfully\n" "$arg"
+          if [[ $arg != ".git" && $arg != "install" ]]; then
+            printf "stowing %s\n" "$arg"
+            if stow -t "$HOME" -S "$arg"; then
+              printf "stowed %s successfully\n" "$arg"
+            fi
           fi
         done
       )
@@ -94,7 +96,7 @@ dotfiles() {
 
         find "$DOTFILES" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           dirname=$(basename "$dir") # get the base name (e.g. $HOME/.dotfiles/nvim => nvim)
-          if [ "$dirname" != ".git" ]; then
+          if [[ "$dirname" != ".git" && $dirname != "install" ]]; then
             printf "unstowing %s...\n" "$dirname"
             stow -t "$HOME" -D "$dirname" # unstow the directory into the parent of dotfiles dir
             printf "unstowed %s successfully\n" "$dirname"
@@ -105,9 +107,11 @@ dotfiles() {
       (
         cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
-          printf "unstowing %s\n" "$arg"
-          if stow -t "$HOME" -D "$arg"; then
-            printf "unstowed %s successfully\n" "$arg"
+          if [[ "$arg" != ".git" && $arg != "install" ]]; then
+            printf "unstowing %s\n" "$arg"
+            if stow -t "$HOME" -D "$arg"; then
+              printf "unstowed %s successfully\n" "$arg"
+            fi
           fi
         done
       )
