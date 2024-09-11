@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-# TODO set env variable
-dotfiles_dir="$HOME/.dotfiles"
+# make sure DOTFILES_DIR environment variable is set
+if [[ -z $DOTFILES_DIR ]]; then
+  printf "Make sure \$DOTFILES_DIR is set. Add the following to your .bashrc or .zshrc file and restart your shell:\n\n"
+  printf '  export DOTFILES_DIR="/path/to/dotfiles/directory"\n'
+  return 1
+fi
 
 title="\e[1;4m"
 reset="\e[0m"
@@ -42,9 +46,9 @@ dotfiles() {
 
     if [[ "$1" == "--all" ]]; then
       (
-        cd "$dotfiles_dir" || (printf "Failed to enter dotfiles directory\n" && return 1)
+        cd "$DOTFILES_DIR" || (printf "Failed to enter dotfiles directory\n" && return 1)
 
-        find "$dotfiles_dir" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+        find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           dirname=$(basename "$dir") # get the base name (e.g. $HOME/.dotfiles/nvim => nvim)
           if [ "$dirname" != ".git" ]; then
             printf "stowing %s...\n" "$dirname"
@@ -55,7 +59,7 @@ dotfiles() {
       )
     else
       (
-        cd "$dotfiles_dir" || (printf "Failed to enter dotfiles directory\n" && return 1)
+        cd "$DOTFILES_DIR" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
           printf "stowing %s\n" "$arg"
           if stow -t "$HOME" -S "$arg"; then
@@ -79,9 +83,9 @@ dotfiles() {
 
     if [[ "$1" == "--all" ]]; then
       (
-        cd "$dotfiles_dir" || (printf "Failed to enter dotfiles directory\n" && return 1)
+        cd "$DOTFILES_DIR" || (printf "Failed to enter dotfiles directory\n" && return 1)
 
-        find "$dotfiles_dir" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+        find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           dirname=$(basename "$dir") # get the base name (e.g. $HOME/.dotfiles/nvim => nvim)
           if [ "$dirname" != ".git" ]; then
             printf "unstowing %s...\n" "$dirname"
@@ -92,7 +96,7 @@ dotfiles() {
       )
     else
       (
-        cd "$dotfiles_dir" || (printf "Failed to enter dotfiles directory\n" && return 1)
+        cd "$DOTFILES_DIR" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
           printf "unstowing %s\n" "$arg"
           if stow -t "$HOME" -D "$arg"; then
@@ -162,6 +166,11 @@ dotfiles() {
     printf "Successfully renamed %s to %s and re-stowed all dotfiles.\n" "$old_name" "$new_name"
 
     return 0
+  fi
+
+  # cd
+  if [[ "$command" == "cd" ]]; then
+    cd "$DOTFILES_DIR" || return 1
   fi
 
 }
