@@ -137,6 +137,8 @@ dotfiles() {
     old_name="$1"
     new_name="$2"
 
+    # TODO: only unstow & restow necessary files
+
     # attempt to unstow dotfiles
     if ! dotfiles unload --all; then
       printf "Failed to unstow. Exiting.\n"
