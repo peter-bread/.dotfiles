@@ -174,4 +174,8 @@ dotfiles() {
     return 0
   fi
 
+  # unknown command
+  printf "dotfiles: '%s' is not a dotfiles command. See 'dotfiles --help'.\n" "$command"
+  return 1
+
 }
