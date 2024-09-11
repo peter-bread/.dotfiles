@@ -20,7 +20,7 @@ dotfiles() {
   fi
 
   # display help / usage instructions
-  if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" ]]; then
+  if [[ -z $1 || $1 == "-h" || $1 == "--help" ]]; then
     printf "Manage dotfiles symlinks.\n\n"
     printf "usage: dotfiles [-h | --help] <cmd> [<args>]\n\n"
     echo -e "${title}Commands:${reset}\n"
@@ -45,19 +45,19 @@ dotfiles() {
   load)
 
     # ensure an arg is passed in
-    if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
+    if [[ -z $1 || $1 == "-h" || $1 == "--help" ]]; then
       printf "Create symlinks.\n\n"
       printf "usage: dotfiles load (<category>... | --all)\n"
       return 1
     fi
 
-    if [[ "$1" == "--all" ]]; then
+    if [[ $1 == "--all" ]]; then
       (
         cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
 
         find "$DOTFILES" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           dirname=$(basename "$dir") # get the base name (e.g. $HOME/.dotfiles/nvim => nvim)
-          if [[ "$dirname" != ".git" && $dirname != "install" ]]; then
+          if [[ $dirname != ".git" && $dirname != "install" ]]; then
             printf "stowing %s...\n" "$dirname"
             stow -t "$HOME" -S "$dirname" # stow the directory into the parent of dotfiles dir
             printf "stowed %s successfully\n" "$dirname"
@@ -87,19 +87,19 @@ dotfiles() {
   unload)
 
     # ensure an arg is passed in
-    if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
+    if [[ -z $1 || $1 == "-h" || $1 == "--help" ]]; then
       printf "Prune symlinks.\n\n"
       printf "usage: dotfiles unload (<category>... | --all)\n"
       return 1
     fi
 
-    if [[ "$1" == "--all" ]]; then
+    if [[ $1 == "--all" ]]; then
       (
         cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
 
         find "$DOTFILES" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           dirname=$(basename "$dir") # get the base name (e.g. $HOME/.dotfiles/nvim => nvim)
-          if [[ "$dirname" != ".git" && $dirname != "install" ]]; then
+          if [[ $dirname != ".git" && $dirname != "install" ]]; then
             printf "unstowing %s...\n" "$dirname"
             stow -t "$HOME" -D "$dirname" # unstow the directory into the parent of dotfiles dir
             printf "unstowed %s successfully\n" "$dirname"
@@ -110,7 +110,7 @@ dotfiles() {
       (
         cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
-          if [[ "$arg" == ".git" || $arg == "install" ]]; then
+          if [[ $arg == ".git" || $arg == "install" ]]; then
             printf "Invalid directory to unstow: '%s'.\n" "$arg"
             printf "Skipping...\n"
           else
@@ -128,13 +128,13 @@ dotfiles() {
 
   reload)
 
-    if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
+    if [[ -z $1 || $1 == "-h" || $1 == "--help" ]]; then
       printf "Prune and create symlinks.\n\n"
       printf "usage: dotfiles reload (<category>... | --all)\n"
       return 1
     fi
 
-    if [[ "$1" == "--all" ]]; then
+    if [[ $1 == "--all" ]]; then
       dotfiles unload --all
       dotfiles load --all
     else
@@ -149,7 +149,7 @@ dotfiles() {
 
   rename)
 
-    if [[ -z "$1" || -z "$2" || $1 == "-h" || "$1" == "--help" ]]; then
+    if [[ -z $1 || -z $2 || $1 == "-h" || $1 == "--help" ]]; then
       printf "Rename file and update symlinks.\n\n"
       printf "usage: dotfiles rename <old-name> <new-name>\n"
       return 1
@@ -188,7 +188,7 @@ dotfiles() {
   cd)
 
     # help
-    if [[ $1 == "-h" || "$1" == "--help" ]]; then
+    if [[ $1 == "-h" || $1 == "--help" ]]; then
       printf "cd to dotfiles directory.\n\n"
       printf "usage: dotfiles cd\n"
       return 1
