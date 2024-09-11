@@ -25,6 +25,8 @@ dotfiles() {
     printf "\n"
     echo -e "${title}Options:${reset}\n"
     printf "  -h, --help     print help\n"
+    printf "\n"
+    printf "Use 'dotfiles <cmd> --help' for documentation on any subcommand.\n"
     return 1
   fi
 
@@ -35,14 +37,10 @@ dotfiles() {
   if [[ "$command" == "load" ]]; then
 
     # ensure an arg is passed in
-    if [[ -z "$1" ]]; then
+    if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
+      printf "Create symlinks.\n\n"
       printf "usage: dotfiles load (<category>... | --all)\n"
       return 1
-    fi
-
-    if [[ $1 == "-h" || "$1" == "--help" ]]; then
-      printf "usage: dotfiles load (<category>... | --all)\n"
-      return 0
     fi
 
     if [[ "$1" == "--all" ]]; then
@@ -77,7 +75,8 @@ dotfiles() {
   if [[ "$command" == "unload" ]]; then
 
     # ensure an arg is passed in
-    if [[ -z "$1" ]]; then
+    if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
+      printf "Prune symlinks.\n\n"
       printf "usage: dotfiles unload (<category>... | --all)\n"
       return 1
     fi
@@ -112,7 +111,8 @@ dotfiles() {
 
   # reload
   if [[ "$command" == "reload" ]]; then
-    if [[ -z "$1" ]]; then
+    if [[ -z "$1" || $1 == "-h" || "$1" == "--help" ]]; then
+      printf "Prune and create symlinks.\n\n"
       printf "usage: dotfiles reload (<category>... | --all)\n"
       return 1
     fi
@@ -133,7 +133,8 @@ dotfiles() {
   # rename
   if [[ "$command" == "rename" ]]; then
 
-    if [[ -z "$1" || -z "$2" ]]; then
+    if [[ -z "$1" || -z "$2" || $1 == "-h" || "$1" == "--help" ]]; then
+      printf "Rename file and update symlinks.\n\n"
       printf "usage: dotfiles rename <old-name> <new-name>\n"
       return 1
     fi
@@ -170,7 +171,22 @@ dotfiles() {
 
   # cd
   if [[ "$command" == "cd" ]]; then
+
+    # help
+    if [[ $1 == "-h" || "$1" == "--help" ]]; then
+      printf "cd to dotfiles directory.\n\n"
+      printf "usage: dotfiles cd\n"
+      return 1
+    fi
+
+    # unexpected argument
+    if [[ -n $1 ]]; then
+      printf "This command doesn't take any arguments. See 'dotfiles cd --help'.\n"
+      return 1
+    fi
+
     cd "$DOTFILES_DIR" || return 1
+
     return 0
   fi
 
