@@ -128,7 +128,6 @@ dotfiles() {
     fi
 
     return 0
-
   fi
 
   # rename
