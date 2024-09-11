@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # make sure DOTFILES_DIR environment variable is set before sourcing
-if [[ -z $DOTFILES_DIR ]]; then
+if [[ -z $DOTFILES ]]; then
   printf "Make sure \$DOTFILES_DIR is set. Add the following to your .bashrc or .zshrc file and restart your shell:\n\n"
   printf '  export DOTFILES_DIR="/path/to/dotfiles/directory"\n'
   return 1
@@ -13,7 +13,7 @@ reset="\e[0m"
 dotfiles() {
 
   # make sure DOTFILES_DIR environment variable is set when running command
-  if [[ -z $DOTFILES_DIR ]]; then
+  if [[ -z $DOTFILES ]]; then
     printf "Make sure \$DOTFILES_DIR is set. Add the following to your .bashrc or .zshrc file and restart your shell:\n\n"
     printf '  export DOTFILES_DIR="/path/to/dotfiles/directory"\n'
     return 1
@@ -53,9 +53,9 @@ dotfiles() {
 
     if [[ "$1" == "--all" ]]; then
       (
-        cd "$DOTFILES_DIR" || (printf "Failed to enter dotfiles directory\n" && return 1)
+        cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
 
-        find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+        find "$DOTFILES" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           dirname=$(basename "$dir") # get the base name (e.g. $HOME/.dotfiles/nvim => nvim)
           if [ "$dirname" != ".git" ]; then
             printf "stowing %s...\n" "$dirname"
@@ -66,7 +66,7 @@ dotfiles() {
       )
     else
       (
-        cd "$DOTFILES_DIR" || (printf "Failed to enter dotfiles directory\n" && return 1)
+        cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
           printf "stowing %s\n" "$arg"
           if stow -t "$HOME" -S "$arg"; then
@@ -90,9 +90,9 @@ dotfiles() {
 
     if [[ "$1" == "--all" ]]; then
       (
-        cd "$DOTFILES_DIR" || (printf "Failed to enter dotfiles directory\n" && return 1)
+        cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
 
-        find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+        find "$DOTFILES" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           dirname=$(basename "$dir") # get the base name (e.g. $HOME/.dotfiles/nvim => nvim)
           if [ "$dirname" != ".git" ]; then
             printf "unstowing %s...\n" "$dirname"
@@ -103,7 +103,7 @@ dotfiles() {
       )
     else
       (
-        cd "$DOTFILES_DIR" || (printf "Failed to enter dotfiles directory\n" && return 1)
+        cd "$DOTFILES" || (printf "Failed to enter dotfiles directory\n" && return 1)
         for arg in "$@"; do
           printf "unstowing %s\n" "$arg"
           if stow -t "$HOME" -D "$arg"; then
@@ -190,7 +190,7 @@ dotfiles() {
       return 1
     fi
 
-    cd "$DOTFILES_DIR" || return 1
+    cd "$DOTFILES" || return 1
 
     return 0
     ;;
