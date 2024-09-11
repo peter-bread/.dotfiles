@@ -66,6 +66,18 @@ script. They can also be invoked manually using the `dotfiles` command.
 └── install.sh
 ```
 
+<!--toc:ignore-->
+
+### Example `install/install-wezterm.sh`
+
+```sh
+# this line might be moved into the master install script
+config="${XDG_CONFIG_HOME:-$HOME/.config}" # handle tools that don't support xdg
+
+mkdir -p "$config/wezterm"
+ln -sf "$DOTFILES/wezterm/wezterm.lua" "$config/wezterm.lua"
+```
+
 ## Setup
 
 1. Run `bootstrap.sh`.
