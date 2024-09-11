@@ -41,6 +41,7 @@ dotfiles() {
   shift
 
   case "$command" in
+
   load)
 
     # ensure an arg is passed in
