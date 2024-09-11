@@ -21,6 +21,7 @@ dotfiles() {
     printf "  unload    prune symlinks\n"
     printf "  rename    rename file and update symlinks\n"
     printf "  reload    prune and create symlinks\n"
+    printf "  cd        cd to dotfiles directory\n"
     printf "\n"
     echo -e "${title}Options:${reset}\n"
     printf "  -h, --help     print help\n"
