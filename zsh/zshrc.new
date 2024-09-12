@@ -38,3 +38,6 @@ bindkey '^n' history-search-forward
 # Starship Prompt
 # -----------------
 eval "$(starship init zsh)"
+
+autoload -Uz compinit
+compinit
