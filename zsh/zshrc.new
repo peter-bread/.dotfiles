@@ -1,0 +1,22 @@
+# user-specific scripts and executables
+export PATH="$HOME/.local/bin:$PATH"
+
+# git-scripts (add custom git commands)
+# export PATH="$PATH:$HOME/.git-scripts"
+
+# History
+# -----------------
+setopt hist_ignore_space    # Commands not saved if they are prepended with a space
+setopt hist_ignore_all_dups # Remove all duplicate commands from history
+setopt hist_save_no_dups    # Do not write duplicate commands to history file
+setopt hist_ignore_dups     # Ignore duplicate commands in history
+setopt hist_find_no_dups    # Do not display duplicate commands during history search
+
+# Keybinds
+# -----------------
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
+
+# Starship Prompt
+# -----------------
+eval "$(starship init zsh)"
