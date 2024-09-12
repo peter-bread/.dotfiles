@@ -49,7 +49,8 @@ bindkey '^n' history-search-forward
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # case insensitive completion
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'colorls --color=always $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview \
+  'eza --color=always --icons=always --group-directories-first --git $realpath'
 
 # TODO: move this into a file in "$HOME/.zshrc.d"
 #
