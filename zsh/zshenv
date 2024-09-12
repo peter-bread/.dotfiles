@@ -1,6 +1,7 @@
 # DO NOT set PATH in this file: https://gist.github.com/Linerre/f11ad4a6a934dcf01ee8415c9457e7b2
 # Use $ZDOTDIR/.zshrc instead
 
+# dotfiles
 export DOTFILES="$HOME/.dotfiles"
 
 # . "$HOME/.cargo/env"
@@ -19,3 +20,6 @@ export VISUAL="nvim"
 
 # zsh
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+
+# starship prompt
+export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
