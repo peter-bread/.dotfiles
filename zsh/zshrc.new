@@ -39,5 +39,7 @@ bindkey '^n' history-search-forward
 # -----------------
 eval "$(starship init zsh)"
 
+# Completion
+# -----------------
 autoload -Uz compinit
 compinit
