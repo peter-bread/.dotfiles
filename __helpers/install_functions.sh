@@ -2,5 +2,5 @@
 
 function dot_install() {
   # add coloured logging
-  . "$DOTFILES/install/install-${1}.sh"
+  . "$DOTFILES/_install/install-${1}.sh"
 }
