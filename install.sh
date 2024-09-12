@@ -11,5 +11,6 @@ source ./_helpers/install_functions.sh
 
 dot_install zsh
 dot_install wezterm
+dot_install git
 dot_install tmux
 dot_install starship

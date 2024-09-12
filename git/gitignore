@@ -1,0 +1,15 @@
+# git repo
+.git/
+
+# node modules
+node_modules
+
+# env
+.env
+
+# MacOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
