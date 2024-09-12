@@ -75,7 +75,7 @@ script. They can also be invoked manually using the `dotfiles` command.
 #### `install.sh`
 
 ```sh
-# make sure important environment variables are set
+# make sure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*)
 source ./zsh/zshenv
 
 # config directory to handle apps that do/don't support XDG spec
