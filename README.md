@@ -9,6 +9,7 @@ Managing my dotfiles.
 <!--toc:start-->
 
 - [File Structure](#file-structure)
+- [Example](#example)
 - [Setup](#setup)
 - [TODO](#todo)
 <!--toc:end-->
@@ -66,13 +67,13 @@ script. They can also be invoked manually using the `dotfiles` command.
 └── install.sh
 ```
 
+## Example
+
+Below is a simple example of how the config files might be installed:
+
 <!--toc:ignore-->
 
-### Example
-
-<!--toc:ignore-->
-
-#### `install.sh`
+### `install.sh`
 
 ```sh
 # make sure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*)
@@ -81,7 +82,7 @@ source ./zsh/zshenv
 
 <!--toc:ignore-->
 
-#### `install/install-zsh.sh`
+### `install/install-zsh.sh`
 
 ```sh
 # make directory for zsh config files
@@ -96,7 +97,7 @@ ln -sf "$DOTFILES/zsh/zshrc" "$ZDOTDIR/.zshrc"
 
 <!--toc:ignore-->
 
-#### `install/install-wezterm.sh`
+### `install/install-wezterm.sh`
 
 ```sh
 # make directory for wezterm config
