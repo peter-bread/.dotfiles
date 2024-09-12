@@ -4,10 +4,10 @@
 source ./zsh/zshenv
 
 # colours for logging
-source ./colours.sh
+source ./_helpers/colours.sh
 
 # functions for installing configs
-source ./install_functions.sh
+source ./_helpers/install_functions.sh
 
 # config directory to handle apps that do/don't support XDG spec
 # (attempt to use $XDG_CONFIG_HOME, fall back to $HOME/.config)
