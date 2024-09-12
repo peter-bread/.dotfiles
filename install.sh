@@ -14,3 +14,4 @@ dot_install wezterm
 dot_install git
 dot_install tmux
 dot_install starship
+dot_install yamlfmt
