@@ -10,3 +10,4 @@ source ./_helpers/colours.sh
 source ./_helpers/install_functions.sh
 
 dot_install zsh
+dot_install wezterm
