@@ -15,6 +15,7 @@ export XDG_CONFIG_DIRS="/etc/xdg"
 # editor
 export EDITOR="nvim"
 export VISUAL="nvim"
+export NVIM_APPNAME="peter.nvim"
 
 # zsh
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"

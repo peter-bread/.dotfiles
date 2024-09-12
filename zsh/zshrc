@@ -29,9 +29,6 @@ done
 # ensure correct gh account on startup
 gh_auth_switch_on_pwd
 
-# use my own neovim config rather than LazyVim
-neovim peter
-
 # TODO: move this into a file in "$HOME/.zshrc.d"
 #
 # ensure git-scripts are in PATH
