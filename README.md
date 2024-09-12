@@ -104,7 +104,7 @@ ln -sf "$DOTFILES/zsh/zshrc" "$ZDOTDIR/.zshrc"
 mkdir -p "$XDG_CONFIG_HOME/wezterm"
 
 # place wezterm config file in that directory
-ln -sf "$DOTFILES/wezterm/wezterm.lua" "$XDG_CONFIG_HOME/wezterm.lua"
+ln -sf "$DOTFILES/wezterm/wezterm.lua" "$XDG_CONFIG_HOME/wezterm/wezterm.lua"
 ```
 
 ## Setup
