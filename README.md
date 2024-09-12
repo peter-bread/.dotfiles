@@ -11,6 +11,7 @@ Managing my dotfiles.
 - [File Structure](#file-structure)
 - [Example](#example)
 - [Setup](#setup)
+- [Where's Neovim Config???](#wheres-neovim-config)
 - [TODO](#todo)
 <!--toc:end-->
 
@@ -113,7 +114,11 @@ ln -sf "$DOTFILES/wezterm/wezterm.lua" "$XDG_CONFIG_HOME/wezterm/wezterm.lua"
 
 <!--toc:ignore-->
 
-## How `bootstrap.sh` works
+### How `bootstrap.sh` works
+
+## Where's Neovim Config???
+
+My neovim configuration is in its own repository [here](https://github.com/peter-bread/peter.nvim).
 
 <!--TODO: finish writing `bootstrap.sh` and explain it here-->
 
