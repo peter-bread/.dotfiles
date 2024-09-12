@@ -75,7 +75,26 @@ script. They can also be invoked manually using the `dotfiles` command.
 #### `install.sh`
 
 ```sh
+# make sure important environment variables are set
+source ./zsh/zshenv
+
+# config directory to handle apps that do/don't support XDG spec
 export CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"
+```
+
+<!--toc:ignore-->
+
+#### `install/install-zsh.sh`
+
+```sh
+# make directory for zsh config files
+mkdir -p "$ZDOTDIR"
+
+# .zshenv MUST be placed in $HOME directory
+ln -sf "$DOTFILES/zsh/zshenv" "$HOME/.zshenv"
+
+# .zshrc MUST be placed in $ZDOTDIR directory
+ln -sf "$DOTFILES/zsh/zshrc" "$ZDOTDIR/.zshrc"
 ```
 
 <!--toc:ignore-->
@@ -83,7 +102,10 @@ export CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"
 #### `install/install-wezterm.sh`
 
 ```sh
+# make directory for wezterm config
 mkdir -p "$CONFIG/wezterm"
+
+# place wezterm config file in that directory
 ln -sf "$DOTFILES/wezterm/wezterm.lua" "$CONFIG/wezterm.lua"
 ```
 
