@@ -1,22 +1,22 @@
-# user-specific scripts and executables
+# User-specific scripts and executables
 export PATH="$HOME/.local/bin:$PATH"
 
-# git-scripts (add custom git commands)
+# Git scripts (add custom git commands)
 # export PATH="$PATH:$HOME/.git-scripts"
 
 # ZSH Plugin Manager (Zap)
 # ------------------------
 
-# install
+# Install
 [ ! -d "${XDG_CONFIG_HOME:-$HOME/.local/share}/zap" ] && \
   zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) \
   --branch release-v1 --keep
 
-# init
+# Init
 [ -f "${XDG_CONFIG_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && \
   source "${XDG_CONFIG_HOME:-$HOME/.local/share}/zap/zap.zsh"
 
-# plugins
+# Plugins
 plug "zsh-users/zsh-autosuggestions"
 plug "zsh-users/zsh-completions"
 plug "zsh-users/zsh-syntax-highlighting"
