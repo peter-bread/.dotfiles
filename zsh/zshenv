@@ -4,8 +4,6 @@
 # dotfiles
 export DOTFILES="$HOME/.dotfiles"
 
-# . "$HOME/.cargo/env"
-
 # xdg
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -23,3 +21,6 @@ export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 
 # starship prompt
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
+
+# rustup (maybe temporarily)
+. "$HOME/.cargo/env"
