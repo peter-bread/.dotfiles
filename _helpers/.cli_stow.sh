@@ -2,7 +2,8 @@
 
 # make sure DOTFILES_DIR environment variable is set before sourcing
 if [[ -z $DOTFILES ]]; then
-  printf "Make sure \$DOTFILES is set. Add the following to your .bashrc or .zshrc file and restart your shell:\n\n"
+  printf "Make sure \$DOTFILES is set. "
+  printf "Add the following to your .bashrc or .zshrc file and restart your shell:\n\n"
   printf '  export DOTFILES="/path/to/dotfiles/directory"\n'
   return 1
 fi
@@ -14,8 +15,9 @@ dotfiles() {
 
   # make sure DOTFILES_DIR environment variable is set when running command
   if [[ -z $DOTFILES ]]; then
-    printf "Make sure \$DOTFILES_DIR is set. Add the following to your .bashrc or .zshrc file and restart your shell:\n\n"
-    printf '  export DOTFILES_DIR="/path/to/dotfiles/directory"\n'
+    printf "Make sure \$DOTFILES is set. "
+    printf "Add the following to your .bashrc or .zshrc file and restart your shell:\n\n"
+    printf '  export DOTFILES="/path/to/dotfiles/directory"\n'
     return 1
   fi
 
