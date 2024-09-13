@@ -20,6 +20,7 @@ export PATH="$HOME/.local/bin:$PATH"
 plug "zsh-users/zsh-autosuggestions"
 plug "zsh-users/zsh-completions"
 plug "zsh-users/zsh-syntax-highlighting"
+plug "hlissner/zsh-autopair"
 plug "Aloxaf/fzf-tab"
 
 # History
