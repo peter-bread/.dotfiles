@@ -80,6 +80,8 @@ function y() {
 
 alias so="source"
 
+eval "$(mise activate)"
+
 # this doesn't have any functionality yet
 # alias f='find ~ ~/Developer/peter-bread ~/Developer/ak22112 ~/.config -mindepth 1 -maxdepth 1 -type d | sed "s|$HOME|~|g" | fzf'
 
