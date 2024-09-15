@@ -48,6 +48,11 @@ bindkey '^n' history-search-forward
 eval "$(starship init zsh)"
 
 
+# Mise-en-place
+
+eval "$(mise activate zsh)"
+
+
 # Completion ------------------------------------------------------------------
 
 # Homebrew Completion
