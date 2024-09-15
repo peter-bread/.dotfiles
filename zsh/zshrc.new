@@ -6,7 +6,7 @@
 path=("$HOME/.local/bin" $path)
 
 # Git scripts (add custom git commands)
-# export PATH="$PATH:$HOME/.git-scripts"
+# path+=("$DOTFILES/git/git-scripts")
 
 
 # ZSH Plugin Manager (Zap) ----------------------------------------------------
