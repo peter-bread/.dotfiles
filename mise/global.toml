@@ -1,0 +1,8 @@
+[settings]
+experimental = true
+
+[tools]
+go = "latest"
+lua = "latest"
+node = "lts"
+python = "latest"

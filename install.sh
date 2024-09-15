@@ -15,3 +15,4 @@ dot_install git
 dot_install tmux
 dot_install starship
 dot_install yamlfmt
+dot_install mise
