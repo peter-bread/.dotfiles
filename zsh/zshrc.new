@@ -3,7 +3,7 @@
 # PATH ------------------------------------------------------------------------
 
 # User-specific scripts and executables
-export PATH="$HOME/.local/bin:$PATH"
+path=("$HOME/.local/bin" $path)
 
 # Git scripts (add custom git commands)
 # export PATH="$PATH:$HOME/.git-scripts"
