@@ -1,3 +1,5 @@
+# Global configuration file to be shared across machines
+
 [settings]
 experimental = true
 
