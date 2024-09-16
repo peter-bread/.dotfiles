@@ -16,5 +16,5 @@ These are configuration files for ZSH.
 > `zshrc.new` is part of my zsh config rewrite.
 
 > [!WARNING]
-> In `.zshrc`, there are references to `$HOME/zshrc.d`.
+> In `.zshrc`, there are references to `$HOME/.zshrc.d`.
 > This file is currently on my local machine and not version controlled.
