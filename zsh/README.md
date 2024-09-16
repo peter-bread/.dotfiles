@@ -11,7 +11,9 @@ These are configuration files for ZSH.
 > See [this gist](https://gist.github.com/Linerre/f11ad4a6a934dcf01ee8415c9457e7b2)
 > for more details.
 
-> [!NOTE] > `zshrc.new` is part of my zsh config rewrite.
+<!-- prettier-ignore-->
+> [!NOTE]
+> `zshrc.new` is part of my zsh config rewrite.
 
 > [!WARNING]
 > In `.zshrc`, there are references to `$HOME/zshrc.d`.
