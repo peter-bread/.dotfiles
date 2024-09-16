@@ -6,7 +6,7 @@ Global configuration file for [mise](https://mise.jdx.dev).
 
 ### Bootstrap
 
-Use bootstrap script to automatically install this.
+Use `bootstrap` script to automatically install tools.
 
 ### Manual
 
