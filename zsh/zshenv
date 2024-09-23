@@ -19,6 +19,7 @@ export NVIM_APPNAME="peter.nvim"
 
 # zsh
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
 
 # starship prompt
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
