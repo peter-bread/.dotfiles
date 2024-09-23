@@ -3,6 +3,7 @@
 # PATH ------------------------------------------------------------------------
 
 # User-specific scripts and executables
+mkdir -p "$HOME/.local/bin"
 path=("$HOME/.local/bin" $path)
 
 # Git scripts (add custom git commands)
