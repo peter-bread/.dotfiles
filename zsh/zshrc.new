@@ -12,8 +12,10 @@ path=("$HOME/.local/bin" $path)
 
 # FPATH -----------------------------------------------------------------------
 
+# User-specifc completion scripts
 mkdir -p "$ZSH_COMPLETIONS"
 fpath=("$ZSH_COMPLETIONS" $fpath)
+
 
 # ZSH Plugin Manager (Zap) ----------------------------------------------------
 
@@ -54,9 +56,16 @@ bindkey '^n' history-search-forward
 eval "$(starship init zsh)"
 
 
-# Mise-en-place
+# Mise-en-place ---------------------------------------------------------------
 
 eval "$(mise activate zsh)"
+
+
+# Languages -------------------------------------------------------------------
+
+[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
 # Completion ------------------------------------------------------------------
