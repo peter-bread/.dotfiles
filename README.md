@@ -12,7 +12,6 @@ Managing my dotfiles.
 - [Example](#example)
 - [Setup](#setup)
 - [Where's Neovim Config???](#wheres-neovim-config)
-- [TODO](#todo)
 <!--toc:end-->
 
 ## File Structure
@@ -110,20 +109,36 @@ ln -sf "$DOTFILES/wezterm/wezterm.lua" "$XDG_CONFIG_HOME/wezterm/wezterm.lua"
 
 ## Setup
 
-1. Run `bootstrap.sh`.
+<!--toc:ignore-->
+
+### Bootstrap
+
+Use bootstrap script on a new machine (if available):
+
+```sh
+curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh | bash
+```
 
 <!--toc:ignore-->
 
-### How `bootstrap.sh` works
+### Manual
+
+Clone the repo:
+
+```sh
+git clone git@github.com:peter-bread/.dotfiles.git ~/.dotfiles
+```
+
+Run the install script:
+
+```sh
+bash ~/.dotfiles/install.sh
+```
+
+Restart shell.
 
 ## Where's Neovim Config???
 
 My neovim configuration is in its own repository [here](https://github.com/peter-bread/peter.nvim).
 
-<!--TODO: finish writing `bootstrap.sh` and explain it here-->
-
-<!--TODO: all planned todos-->
-
-## TODO
-
-- create uninstall scripts
+You can clone it manually or use a bootstrap script.
