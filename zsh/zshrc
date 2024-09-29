@@ -11,8 +11,6 @@ zsh_conf_dir="$HOME/.zshrc.d"
 zsh_conf_scripts=(
   "environment" # general environment variables
   "languages"   # language-specific environment variables
-  # "nvm"         # set up node version manager
-  "gamon"       # start gamon
   "functions"   # functions
   "aliases"     # aliases
   "completion"  # shell completion
