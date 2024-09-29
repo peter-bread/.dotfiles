@@ -24,5 +24,8 @@ export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
 # starship prompt
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
 
+# gamon
+export GAM_REPO_ROOT_DIR="$HOME/Developer"
+
 # gh cli
 export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"

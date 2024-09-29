@@ -27,7 +27,11 @@ for conf_script in "${zsh_conf_scripts[@]}"; do
 done
 
 # ensure correct gh account on startup
-gh_auth_switch_on_pwd
+gam run
+
+# hook into shell
+source <(gam hook)
+
 
 # TODO: move this into a file in "$HOME/.zshrc.d"
 #
