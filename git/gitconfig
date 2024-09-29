@@ -1,31 +1,33 @@
 [user]
 	name = Peter Sheehan
+	email = petersheehan2003@gmail.com
+
+[core]
+	excludesfile = /Users/petersheehan/.config/git/ignore
+	sshCommand = ssh -i ~/.ssh/github-peter-bread -F /dev/null
 
 [init]
 	defaultBranch = main
 
 [includeIf "gitdir:~/Developer/ak22112/"]
-	path = ~/Developer/ak22112/.gitconfig
-
-[includeIf "gitdir:~/Developer/peter-bread/"]
-	path = ~/Developer/peter-bread/.gitconfig
+	path = ~/.dotfiles/git/gitconfig.ak22112
 
 [alias]
-  a = add
-  aa = add -A
+	a = add
+	aa = add -A
 	br = branch
 	cm = commit -m
-  co = checkout
-  cob = checkout -b
-  d = diff
-  f = fetch
+	co = checkout
+	cob = checkout -b
+	d = diff
+	f = fetch
 	l = log --oneline --decorate --graph
 	last = log -1 HEAD
 	pr = remote prune origin
-  pl = pull
-  plom = pull origin main
-  ps = push
-  psom = push origin main
+	pl = pull
+	plom = pull origin main
+	ps = push
+	psom = push origin main
 	st = status
 	unstage = reset HEAD --
 
@@ -37,5 +39,3 @@
 	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
 
-[core]
-	excludesfile = /Users/petersheehan/.config/git/ignore

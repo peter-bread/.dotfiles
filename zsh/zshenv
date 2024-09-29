@@ -4,6 +4,9 @@
 # dotfiles
 export DOTFILES="$HOME/.dotfiles"
 
+# development
+export DEVELOPER="$HOME/Developer"
+
 # xdg
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -25,7 +28,7 @@ export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
 
 # gamon
-export GAM_REPO_ROOT_DIR="$HOME/Developer"
+export GAM_REPO_ROOT_DIR="$DEVELOPER"
 
 # gh cli
 export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"

@@ -9,6 +9,8 @@ source ./_helpers/colours.sh
 # functions for installing configs
 source ./_helpers/install_functions.sh
 
+mkdir -p "$DEVELOPER"
+
 dot_install zsh
 dot_install wezterm
 dot_install git

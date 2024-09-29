@@ -1,0 +1,5 @@
+[user]
+	email = ak22112@bristol.ac.uk
+
+[core]
+	sshCommand = ssh -i ~/.ssh/github-ak22112 -F /dev/null
