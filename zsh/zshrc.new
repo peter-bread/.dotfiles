@@ -85,8 +85,8 @@ fi
 
 # Functions ===================================================================
 
-source "$file"
-  for file in "$DOTFILES/zsh/functions/*(.)"; do
+for file in $DOTFILES/zsh/functions/*(.); do
+  source "$file"
 done
 
 
