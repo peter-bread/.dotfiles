@@ -61,13 +61,8 @@ eval "$(mise hook-env -s zsh)"
 # Gamon -----------------------------------------------------------------------
 
 if command -v gam &>/dev/null; then
-
-  # Ensure correct GH CLI account on startup
-  gam run
-
-  # Hook into shell cd
-  source <(gam hook)
-
+  gam run             # Ensure correct GH CLI account on startup
+  source <(gam hook)  # Hook into shell cd
 fi
 
 
