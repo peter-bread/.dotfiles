@@ -2,12 +2,21 @@
 
 # PATH ========================================================================
 
+# General ---------------------------------------------------------------------
+
 # User-specific scripts and executables
 mkdir -p "$HOME/.local/bin"
 path=("$HOME/.local/bin" $path)
 
 # Git scripts (add custom git commands)
 # path+=("$DOTFILES/git/git-scripts")
+
+
+# Languages -------------------------------------------------------------------
+
+[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
 # ZSH Plugin Manager (Zap) ====================================================
@@ -64,13 +73,6 @@ if command -v gam &>/dev/null; then
   gam run             # Ensure correct GH CLI account on startup
   source <(gam hook)  # Hook into shell cd
 fi
-
-
-# Languages ===================================================================
-
-[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
-[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
 # Completion ==================================================================
