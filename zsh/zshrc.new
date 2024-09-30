@@ -15,8 +15,11 @@ path=("$HOME/.local/bin" $path)
 # Languages -------------------------------------------------------------------
 
 [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
+
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && \
+  source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
 # ZSH Plugin Manager (Zap) ====================================================
