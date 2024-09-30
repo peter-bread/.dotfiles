@@ -51,7 +51,11 @@ eval "$(starship init zsh)"
 
 # Mise-en-place ---------------------------------------------------------------
 
+# Interactive Usage
 eval "$(mise activate zsh)"
+
+# Usage in this script
+eval "$(mise hook-env -s zsh)"
 
 
 # Languages -------------------------------------------------------------------
