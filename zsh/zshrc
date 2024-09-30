@@ -67,16 +67,17 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview \
 
 # Starship Prompt =============================================================
 
-eval "$(starship init zsh)"
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+fi
 
 
 # Mise=en=place ===============================================================
 
-# Interactive Usage
-eval "$(mise activate zsh)"
-
-# Usage in this script
-eval "$(mise hook-env -s zsh)"
+if command -v gam &>/dev/null; then
+  eval "$(mise activate zsh)"     # Interactive Usage
+  eval "$(mise hook-env -s zsh)"  # Usage in this script
+fi
 
 
 # Gamon =======================================================================
