@@ -1,93 +1,115 @@
-# TODO: use zinit ???
-# this would be primarily for installing plugins
-# which would make this config less reliant on a
-# platform specific package manager, thus making
-# this config more portable.
+#!/usr/bin/env zsh
 
-# define directory for zsh config files
-zsh_conf_dir="$HOME/.zshrc.d"
+# PATH ========================================================================
 
+# General ---------------------------------------------------------------------
 
-fpath=("$ZSH_COMPLETIONS" $fpath)
+# User-specific scripts and executables
+mkdir -p "$HOME/.local/bin"
+path=("$HOME/.local/bin" $path)
 
-# names of config scripts
-zsh_conf_scripts=(
-  "languages"   # language-specific environment variables
-  "functions"   # functions
-  "aliases"     # aliases
-  "completion"  # shell completion
-  "starship"    # starship terminal prompt
-  "sdkman"      # initialise sdkman
-  "zsh-plugins" # enable zsh plugins (must go last)
-)
-
-# source config scripts
-for conf_script in "${zsh_conf_scripts[@]}"; do
-  source "$zsh_conf_dir/$conf_script.sh"
-done
-
-# ensure correct gh account on startup
-gam run
-
-# hook into shell
-source <(gam hook)
+# Git scripts (add custom git commands)
+# path+=("$DOTFILES/git/git-scripts")
 
 
-# TODO: move this into a file in "$HOME/.zshrc.d"
-#
-# ensure git-scripts are in PATH
-export PATH="$PATH:$HOME/.git-scripts"
+# Languages -------------------------------------------------------------------
 
-# TODO: move this into a file in "$HOME/.zshrc.d"
-#
-# ensure user-specific scripts and executables are in PATH
-export PATH="$PATH:$HOME/.local/bin"
+[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
+
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && \
+  source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
-# TODO: move this into a file in "$HOME/.zshrc.d"
-#
-# keybinds
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
+# ZSH Plugin Manager (Zap) ====================================================
 
-# fuzzy finding
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # case insensitive completion
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview \
-  'eza --color=always --icons=always --group-directories-first --git $realpath'
+# Install
+[ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/zap" ] && \
+  zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) \
+  --branch release-v1 --keep
 
-# TODO: move this into a file in "$HOME/.zshrc.d"
-#
-# History commands:
-# -----------------
+# Init
+[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && \
+  source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
+
+# Plugins
+plug "zsh-users/zsh-autosuggestions"
+plug "zsh-users/zsh-completions"
+plug "zsh-users/zsh-syntax-highlighting"
+plug "hlissner/zsh-autopair"
+plug "Aloxaf/fzf-tab"
+
+
+# History =====================================================================
+
 setopt hist_ignore_space    # Commands not saved if they are prepended with a space
 setopt hist_ignore_all_dups # Remove all duplicate commands from history
 setopt hist_save_no_dups    # Do not write duplicate commands to history file
 setopt hist_ignore_dups     # Ignore duplicate commands in history
 setopt hist_find_no_dups    # Do not display duplicate commands during history search
 
-# yazi
-function y() {
-  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-  yazi "$@" --cwd-file="$tmp"
-  if cwd="$(cat -- "$tmp")" && [ "$cwd" != "" ] && [ "$cwd" != "$PWD" ]; then
-    cd -- "$cwd"
-  fi
-  rm -f -- "$tmp"
-}
 
-# automatically launch tmux session if not already in one.
-# I won't use this until I've properly configured tmux.
-# if [ -z "$TMUX" ]; then
-#   tmux
-# fi
+# Keybinds ====================================================================
 
-alias so="source"
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
 
-eval "$(mise activate zsh)" # interactive usage
 
-eval "$(mise hook-env -s zsh)" # usage in this script
+# fzf Tab Completion ==========================================================
 
-# this doesn't have any functionality yet
-# alias f='find ~ ~/Developer/peter-bread ~/Developer/ak22112 ~/.config -mindepth 1 -maxdepth 1 -type d | sed "s|$HOME|~|g" | fzf'
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # case insensitive completion
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview \
+  'eza --color=always --icons=always --group-directories-first --git $realpath'
+
+
+# Starship Prompt =============================================================
+
+eval "$(starship init zsh)"
+
+
+# Mise=en=place ===============================================================
+
+# Interactive Usage
+eval "$(mise activate zsh)"
+
+# Usage in this script
+eval "$(mise hook-env -s zsh)"
+
+
+# Gamon =======================================================================
+
+if command -v gam &>/dev/null; then
+  gam run             # Ensure correct GH CLI account on startup
+  source <(gam hook)  # Hook into shell cd
+fi
+
+
+# Aliases =====================================================================
+
+[ -f "$DOTFILES/zsh/aliases.sh" ] && source "$DOTFILES/zsh/aliases.sh"
+
+
+# Functions ===================================================================
+
+for file in $DOTFILES/zsh/functions/*(.); do
+  source "$file"
+done
+
+
+# Completion ==================================================================
+
+# Homebrew Completion
+if type brew &>/dev/null; then
+  fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
+fi
+
+# User-specifc Completion
+mkdir -p "$ZSH_COMPLETIONS"
+fpath=("$ZSH_COMPLETIONS" $fpath)
+
+# Load Shell Completion
+autoload -Uz compinit
+compinit
