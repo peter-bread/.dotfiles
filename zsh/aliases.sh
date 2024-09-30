@@ -13,9 +13,6 @@ alias cat='bat'
 
 alias ez='exec zsh'
 
-# activate python venv with name ".venv"
-alias activate='source .venv/bin/activate'
-
 alias g='git'
 alias n='nvim'
 
