@@ -58,6 +58,19 @@ eval "$(mise activate zsh)"
 eval "$(mise hook-env -s zsh)"
 
 
+# Gamon -----------------------------------------------------------------------
+
+if command -v gam &>/dev/null; then
+
+  # Ensure correct GH CLI account on startup
+  gam run
+
+  # Hook into shell cd
+  source <(gam hook)
+
+fi
+
+
 # Languages -------------------------------------------------------------------
 
 [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
