@@ -12,7 +12,6 @@ fpath=("$ZSH_COMPLETIONS" $fpath)
 
 # names of config scripts
 zsh_conf_scripts=(
-  "environment" # general environment variables
   "languages"   # language-specific environment variables
   "functions"   # functions
   "aliases"     # aliases
@@ -92,10 +91,3 @@ eval "$(mise hook-env -s zsh)" # usage in this script
 
 # this doesn't have any functionality yet
 # alias f='find ~ ~/Developer/peter-bread ~/Developer/ak22112 ~/.config -mindepth 1 -maxdepth 1 -type d | sed "s|$HOME|~|g" | fzf'
-
-# rename() {
-#   $HOME/.dotfiles/rename.sh $@
-#}
-
-
-# source "$DOTFILES/cli_stow.sh"
