@@ -10,13 +10,6 @@ path=("$HOME/.local/bin" $path)
 # path+=("$DOTFILES/git/git-scripts")
 
 
-# FPATH -----------------------------------------------------------------------
-
-# User-specifc completion scripts
-mkdir -p "$ZSH_COMPLETIONS"
-fpath=("$ZSH_COMPLETIONS" $fpath)
-
-
 # ZSH Plugin Manager (Zap) ----------------------------------------------------
 
 # Install
@@ -75,5 +68,10 @@ if type brew &>/dev/null; then
   fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
 fi
 
+# User-specifc Completion
+mkdir -p "$ZSH_COMPLETIONS"
+fpath=("$ZSH_COMPLETIONS" $fpath)
+
+# Load Shell Completion
 autoload -Uz compinit
 compinit
