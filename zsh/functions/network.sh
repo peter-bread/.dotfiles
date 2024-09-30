@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function get_wifi_ip_addr() {
   ipconfig getifaddr en0
 }
