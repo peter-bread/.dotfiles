@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# PATH ------------------------------------------------------------------------
+# PATH ========================================================================
 
 # User-specific scripts and executables
 mkdir -p "$HOME/.local/bin"
@@ -10,7 +10,7 @@ path=("$HOME/.local/bin" $path)
 # path+=("$DOTFILES/git/git-scripts")
 
 
-# ZSH Plugin Manager (Zap) ----------------------------------------------------
+# ZSH Plugin Manager (Zap) ====================================================
 
 # Install
 [ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/zap" ] && \
@@ -29,7 +29,7 @@ plug "hlissner/zsh-autopair"
 plug "Aloxaf/fzf-tab"
 
 
-# History ---------------------------------------------------------------------
+# History =====================================================================
 
 setopt hist_ignore_space    # Commands not saved if they are prepended with a space
 setopt hist_ignore_all_dups # Remove all duplicate commands from history
@@ -38,18 +38,18 @@ setopt hist_ignore_dups     # Ignore duplicate commands in history
 setopt hist_find_no_dups    # Do not display duplicate commands during history search
 
 
-# Keybinds --------------------------------------------------------------------
+# Keybinds ====================================================================
 
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
 
-# Starship Prompt -------------------------------------------------------------
+# Starship Prompt =============================================================
 
 eval "$(starship init zsh)"
 
 
-# Mise-en-place ---------------------------------------------------------------
+# Mise=en=place ===============================================================
 
 # Interactive Usage
 eval "$(mise activate zsh)"
@@ -58,7 +58,7 @@ eval "$(mise activate zsh)"
 eval "$(mise hook-env -s zsh)"
 
 
-# Gamon -----------------------------------------------------------------------
+# Gamon =======================================================================
 
 if command -v gam &>/dev/null; then
   gam run             # Ensure correct GH CLI account on startup
@@ -66,14 +66,14 @@ if command -v gam &>/dev/null; then
 fi
 
 
-# Languages -------------------------------------------------------------------
+# Languages ===================================================================
 
 [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
-# Completion ------------------------------------------------------------------
+# Completion ==================================================================
 
 # Homebrew Completion
 if type brew &>/dev/null; then
