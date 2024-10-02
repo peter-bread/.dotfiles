@@ -11,7 +11,7 @@ function activate() {
     activate ".venv"
   else
     if [[ $1 == "-h" || $1 == "--help" ]]; then
-      echo "usage: actiavte [ -h | --help ] [<venv_name>]"
+      echo "usage: activate [ -h | --help ] [<venv_name>]"
       echo
       echo -e "\tactivate               attempts to activate .venv"
       echo -e "\tactivate <venv_name>   attempts to activate <venv_name>"
