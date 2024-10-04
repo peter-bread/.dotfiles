@@ -31,7 +31,7 @@ config.font = wezterm.font({
 	},
 })
 -- TODO: add backup font
-config.font_size = 20
+config.font_size = 18
 config.send_composed_key_when_left_alt_is_pressed = false -- left opt is ALT/META key
 config.send_composed_key_when_right_alt_is_pressed = true -- right opt is normal (so i can type #)
 
