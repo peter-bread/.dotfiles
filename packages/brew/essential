@@ -42,4 +42,3 @@ cask "wezterm"
 brew "mas"
 
 mas "Microsoft Outlook", id: 985367838
-
