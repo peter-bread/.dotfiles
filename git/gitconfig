@@ -3,11 +3,28 @@
 	email = petersheehan2003@gmail.com
 
 [core]
+	pager = "delta"
 	excludesfile = /Users/petersheehan/.config/git/ignore
 	sshCommand = ssh -i ~/.ssh/github-peter-bread -F /dev/null
 
 [init]
 	defaultBranch = main
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	plus-style = "syntax #15223a"
+	minus-style = "syntax #2d1e1b"
+	plus-emph-style = "syntax #234d87"
+	minus-emph-style = "syntax #733d22"
+
+[merge]
+	conflictstyle = diff3
+
+[diff]
+	colorMoved = default
 
 [includeIf "gitdir:~/Developer/ak22112/"]
 	path = ~/.dotfiles/git/gitconfig.ak22112
