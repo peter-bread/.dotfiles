@@ -16,3 +16,8 @@ node_modules
 
 # private local mise config
 .mise.local.toml
+
+# project-specific local nvim settings
+.nvim.lua
+.nvimrc
+.exrc
