@@ -29,8 +29,8 @@
 	navigate = true
 	plus-style = "syntax #15223a"
 	minus-style = "syntax #2d1e1b"
-	plus-emph-style = "syntax #234d87"
-	minus-emph-style = "syntax #733d22"
+	plus-emph-style = "syntax #234d87 bold"
+	minus-emph-style = "syntax #733d22 bold"
 
 [merge]
 	conflictstyle = diff3
