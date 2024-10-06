@@ -5,6 +5,11 @@ local act = wezterm.action
 
 M.keys = {
   {
+    key = "q",
+    mods = "SUPER",
+    action = act.QuitApplication,
+  },
+  {
     key = "=",
     mods = "SUPER",
     action = act.IncreaseFontSize,
