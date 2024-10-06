@@ -26,7 +26,7 @@ M.keys = {
   },
   {
     key = "|",
-    mods = "SUPER",
+    mods = "SUPER|SHIFT",
     action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
   },
   {
