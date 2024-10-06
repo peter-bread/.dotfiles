@@ -1,6 +1,6 @@
 local wezterm = require("wezterm")
+local keys = require("keys")
 local mux = wezterm.mux
-local act = wezterm.action
 
 local config = wezterm.config_builder()
 
@@ -38,63 +38,7 @@ config.send_composed_key_when_right_alt_is_pressed = true -- right opt is normal
 
 config.disable_default_key_bindings = true
 
-config.keys = {
-  {
-    key = "=",
-    mods = "SUPER",
-    action = act.IncreaseFontSize,
-  },
-  {
-    key = "-",
-    mods = "SUPER",
-    action = act.DecreaseFontSize,
-  },
-  {
-    key = "0",
-    mods = "SUPER",
-    action = act.ResetFontSize,
-  },
-  {
-    key = "|",
-    mods = "SUPER",
-    action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
-  },
-  {
-    key = "-",
-    mods = "SUPER|SHIFT",
-    action = act.SplitVertical({ domain = "CurrentPaneDomain" }),
-  },
-  {
-    key = "t",
-    mods = "SUPER",
-    action = act.SpawnTab("CurrentPaneDomain"),
-  },
-  {
-    key = "w",
-    mods = "SUPER",
-    action = act.CloseCurrentTab({ confirm = true }),
-  },
-  {
-    key = "c",
-    mods = "SUPER",
-    action = act.CopyTo("Clipboard"),
-  },
-  {
-    key = "v",
-    mods = "SUPER",
-    action = act.PasteFrom("Clipboard"),
-  },
-  {
-    key = "]",
-    mods = "SUPER",
-    action = act.ActivateTabRelative(1),
-  },
-  {
-    key = "[",
-    mods = "SUPER",
-    action = act.ActivateTabRelative(-1),
-  },
-}
+config.keys = keys.keys
 
 -- launch maximised
 wezterm.on("gui-startup", function(cmd)

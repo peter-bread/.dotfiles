@@ -3,3 +3,4 @@
 mkdir -p "$XDG_CONFIG_HOME/wezterm"
 
 ln -sf "$DOTFILES/wezterm/wezterm.lua" "$XDG_CONFIG_HOME/wezterm/wezterm.lua"
+ln -sf "$DOTFILES/wezterm/keys.lua" "$XDG_CONFIG_HOME/wezterm/keys.lua"
