@@ -7,6 +7,18 @@
 	excludesfile = /Users/petersheehan/.config/git/ignore
 	sshCommand = ssh -i ~/.ssh/github-peter-bread -F /dev/null
 
+[color]
+	ui = true
+
+[color "status"]
+	untracked = "#cfcf15"
+	changed = "#d4d481"
+	added = "#16a307"
+	deleted = "#ff0000"
+	renamed = "#5551e0"
+	branch = "#741ca3"
+	upstream = "#792096"
+
 [init]
 	defaultBranch = main
 
