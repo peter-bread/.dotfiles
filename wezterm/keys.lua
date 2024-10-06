@@ -59,6 +59,16 @@ M.keys = {
     mods = "SUPER",
     action = act.ActivateTabRelative(-1),
   },
+  {
+    key = "]",
+    mods = "SUPER|SHIFT",
+    action = act.MoveTabRelative(1),
+  },
+  {
+    key = "[",
+    mods = "SUPER|SHIFT",
+    action = act.MoveTabRelative(-1),
+  },
 }
 
 return M
