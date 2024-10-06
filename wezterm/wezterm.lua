@@ -11,14 +11,15 @@ config.window_decorations = "RESIZE"
 -- color_scheme = "rose-pine",
 -- color_scheme = "tokyonight_night",
 config.color_scheme = "Kanagawa (Gogh)"
+
 config.window_background_opacity = 0.75
 config.macos_window_background_blur = 10
+
 config.font = wezterm.font({
   family = "FiraCode Nerd Font",
   -- family = "JetBrainsMono Nerd Font",
   weight = "Book",
   harfbuzz_features = {
-    -- "calt=0", -- disable ligatures
     "zero", -- 0 => zero with dot
     "ss05", -- @ => better [ AT ] symbol
     "ss03", -- & => better [ ampersand ] symbol
@@ -33,11 +34,11 @@ config.font = wezterm.font({
 })
 -- TODO: add backup font
 config.font_size = 18
+
 config.send_composed_key_when_left_alt_is_pressed = false -- left opt is ALT/META key
 config.send_composed_key_when_right_alt_is_pressed = true -- right opt is normal (so i can type #)
 
 config.disable_default_key_bindings = true
-
 config.keys = keys.keys
 
 -- launch maximised
