@@ -31,6 +31,7 @@
 	minus-style = "syntax #2d1e1b"
 	plus-emph-style = "syntax #234d87 bold"
 	minus-emph-style = "syntax #733d22 bold"
+	syntax-theme = "OneHalfDark"
 
 [merge]
 	conflictstyle = diff3
