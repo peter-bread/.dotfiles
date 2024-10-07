@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function _show_help() {
+function _show_help_my() {
   echo -e "Go to \e[1mmy\e[0m important places."
   echo
   echo -e "\e[1;4mUsage\e[0m: my <place>"
