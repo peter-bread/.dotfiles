@@ -9,6 +9,8 @@ alias c='clear'
 alias home='cd && clear'
 alias h='cd && clear'
 
+alias so='source'
+
 alias cat='bat'
 
 alias ez='exec zsh'
