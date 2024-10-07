@@ -18,12 +18,6 @@ alias ez='exec zsh'
 alias g='git'
 alias n='nvim'
 
-# Configuration Shortcuts -----------------------------------------------------
-# alias zsh-conf='nvim ~/.zshrc'                       # zshrc config
-# alias zshd-conf='nvim ~/.zshrc.d/'                   # zshrc.d config
-# alias nvim-conf='nvim ~/.config/nvim'                # nvim config
-# alias nvim-conf-custom='nvim ~/.config/nvim.custom/' # custom nvim config
-
 # Default Flags for Commands --------------------------------------------------
 alias grep='grep --color=auto'
 alias tree='tree -I ".git"' # ignore .git directory
