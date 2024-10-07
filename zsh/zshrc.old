@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 # TODO: use zinit ???
 # this would be primarily for installing plugins
 # which would make this config less reliant on a
