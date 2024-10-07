@@ -4,6 +4,7 @@
 experimental = true
 
 [tools]
+erlang = "latest"
 go = "latest"
 lua = "latest"
 node = "lts"
