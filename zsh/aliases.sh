@@ -33,6 +33,5 @@ alias peter='cd $HOME/Developer/peter-bread/peter-bread'
 # =============================================================================
 
 # Repository/Project Shortcuts
-alias sep='cd $HOME/Developer/ak22112/Year2/sep/2023-AIAREnhancedTech'
 alias gamon='cd $HOME/Developer/peter-bread/gamon'
 alias rednoise='cd $HOME/Developer/ak22112/Year3/tb1/CG/CG2024/"Weekly Workbooks"/"01 Introduction and Orientation"/extras/RedNoise'
