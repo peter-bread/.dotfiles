@@ -11,9 +11,6 @@ function dev() {
   p)
     cd ~/Developer/peter-bread || exit
     ;;
-  e)
-    cd ~/testing/my-docker-env || exit
-    ;;
   *)
     echo "Error: Invalid argument. Use 'a' or 'p'."
     ;;

@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-backup() {
-  mv "$1"{,.bak}
-}
-
-restore() {
-  mv "$1"{.bak,}
-}
-
 bak() {
   if [[ "$1" == "-r" || $1 == "--restore" ]]; then
     mv "$2"{.bak,}
