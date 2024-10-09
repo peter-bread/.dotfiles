@@ -12,12 +12,12 @@ function _show_help_my() {
 
 function my() {
   if [[ -z $1 ]]; then
-    _show_help
+    _show_help_my
     return 1
   fi
   case $1 in
   h | -h | help | --help)
-    _show_help
+    _show_help_my
     ;;
   d | dots | dotfiles)
     cd "$DOTFILES" || return 1
@@ -26,7 +26,7 @@ function my() {
     cd "$XDG_CONFIG_HOME/$NVIM_APPNAME" || return 1
     ;;
   *)
-    echo -e "\e[31mError: Not a valid option right now :("
+    echo -e "\e[31mError: Not a valid option right now :(\e[0m"
     return 1
     ;;
   esac
