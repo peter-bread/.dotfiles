@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-red="\e[0;31m"
-yellow="\e[33m"
-bold="\e[1m"
-underline="\e[4m"
-reset="\e[0m"
-
 function activate() {
+
+  red="\e[0;31m"
+  yellow="\e[33m"
+  bold="\e[1m"
+  underline="\e[4m"
+  reset="\e[0m"
+
   if [[ -z $1 ]]; then
     activate ".venv"
   else
