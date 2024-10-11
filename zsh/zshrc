@@ -114,6 +114,10 @@ fi
 mkdir -p "$ZSH_COMPLETIONS"
 fpath=("$ZSH_COMPLETIONS" $fpath)
 
+if command -v terraform &>/dev/null; then
+  complete -C /opt/homebrew/bin/terraform terraform
+fi
+
 # Load Shell Completion
 autoload -Uz compinit
 compinit
