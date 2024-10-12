@@ -3,3 +3,5 @@
 
 # Ruby LSP
 .ruby-lsp/
+
+*.temp
