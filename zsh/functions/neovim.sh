@@ -11,12 +11,13 @@ function neovim() {
     echo "Usage: neovim <command>"
     echo
     echo -e "${title}Commands:${reset}"
-    echo -e "  clear      Delete neovim runtime files"
-    echo -e "  update     Update all plugins and mason tools"
-    echo -e "  restore    Restore config to state of lazy-lock.json"
-    echo -e "  refresh    Equivalent of 'neovim clear && neovim restore'"
-    echo -e "  reset      Equivalent of 'neovim clear && neovim update'"
-    echo -e "  help       Show help"
+    echo -e "  clear              Delete neovim runtime files"
+    echo -e "  update             Update all plugins and mason tools"
+    echo -e "  restore            Restore config to state of lazy-lock.json"
+    echo -e "  refresh            Equivalent of 'neovim clear && neovim restore'"
+    echo -e "  reset              Equivalent of 'neovim clear && neovim update'"
+    echo -e "  switch <config>    Switch to different config"
+    echo -e "  help               Show help"
     echo
     echo -e "${title}Options:${reset}"
     echo -e "  -h, --help   Show help"
@@ -41,6 +42,15 @@ function neovim() {
       '+Lazy! load mason-tool-installer.nvim' \
       '+MasonToolsClean' \
       +qa
+  }
+
+  function _switch() {
+    if [[ -z $1 ]]; then
+      echo "Error: argument cannot be empty."
+      echo "See 'neovim help'."
+      return 1
+    fi
+    export NVIM_APPNAME="$1"
   }
 
   if [[ -z $1 ]]; then
@@ -75,6 +85,10 @@ function neovim() {
   reset)
     _clear
     _update
+    ;;
+
+  switch)
+    _switch "$2"
     ;;
 
   esac
