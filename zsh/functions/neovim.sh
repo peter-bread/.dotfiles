@@ -2,7 +2,7 @@
 
 function neovim() {
 
-  function show_help() {
+  function _show_help() {
     title="\e[1;4m"
     reset="\e[0m"
 
@@ -22,20 +22,20 @@ function neovim() {
     echo -e "  -h, --help   Show help"
   }
 
-  function clear() {
+  function _clear() {
     rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}/${NVIM_APPNAME:-nvim}"
     rm -rf "${XDG_STATE_HOME:-$HOME/.local/state}/${NVIM_APPNAME:-nvim}"
     rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}/${NVIM_APPNAME:-nvim}"
   }
 
-  function update() {
+  function _update() {
     nvim --headless \
       '+Lazy! sync' \
       '+Lazy! load mason-tool-installer.nvim' \
       +qa
   }
 
-  function restore() {
+  function _restore() {
     nvim --headless \
       '+Lazy! restore' \
       '+Lazy! load mason-tool-installer.nvim' \
@@ -44,37 +44,37 @@ function neovim() {
   }
 
   if [[ -z $1 ]]; then
-    show_help
+    _show_help
     return 1
   fi
 
   case $1 in
 
   -h | --help | help)
-    show_help
+    _show_help
     ;;
 
   clear)
-    clear
+    _clear
     return 0
     ;;
 
   update)
-    update
+    _update
     ;;
 
   restore)
-    restore
+    _restore
     ;;
 
   refresh)
-    clear
-    restore
+    _clear
+    _restore
     ;;
 
   reset)
-    clear
-    update
+    _clear
+    _update
     ;;
 
   esac
