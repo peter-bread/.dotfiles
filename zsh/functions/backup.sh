@@ -39,8 +39,7 @@ function bak() {
       # Check if the target file already exists
       if [[ -e $file_bak ]]; then
         echo "Warning: '$file_bak' already exists."
-        echo 'Would you like to overwrite (y/N)'
-        read -r answer
+        answer=$(bash -c 'read -rp "Would you like to overwrite (y/N)? " ans; echo "$ans"')
         if [[ ! "$answer" =~ ^[Yy]$ ]]; then
           echo "Skipping restoration of '$file'."
           continue
