@@ -5,4 +5,6 @@ function tlc_submit() {
   mogrify -format jpg *.heic
   rm *.heic
   magick *.jpg answers.pdf
+  rm *.jpg
+  open -a 'Microsoft Outlook'
 }
