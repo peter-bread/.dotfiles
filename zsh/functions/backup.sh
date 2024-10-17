@@ -7,7 +7,7 @@ function bak() {
   while [[ $1 == --* || $1 == -? ]]; do
     case $1 in
     -c | --copy)
-      command="cp"
+      command="cp -r"
       shift
       ;;
     -r | --restore)
