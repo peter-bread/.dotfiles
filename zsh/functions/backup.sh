@@ -3,11 +3,13 @@
 function bak() {
   restore=0
   command="mv"
+  options=""
 
   while [[ $1 == --* || $1 == -? ]]; do
     case $1 in
     -c | --copy)
-      command="cp -r"
+      command="cp"
+      options="-r"
       shift
       ;;
     -r | --restore)
@@ -49,7 +51,7 @@ function bak() {
       file_bak="${file}.bak"
     fi
 
-    if "$command" "$file" "$file_bak"; then
+    if "$command" "$options" "$file" "$file_bak"; then
       echo "Processed: $file -> $file_bak"
     else
       echo "Error processing: $file"
