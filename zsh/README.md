@@ -2,7 +2,7 @@
 
 These are my configuration files for ZSH.
 
-> [!WARNING]
+> [!IMPORTANT]
 > Although ZSH recommends you update `$PATH` in `$ZDOTDIR/.zshenv`, this should
 > not be done on MacOS.
 >
