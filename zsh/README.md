@@ -14,8 +14,8 @@ These are my configuration files for ZSH.
 <!-- markdownlint:disable MD028 -->
 
 > [!NOTE]
-> Both `zshrc.old` and `ruby.sh` are both from my old zsh config. They will be removed
+> Both `zshrc.old` and `ruby.sh` are from my old ZSH config. They will be removed
 > in the future. I'm just keeping them here in case I need to use anything from
-> them in the future.
+> them.
 
 <!-- markdownlint:restore -->
