@@ -58,7 +58,7 @@
 	plom = pull origin main
 	ps = push
 	psom = push origin main
-	st = status
+	st = status -sb
 	unstage = reset HEAD --
 
 [credential "https://github.com"]
