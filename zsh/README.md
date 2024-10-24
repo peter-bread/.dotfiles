@@ -1,6 +1,6 @@
 # ZSH
 
-These are configuration files for ZSH.
+These are my configuration files for ZSH.
 
 > [!WARNING]
 > Although ZSH recommends you update `$PATH` in `$ZDOTDIR/.zshenv`, this should
