@@ -18,3 +18,4 @@ dot_install tmux
 dot_install starship
 dot_install yamlfmt
 dot_install mise
+dot_install skhd
