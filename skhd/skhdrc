@@ -114,6 +114,6 @@
 # open mpv
 # cmd - m : open -na /Applications/mpv.app $(pbpaste)
 
-lctrl + lalt - space : open -a "WezTerm"
+lctrl + lalt - space : open -a "$DESIRED_TERM_PROGRAM"
 
 lctrl + lalt - b : open -a "$BROWSER"
