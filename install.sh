@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+OS=$(uname -n)
+
 # make sure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*)
 source ./zsh/zshenv
 
@@ -18,4 +20,13 @@ dot_install tmux
 dot_install starship
 dot_install yamlfmt
 dot_install mise
-dot_install skhd
+
+# macOS specific
+if [[ $OS == "Darwin" ]]; then
+  dot_install skhd
+fi
+
+# TODO: Linux specific
+if [[ $OS == "Linux" ]]; then
+  :
+fi
