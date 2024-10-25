@@ -116,4 +116,4 @@
 
 lctrl + lalt - space : open -a "WezTerm"
 
-lctrl + lalt - b : open -a "Brave Browser"
+lctrl + lalt - b : open -a "$BROWSER"

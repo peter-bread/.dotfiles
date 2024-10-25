@@ -20,6 +20,9 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export NVIM_APPNAME="peter.nvim"
 
+# browser
+export BROWSER="Brave Browser"
+
 # zsh
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
