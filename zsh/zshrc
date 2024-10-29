@@ -121,3 +121,5 @@ fi
 # Load Shell Completion
 autoload -Uz compinit
 compinit
+
+fastfetch
