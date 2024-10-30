@@ -5,7 +5,7 @@
 
 [core]
 	pager = "delta"
-	excludesfile = /Users/petersheehan/.config/git/ignore
+	excludesfile = ~/.config/git/ignore
 	sshCommand = ssh -i ~/.ssh/github-peter-bread -F /dev/null
 
 [color]
