@@ -72,3 +72,5 @@
 
 [includeIf "gitdir:~/Developer/ak22112/"]
 	path = ~/.dotfiles/git/gitconfig.ak22112
+[commit]
+	gpgsign = true
