@@ -67,10 +67,11 @@
 	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
 
+[commit]
+	gpgsign = true
+
 [gpg]
 	format = ssh
 
 [includeIf "gitdir:~/Developer/ak22112/"]
 	path = ~/.dotfiles/git/gitconfig.ak22112
-[commit]
-	gpgsign = true
