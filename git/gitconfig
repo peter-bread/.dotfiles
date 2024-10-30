@@ -1,7 +1,7 @@
 [user]
 	name = Peter Sheehan
 	email = petersheehan2003@gmail.com
-	signingkey = /Users/petersheehan/.ssh/github-peter-bread.pub
+	signingkey = ~/.ssh/github-peter-bread.pub
 
 [core]
 	pager = "delta"
