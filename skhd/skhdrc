@@ -116,6 +116,10 @@
 
 lctrl + lalt - space : open -a "$DESIRED_TERM_PROGRAM"
 
+lctrl + lalt - d : open -a "Discord"
+
+lctrl + lalt - s : open -a "Spotify"
+
 lctrl + lalt - b : open -a "$BROWSER"
 
 lctrl + lalt - o : open -a "Microsoft Outlook"
