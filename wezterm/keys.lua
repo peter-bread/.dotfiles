@@ -35,6 +35,26 @@ M.keys = {
     action = act.SplitVertical({ domain = "CurrentPaneDomain" }),
   },
   {
+    key = "h",
+    mods = "SUPER",
+    action = act.ActivatePaneDirection("Left"),
+  },
+  {
+    key = "j",
+    mods = "SUPER",
+    action = act.ActivatePaneDirection("Down"),
+  },
+  {
+    key = "k",
+    mods = "SUPER",
+    action = act.ActivatePaneDirection("Up"),
+  },
+  {
+    key = "l",
+    mods = "SUPER",
+    action = act.ActivatePaneDirection("Right"),
+  },
+  {
     key = "t",
     mods = "SUPER",
     action = act.SpawnTab("CurrentPaneDomain"),
