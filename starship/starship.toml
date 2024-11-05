@@ -1,9 +1,9 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-
 format = """
 $directory\
 $sudo\
+$python\
 $line_break\
 $shell\
 $character
@@ -99,6 +99,10 @@ symbol = '󰟓 '
 
 [lua]
 symbol = ' '
+
+
+[python]
+format = '[(\($virtualenv\))]($style)'
 
 
 [ruby]
