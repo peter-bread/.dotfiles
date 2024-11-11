@@ -6,7 +6,7 @@ local config = wezterm.config_builder()
 
 -- Window ---------------------------------------------------------------------
 
-config.window_decorations = "INTEGRATED_BUTTONS"
+config.window_decorations = "TITLE | RESIZE" -- this is the default value
 config.window_background_opacity = 0.75
 config.macos_window_background_blur = 10
 
