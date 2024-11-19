@@ -1,0 +1,17 @@
+#compdef neovim
+
+# temporary solution for single words
+
+local -a subcmds
+
+subcmds=(
+  'clear:Delete neovim runtime files'
+  'update:Update all plugins and mason tools'
+  'restore:Restore config to state of lazy-lock.json'
+  'refresh:Alias for "neovim clear && neovim restore"'
+  'reset:Alias for "neovim clear && neovim update"'
+  'switch:Switch to different config'
+  'help:Show help'
+  )
+
+_describe 'cmd' subcmds
