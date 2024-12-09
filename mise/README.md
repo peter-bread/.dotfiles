@@ -10,7 +10,7 @@ Use `bootstrap` script to automatically install tools.
 
 ### Manual
 
-To install all tools in `config.toml`, run:
+To install all tools in `defaults.toml`, run:
 
 ```sh
 mise install
