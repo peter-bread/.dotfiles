@@ -36,10 +36,16 @@ Clone the repo:
 git clone git@github.com:peter-bread/.dotfiles.git ~/.dotfiles
 ```
 
+Change to directory:
+
+```sh
+cd ~/.dotfiles
+```
+
 Run the install script:
 
 ```sh
-bash ~/.dotfiles/install.sh
+make install
 ```
 
 Restart shell.
