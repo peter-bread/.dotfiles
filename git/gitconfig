@@ -49,7 +49,8 @@
 	cob = checkout -b
 	d = diff
 	f = fetch
-	l = log --oneline --decorate --graph
+	l = log --oneline --decorate --graph --max-count=10
+	ll = log --oneline --decorate --graph
 	last = log -1 HEAD
 	pr = remote prune origin
 	pl = pull
