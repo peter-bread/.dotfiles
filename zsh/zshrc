@@ -77,7 +77,7 @@ fi
 
 # Mise=en=place ===============================================================
 
-if command -v gam &>/dev/null; then
+if command -v mise &>/dev/null; then
   eval "$(mise activate zsh)"     # Interactive Usage
   eval "$(mise hook-env -s zsh)"  # Usage in this script
 fi
