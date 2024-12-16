@@ -22,6 +22,7 @@ dot_install yamlfmt
 dot_install mise
 dot_install fastfetch
 dot_install neomutt
+dot_install television
 
 # macOS specific
 if [[ $OS == "Darwin" ]]; then

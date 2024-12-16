@@ -1,0 +1,4 @@
+[[cable_channel]]
+name = "brew-list"
+source_command = "brew list --versions"
+preview_command = "brew info {0}"
