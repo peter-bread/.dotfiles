@@ -1,20 +1,17 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+
 format = """
 $directory\
 $sudo\
 $python\
-$line_break\
-$shell\
-$character
-"""
-
-
-right_format = """
+$fill\
 $git_branch\
-$git_commmit\
+$git_commit\
 $git_state\
 $git_status
+$shell\
+$character
 """
 
 
@@ -28,6 +25,14 @@ error_symbol = '[󰄾](bold red)'
 
 [directory]
 style = 'bold italic blue'
+
+
+[fill]
+symbol = "─"
+
+
+[git_branch]
+format = ' on [$symbol$branch(:$remote_branch)]($style) '
 
 
 # modify this to add counts and separate with spaces
@@ -102,8 +107,7 @@ symbol = ' '
 
 
 [python]
-format = '[(\($virtualenv\))]($style)'
-
+format = '[(\($virtualenv\) )]($style)'
 
 [ruby]
 symbol = ' '
