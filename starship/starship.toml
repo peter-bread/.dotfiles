@@ -1,6 +1,5 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-
 format = """
 $directory\
 $sudo\
@@ -14,26 +13,20 @@ $shell\
 $character
 """
 
-
 add_newline = true
-
 
 [character]
 success_symbol = '[󰄾](bold green)'
 error_symbol = '[󰄾](bold red)'
 
-
 [directory]
 style = 'bold italic blue'
-
 
 [fill]
 symbol = "─"
 
-
 [git_branch]
 format = ' on [$symbol$branch(:$remote_branch)]($style) '
-
 
 # modify this to add counts and separate with spaces
 [git_status]
@@ -51,22 +44,18 @@ format = '([\[ $all_status$ahead_behind\]]($style) )'
 # diverged = '[󰃻{󰁝${ahead_count} 󰁅${behind_count}}](bold #741ca3) '
 diverged = '[󰹹{󰁝${ahead_count} 󰁅${behind_count}}](bold #741ca3) '
 
-
 [shell]
 disabled = false
 bash_indicator = "bash"
 fish_indicator = "fish"
 zsh_indicator = "zsh"
 
-
 [sudo]
 disabled = false
 format = '[\(as [$symbol](bold italic underline fg:#ffff00)\) ]($style)'
 symbol = "root"
 
-
 # Languages --------------------------------------------------------------------
-
 
 [c] # c (and c++)
 detect_extensions = ['c', 'h', 'cpp', 'hpp']
@@ -93,18 +82,14 @@ commands = [
   ],
 ]
 
-
 [gleam]
 symbol = ' '
-
 
 [golang]
 symbol = '󰟓 '
 
-
 [lua]
 symbol = ' '
-
 
 [python]
 format = '[(\($virtualenv\) )]($style)'
@@ -112,10 +97,8 @@ format = '[(\($virtualenv\) )]($style)'
 [ruby]
 symbol = ' '
 
-
 [rust]
 symbol = ' '
-
 
 [swift]
 symbol = ' '
