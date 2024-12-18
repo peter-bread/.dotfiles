@@ -75,7 +75,7 @@ if command -v starship &>/dev/null; then
 fi
 
 
-# Mise=en=place ===============================================================
+# Mise-en-place ===============================================================
 
 if command -v mise &>/dev/null; then
   eval "$(mise activate zsh)"     # Interactive Usage
