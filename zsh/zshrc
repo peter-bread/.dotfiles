@@ -103,6 +103,12 @@ for file in $DOTFILES/zsh/functions/*(.); do
 done
 
 
+# Shell Integrations ==========================================================
+
+# enable fzf shell integration
+source <(fzf --zsh)
+
+
 # Completion ==================================================================
 
 # Homebrew Completion
