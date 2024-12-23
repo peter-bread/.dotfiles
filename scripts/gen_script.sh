@@ -36,19 +36,17 @@ while [[ $# -gt 0 ]]; do
     if [[ $# -gt 1 ]]; then
       DESCRIPTION="$2"
       shift 2
-      generate_script "$FILENAME" "$DESCRIPTION"
-      FILENAME=""
-      DESCRIPTION=""
     else
-      echo "Error: -d flag requires a string input."
+      echo "Error: -d flag requires a description string."
       exit 1
     fi
     ;;
   *)
     if [[ -n $FILENAME ]]; then
-      generate_script "$FILENAME"
+      generate_script "$FILENAME" "$DESCRIPTION"
     fi
     FILENAME="$1"
+    DESCRIPTION="" # Reset DESCRIPTION after processing
     shift
     ;;
   esac
@@ -56,5 +54,5 @@ done
 
 # generate the last script if not already processed
 if [[ -n $FILENAME ]]; then
-  generate_script "$FILENAME"
+  generate_script "$FILENAME" "$DESCRIPTION"
 fi
