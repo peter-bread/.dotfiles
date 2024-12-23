@@ -2,4 +2,4 @@
 
 ignore=$(git config --global core.excludesfile)
 
-[[ -n $ignore ]] && cat "${ignore/#\~/$HOME}" >.gitignore
+[[ -n $ignore ]] && cat "${ignore/#\~/"$HOME"}" >.gitignore
