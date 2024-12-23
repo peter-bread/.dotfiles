@@ -46,7 +46,7 @@ while [[ $# -gt 0 ]]; do
       generate_script "$FILENAME" "$DESCRIPTION"
     fi
     FILENAME="$1"
-    DESCRIPTION="" # Reset DESCRIPTION after processing
+    DESCRIPTION="" # reset DESCRIPTION after processing
     shift
     ;;
   esac
