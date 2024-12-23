@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <filename> [-d <description>] <filename2> ... [-d <descriptionN>]"
+  echo "Usage: $0 <filename> [-d <description>] [<filename2> ... [-d <descriptionN>]]"
   exit 1
 fi
 
