@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Generate a template script with optional description
+
 set -Eeuo pipefail
 
 if [[ $# -lt 1 ]]; then
