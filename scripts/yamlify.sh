@@ -24,9 +24,9 @@ fi
 
 case $1 in
 yml)
-  fd -e yaml -x mv "{}" "{.}.yml"
+  fd -H -e yaml -x mv "{}" "{.}.yml"
   ;;
 yaml)
-  fd -e yml -x mv "{}" "{.}.yaml"
+  fd -H -e yml -x mv "{}" "{.}.yaml"
   ;;
 esac
