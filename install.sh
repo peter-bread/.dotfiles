@@ -15,6 +15,7 @@ mkdir -p "$DEVELOPER"
 
 dot_install zsh
 dot_install scripts
+dot_install ghostty
 dot_install wezterm
 dot_install git
 dot_install tmux
