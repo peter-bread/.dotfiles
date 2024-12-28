@@ -19,4 +19,5 @@ quit-after-last-window-closed = true
 macos-option-as-alt = "left"
 
 # this can be removed after a fix is merged
+# https://github.com/ghostty-org/ghostty/issues/3646
 keybind = cmd+backspace=text:\x15
