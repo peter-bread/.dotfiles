@@ -30,4 +30,5 @@ macos-option-as-alt           = left
 
 # this can be removed after a fix is merged
 # https://github.com/ghostty-org/ghostty/issues/3646
+# Will be fixed in v1.0.1
 keybind                       = cmd+backspace=text:\x15
