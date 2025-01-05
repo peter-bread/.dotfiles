@@ -5,12 +5,6 @@ bindkey -e
 
 # PATH ========================================================================
 
-# General ---------------------------------------------------------------------
-
-# User-specific scripts and executables
-mkdir -p "$HOME/.local/bin"
-path=("$HOME/.local/bin" $path)
-
 # Git scripts (add custom git commands)
 # path+=("$DOTFILES/git/git-scripts")
 
@@ -23,6 +17,13 @@ path=("$HOME/.local/bin" $path)
 
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && \
   source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+
+# General ---------------------------------------------------------------------
+
+# User-specific scripts and executables
+mkdir -p "$HOME/.local/bin"
+path=("$HOME/.local/bin" $path)
 
 
 # ZSH Plugin Manager (Zap) ====================================================
