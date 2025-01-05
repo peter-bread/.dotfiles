@@ -26,9 +26,9 @@ dot_install fastfetch
 dot_install neomutt
 dot_install television
 
-# macOS specific
+# TODO: macOS specific
 if [[ $OS == "Darwin" ]]; then
-  dot_install skhd
+  :
 fi
 
 # TODO: Linux specific
