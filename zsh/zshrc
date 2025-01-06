@@ -21,6 +21,14 @@ bindkey -e
   source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
+# Mise-en-place ---------------------------------------------------------------
+
+if command -v mise &>/dev/null; then
+  eval "$(mise activate zsh)"     # Interactive Usage
+  eval "$(mise hook-env -s zsh)"  # Usage in this script
+fi
+
+
 # General ---------------------------------------------------------------------
 
 # User-specific scripts and executables
@@ -75,14 +83,6 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview \
 
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
-fi
-
-
-# Mise-en-place ===============================================================
-
-if command -v mise &>/dev/null; then
-  eval "$(mise activate zsh)"     # Interactive Usage
-  eval "$(mise hook-env -s zsh)"  # Usage in this script
 fi
 
 
