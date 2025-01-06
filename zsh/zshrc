@@ -11,6 +11,8 @@ bindkey -e
 
 # Languages -------------------------------------------------------------------
 
+[ -d "$(brew --prefix ruby)/bin" ] && path=("$(brew --prefix ruby)/bin" $path)
+
 [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
 
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
