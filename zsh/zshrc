@@ -15,7 +15,7 @@ bindkey -e
 
 [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
 
-[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && \
   source "$HOME/.sdkman/bin/sdkman-init.sh"
