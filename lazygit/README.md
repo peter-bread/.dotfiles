@@ -5,3 +5,7 @@ but I can't remember.
 
 > [!IMPORTANT]
 > Currently there is no install script so this configuration will not be applied.
+
+---
+
+[GitHub Repo](https://github.com/jesseduffield/lazygit)
