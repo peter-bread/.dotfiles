@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-OS=$(uname -s)
+OS="$(uname -s)"
 
 # make sure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*)
 source ./zsh/zshenv

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-OS=$(uname -s)
+OS="$(uname -s)"
 
 if [[ $OS == "Darwin" ]]; then
   # homebrew
