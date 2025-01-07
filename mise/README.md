@@ -26,6 +26,28 @@ Run the following:
 mise i
 ```
 
+## Upgrade
+
+To keep tools up to date:
+
+```bash
+mise up
+```
+
+## Keep `mise` up-to-date
+
+On MacOS:
+
+```bash
+brew upgrade mise
+```
+
+Linux:
+
+```bash
+mise self-update
+```
+
 ---
 
 [Official Website](https://mise.jdx.dev)
