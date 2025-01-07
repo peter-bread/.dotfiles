@@ -2,6 +2,7 @@
 
 [settings]
 experimental = true
+default_config_filename = ".mise.toml"
 
 [tools]
 node = ["lts", "latest", "20", "18"]
