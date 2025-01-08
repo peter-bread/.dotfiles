@@ -1,3 +1,5 @@
+# vi: ft=gitconfig
+
 [user]
 	name = Peter Sheehan
 	email = petersheehan2003@gmail.com
