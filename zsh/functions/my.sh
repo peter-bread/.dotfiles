@@ -28,7 +28,7 @@ function my() {
     cd "$XDG_CONFIG_HOME/$NVIM_APPNAME" || return 1
     ;;
   *)
-    echo -e "\e[31mError: Not a valid option right now :(.\n\nSee 'my help'.\e[0m"
+    echo -e "\e[31mError: Not a valid option right now :(\n\nSee 'my help'.\e[0m"
     return 1
     ;;
   esac
