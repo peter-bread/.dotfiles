@@ -14,13 +14,7 @@ show_help() {
   exit 1
 }
 
-if [[ $# -ne 1 ]]; then
-  show_help
-fi
-
-if [[ $1 != "yml" && $1 != "yaml" ]]; then
-  show_help
-fi
+[[ $# -ne 1 || $1 != "yml" && $1 != "yaml" ]] && show_help
 
 case $1 in
 yml)
