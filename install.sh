@@ -25,12 +25,12 @@ dot_install mise
 dot_install fastfetch
 dot_install neomutt
 
-# macOS specific
-if [[ $OS == "Darwin" ]]; then
+case $OS in
+Darwin)
   dot_install skhd
-fi
+  ;;
 
-# TODO: Linux specific
-if [[ $OS == "Linux" ]]; then
-  :
-fi
+Linux)
+  # TODO: Linux-specifics
+  ;;
+esac
