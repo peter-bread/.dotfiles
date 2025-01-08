@@ -11,4 +11,8 @@ Darwin)
   [ -f "$DOTFILES/mise/mac.toml" ] &&
     ln -sf "$DOTFILES/mise/mac.toml" "$XDG_CONFIG_HOME/mise/conf.d/mac.toml"
   ;;
+
+Linux)
+  # TODO: distinguish between different types of Linux
+  ;;
 esac
