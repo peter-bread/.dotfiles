@@ -7,7 +7,7 @@ set -Eeuo pipefail
 show_help() {
   echo "Ensure consistent YAML extensions"
   echo
-  echo "Usage: $0 <yml|yaml>"
+  echo "Usage: yamilify <yml|yaml>"
   echo
   echo "  - yml: convert all .yaml files to .yml"
   echo "  - yaml: convert all .yml files to .yaml"
