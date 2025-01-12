@@ -1,4 +1,4 @@
-# Define zsh aliases
+#!/usr/bin/env bash
 
 # =============================================================================
 # ================= Permanent =================================================
@@ -17,6 +17,9 @@ alias ez='exec zsh'
 
 alias g='git'
 alias n='nvim'
+
+alias lzg='lazygit'
+alias lzd='lazydocker'
 
 # Default Flags for Commands --------------------------------------------------
 alias grep='grep --color=auto'
