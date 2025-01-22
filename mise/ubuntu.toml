@@ -1,0 +1,5 @@
+[tools]
+go = "latest"
+lua = "latest"
+ruby = "latest"
+usage = "latest"
