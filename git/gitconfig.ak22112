@@ -2,7 +2,7 @@
 
 [user]
 	email = ak22112@bristol.ac.uk
-	signingkey = ~/.ssh/github-ak22112.pub
+	signingkey = ~/.ssh/bristol/github-ak22112.pub
 
 [core]
-	sshCommand = ssh -i ~/.ssh/github-ak22112 -F /dev/null
+	sshCommand = ssh -i ~/.ssh/bristol/github-ak22112 -F /dev/null

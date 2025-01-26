@@ -3,12 +3,12 @@
 [user]
 	name = Peter Sheehan
 	email = petersheehan2003@gmail.com
-	signingkey = ~/.ssh/github-peter-bread.pub
+	signingkey = ~/.ssh/personal/github-peter-bread.pub
 
 [core]
 	pager = "delta"
 	excludesfile = ~/.config/git/ignore
-	sshCommand = ssh -i ~/.ssh/github-peter-bread -F /dev/null
+	sshCommand = ssh -i ~/.ssh/personal/github-peter-bread -F /dev/null
 
 [color]
 	ui = true
