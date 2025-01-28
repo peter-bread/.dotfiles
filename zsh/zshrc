@@ -86,12 +86,26 @@ if command -v starship &>/dev/null; then
 fi
 
 
-# Gamon =======================================================================
+# GH CLI ======================================================================
 
-if command -v gam &>/dev/null; then
-  gam run             # Ensure correct GH CLI account on startup
-  source <(gam hook)  # Hook into shell cd
-fi
+# WARN: No error handling. Assumes both of these accounts are authenticated
+
+# TODO: Add error handling here, probably lead into another gamon rewrite,
+# which I will release as a new tool.
+# I want to make this more extensible too.
+# This will be a compiled binary so there is no dependency on `yq`
+
+function _gh_switch() {
+  current_account=$(yq '.["github.com"].user' ~/.config/gh/hosts.yml)
+  if [[ $PWD == "$HOME/Developer/ak22112"* ]]; then
+    [[ $current_account != "ak22112" ]] && gh auth switch --user ak22112
+  else
+    [[ $current_account != "peter-bread" ]] && gh auth switch --user peter-bread
+  fi
+}
+
+autoload -U add-zsh-hook
+add-zsh-hook chpwd _gh_switch
 
 
 # Aliases =====================================================================
