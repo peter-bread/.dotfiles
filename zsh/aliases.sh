@@ -36,4 +36,3 @@ alias peter='cd $HOME/Developer/peter-bread/peter-bread'
 # =============================================================================
 
 # Repository/Project Shortcuts
-alias rednoise='cd $HOME/Developer/ak22112/Year3/tb1/CG/Labs'
