@@ -95,9 +95,7 @@ fi
 # I want to make this more extensible too.
 # This will be a compiled binary so there is no dependency on `yq`
 
-autoload -U add-zsh-hook
-
-add-zsh-hook chpwd () {
+function _gh_switch() {
   current_account=$(yq '.["github.com"].user' ~/.config/gh/hosts.yml)
   if [[ $PWD == "$HOME/Developer/ak22112"* ]]; then
     [[ $current_account != "ak22112" ]] && gh auth switch --user ak22112
@@ -105,6 +103,11 @@ add-zsh-hook chpwd () {
     [[ $current_account != "peter-bread" ]] && gh auth switch --user peter-bread
   fi
 }
+
+autoload -U add-zsh-hook
+add-zsh-hook chpwd _gh_switch
+
+_gh_switch > /dev/null 2>&1
 
 
 # Aliases =====================================================================
