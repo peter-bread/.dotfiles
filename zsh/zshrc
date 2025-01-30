@@ -96,7 +96,7 @@ fi
 # This will be a compiled binary so there is no dependency on `yq`
 
 function _gh_switch() {
-  current_account=$(yq '.["github.com"].user' ~/.config/gh/hosts.yml)
+  current_account=$(yq '.["github.com"].user' "$HOME/.config/gh/hosts.yml")
   if [[ $PWD == "$HOME/Developer/ak22112"* ]]; then
     [[ $current_account != "ak22112" ]] && gh auth switch --user ak22112
   else
