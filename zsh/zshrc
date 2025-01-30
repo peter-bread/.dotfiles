@@ -98,7 +98,7 @@ fi
 function _gh_switch() {
   # TODO: make sure gh and yq are installed
 
-  conf_file="${GH_CONFIG_DIR:-$HOME/.config/gh}/hosts.yml"
+  conf_file="${GH_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/gh}/hosts.yml"
   [[ -f $conf_file ]] || return 1
 
   current_account=$(yq '.["github.com"].user' "$conf_file")
