@@ -118,7 +118,7 @@ function _gh_switch() {
 autoload -U add-zsh-hook
 add-zsh-hook chpwd _gh_switch
 
-_gh_switch > /dev/null 2>&1
+_gh_switch >/dev/null 2>&1
 
 
 # Aliases =====================================================================
