@@ -95,32 +95,34 @@ fi
 # I want to make this more extensible too.
 # This will be a compiled binary so there is no dependency on `yq`
 
-function _gh_switch() {
-  # TODO: make sure gh and yq are installed
-
-  conf_file="${GH_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/gh}/hosts.yml"
-  [[ -f $conf_file ]] || return 1
-
-  current_account=$(yq '.["github.com"].user' "$conf_file")
-
-  function _gh_switch_helper() {
-    [[ -n $1 ]] && [[ $current_account != $1 ]] &&
-      gh auth switch --user "$1" >/dev/null 2>&1
-  }
-
-  if [[ $PWD == "$HOME/Developer/ak22112"* ]]; then
-    _gh_switch_helper "ak22112"
-  else
-    _gh_switch_helper "peter-bread"
-  fi
-
-}
-
 # only create hook if `yq` and `gh` are installed
 if command -v yq &>/dev/null && command -v gh &>/dev/null; then
+
+  function _gh_switch() {
+
+    conf_file="${GH_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/gh}/hosts.yml"
+    [[ -f $conf_file ]] || return 1
+
+    current_account=$(yq '.["github.com"].user' "$conf_file")
+
+    function _gh_switch_helper() {
+      [[ -n $1 ]] && [[ $current_account != $1 ]] &&
+        gh auth switch --user "$1" >/dev/null 2>&1
+    }
+
+    if [[ $PWD == "$HOME/Developer/ak22112"* ]]; then
+      _gh_switch_helper "ak22112"
+    else
+      _gh_switch_helper "peter-bread"
+    fi
+
+  }
+
   autoload -U add-zsh-hook
   add-zsh-hook chpwd _gh_switch
+
   _gh_switch >/dev/null 2>&1
+
 fi
 
 
