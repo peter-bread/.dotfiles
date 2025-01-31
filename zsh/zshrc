@@ -104,7 +104,8 @@ function _gh_switch() {
   current_account=$(yq '.["github.com"].user' "$conf_file")
 
   function _gh_switch_helper() {
-    [[ -n $1 ]] && [[ $current_account != $1 ]] && gh auth switch --user "$1"
+    [[ -n $1 ]] && [[ $current_account != $1 ]] &&
+      gh auth switch --user "$1" >/dev/null 2>&1
   }
 
   if [[ $PWD == "$HOME/Developer/ak22112"* ]]; then
