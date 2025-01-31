@@ -116,10 +116,12 @@ function _gh_switch() {
 
 }
 
-autoload -U add-zsh-hook
-add-zsh-hook chpwd _gh_switch
-
-_gh_switch >/dev/null 2>&1
+# only create hook if `yq` and `gh` are installed
+if command -v yq &>/dev/null && command -v gh &>/dev/null; then
+  autoload -U add-zsh-hook
+  add-zsh-hook chpwd _gh_switch
+  _gh_switch >/dev/null 2>&1
+fi
 
 
 # Aliases =====================================================================
