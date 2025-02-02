@@ -121,7 +121,7 @@ if command -v yq &>/dev/null && command -v gh &>/dev/null; then
   autoload -U add-zsh-hook
   add-zsh-hook chpwd _gh_switch
 
-  _gh_switch >/dev/null 2>&1
+  _gh_switch &>/dev/null
 
 fi
 
