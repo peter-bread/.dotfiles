@@ -59,6 +59,7 @@
 	plom = pull origin main
 	ps = push
 	psom = push origin main
+  re = restore
 	st = status -sb
 	unstage = reset HEAD --
 
