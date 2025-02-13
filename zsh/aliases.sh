@@ -15,7 +15,12 @@ alias cat='bat'
 
 alias ez='exec zsh'
 
-alias g='git'
+if command -v delta >/dev/null 2>&1; then
+  alias g='git'
+else
+  alias g='git --no-pager'
+fi
+
 alias n='nvim'
 
 alias lzg='lazygit'
