@@ -1,0 +1,8 @@
+# vi: ft=gitconfig
+
+[user]
+	email = petersheehan2003@gmail.com
+	signingkey = ~/.ssh/personal/github-peter-bread.pub
+
+[core]
+	sshCommand = ssh -i ~/.ssh/personal/github-peter-bread -F /dev/null

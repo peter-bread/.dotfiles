@@ -2,25 +2,22 @@
 
 [user]
 	name = Peter Sheehan
-	email = petersheehan2003@gmail.com
-	signingkey = ~/.ssh/personal/github-peter-bread.pub
 
 [core]
 	pager = "delta"
 	excludesfile = ~/.config/git/ignore
-	sshCommand = ssh -i ~/.ssh/personal/github-peter-bread -F /dev/null
 
 [color]
 	ui = true
 
 [color "status"]
 	untracked = "#cfcf15"
-	changed = "#d4d481"
-	added = "#16a307"
-	deleted = "#ff0000"
-	renamed = "#5551e0"
-	branch = "#741ca3"
-	upstream = "#792096"
+	changed   = "#d4d481"
+	added     = "#16a307"
+	deleted   = "#ff0000"
+	renamed   = "#5551e0"
+	branch    = "#741ca3"
+	upstream  = "#792096"
 
 [init]
 	defaultBranch = main
@@ -29,12 +26,12 @@
 	diffFilter = delta --color-only
 
 [delta]
-	navigate = true
-	plus-style = "syntax #15223a"
-	minus-style = "syntax #2d1e1b"
-	plus-emph-style = "syntax #234d87 bold"
+	navigate         = true
+	plus-style       = "syntax #15223a"
+	minus-style      = "syntax #2d1e1b"
+	plus-emph-style  = "syntax #234d87 bold"
 	minus-emph-style = "syntax #733d22 bold"
-	syntax-theme = "OneHalfDark"
+	syntax-theme     = "OneHalfDark"
 
 [merge]
 	conflictstyle = diff3
@@ -43,24 +40,22 @@
 	colorMoved = default
 
 [alias]
-	a = add
-	aa = add -A
-	br = branch
-	cm = commit -m
-	co = checkout
-	cob = checkout -b
-	d = diff
-	f = fetch
-	l = log --oneline --decorate --graph --max-count=10
-	ll = log --oneline --decorate --graph
-	last = log -1 HEAD
-	pr = remote prune origin
-	pl = pull
-	plom = pull origin main
-	ps = push
-	psom = push origin main
-  re = restore
-	st = status -sb
+	a       = add
+	aa      = add -A
+	br      = branch
+	cm      = commit -m
+	co      = checkout
+	cob     = checkout -b
+	d       = diff
+	f       = fetch
+	l       = log --oneline --decorate --graph --max-count=10
+	ll      = log --oneline --decorate --graph
+	last    = log -1 HEAD
+	pr      = remote prune origin
+	pl      = pull
+	ps      = push
+  re      = restore
+	st      = status -sb
 	unstage = reset HEAD --
 
 [credential "https://github.com"]
@@ -75,7 +70,11 @@
 	gpgsign = true
 
 [gpg]
-	format = ssh
+  format = ssh
+
+# scope git to home directory
+[includeIf "gitdir:~/"]
+  path = ~/.dotfiles/git/gitconfig-peter-bread
 
 [includeIf "gitdir:~/Developer/ak22112/"]
-	path = ~/.dotfiles/git/gitconfig.ak22112
+	path = ~/.dotfiles/git/gitconfig-ak22112
