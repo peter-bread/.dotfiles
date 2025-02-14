@@ -1,7 +1,7 @@
 # vi: ft=gitconfig
 
 [user]
-	email = ak22112@bristol.ac.uk
+	email      = ak22112@bristol.ac.uk
 	signingkey = ~/.ssh/bristol/github-ak22112.pub
 
 [core]
