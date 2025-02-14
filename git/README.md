@@ -15,3 +15,7 @@ These are account specific settings, i.e. email and SSH command.
 
 `peter-bread` is my main account and is scoped to my home directory,
 and `ak22112` only works in `~/Developer/ak22112`.
+
+---
+
+[Git Config Docs](https://git-scm.com/docs/git-config)
