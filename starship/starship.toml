@@ -55,50 +55,5 @@ disabled = false
 format   = '[\(as [$symbol](bold italic underline fg:#ffff00)\) ]($style)'
 symbol   = "root"
 
-# Languages --------------------------------------------------------------------
-
-[c] # c (and c++)
-detect_extensions = ['c', 'h', 'cpp', 'hpp']
-commands = [
-  [
-    'cc',
-    '--version',
-  ],
-  [
-    'gcc',
-    '--version',
-  ],
-  [
-    'g++',
-    '--version',
-  ],
-  [
-    'clang',
-    '--version',
-  ],
-  [
-    'clang++',
-    '--version',
-  ],
-]
-
-[gleam]
-symbol = ' '
-
-[golang]
-symbol = '󰟓 '
-
-[lua]
-symbol = ' '
-
 [python]
 format = '[(\($virtualenv\) )]($style)'
-
-[ruby]
-symbol = ' '
-
-[rust]
-symbol = ' '
-
-[swift]
-symbol = ' '
