@@ -1,5 +1,5 @@
 [tools]
-go = "latest"
-lua = "latest"
-ruby = "latest"
+go    = "latest"
+lua   = "latest"
+ruby  = "latest"
 usage = "latest"

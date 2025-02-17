@@ -1,9 +1,9 @@
 # Global configuration file to be shared across machines
 
 [settings]
-experimental = true
+experimental            = true
 default_config_filename = ".mise.toml"
 
 [tools]
-node = ["lts", "20", "18"]
+node   = ["lts", "20", "18"]
 python = ["latest", "3.12", "3.11"]

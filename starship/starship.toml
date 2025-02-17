@@ -17,7 +17,7 @@ add_newline = true
 
 [character]
 success_symbol = '[󰄾](bold green)'
-error_symbol = '[󰄾](bold red)'
+error_symbol   = '[󰄾](bold red)'
 
 [directory]
 style = 'bold italic blue'
@@ -31,13 +31,13 @@ format = ' on [$symbol$branch(:$remote_branch)]($style) '
 # modify this to add counts and separate with spaces
 [git_status]
 untracked = '[?$count](bold #cfcf15) '
-modified = '[!$count](bold #d4d481) '
-staged = '[+$count](bold #16a307) '
-deleted = '[✘$count](bold #ff0000) '
-renamed = '[»$count](bold #5551e0) '
-stashed = '[\$$count](bold #406291) '
+modified  = '[!$count](bold #d4d481) '
+staged    = '[+$count](bold #16a307) '
+deleted   = '[✘$count](bold #ff0000) '
+renamed   = '[»$count](bold #5551e0) '
+stashed   = '[\$$count](bold #406291) '
 # ahead = '[⇡$count](bold #792096) '
-ahead = '[⇡$count](bold #741ca3) '
+ahead  = '[⇡$count](bold #741ca3) '
 behind = '[⇣$count](bold #792096) '
 format = '([\[ $all_status$ahead_behind\]]($style) )'
 # diverged = '[⇕{⇡${ahead_count} ⇣${behind_count}}](bold #741ca3) '
@@ -45,15 +45,15 @@ format = '([\[ $all_status$ahead_behind\]]($style) )'
 diverged = '[󰹹{󰁝${ahead_count} 󰁅${behind_count}}](bold #741ca3) '
 
 [shell]
-disabled = false
+disabled       = false
 bash_indicator = "bash"
 fish_indicator = "fish"
-zsh_indicator = "zsh"
+zsh_indicator  = "zsh"
 
 [sudo]
 disabled = false
-format = '[\(as [$symbol](bold italic underline fg:#ffff00)\) ]($style)'
-symbol = "root"
+format   = '[\(as [$symbol](bold italic underline fg:#ffff00)\) ]($style)'
+symbol   = "root"
 
 # Languages --------------------------------------------------------------------
 
