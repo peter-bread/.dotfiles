@@ -4,7 +4,7 @@
 	name = Peter Sheehan
 
 [core]
-	pager = "delta"
+	pager        = delta
 	excludesfile = ~/.config/git/ignore
 
 [color]
@@ -34,7 +34,7 @@
 	syntax-theme     = "OneHalfDark"
 
 [merge]
-	conflictstyle = diff3
+	conflictStyle = zdiff3
 
 [diff]
 	colorMoved = default
