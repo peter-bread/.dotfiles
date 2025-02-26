@@ -41,3 +41,4 @@ alias peter='cd $HOME/Developer/peter-bread/peter-bread'
 # =============================================================================
 
 # Repository/Project Shortcuts
+alias diss='cd $DEVELOPER/ak22112/Year3/tb2/project/program-generator'
