@@ -4,7 +4,7 @@
 # https://github.com/ghostty-org/ghostty/discussions/3501
 font-family                   = Fira Code
 font-style                    = Light
-font-size                     = 17.5
+font-size                     = 18
 
 font-feature                  = calt
 font-feature                  = zero
@@ -14,7 +14,7 @@ font-feature                  = ss03
 theme                         = Kanagawa Wave
 
 adjust-cell-height            = 4%
-adjust-cell-width             = 0%
+adjust-cell-width             = -4%
 
 cursor-style                  = block
 cursor-style-blink            = false
