@@ -29,6 +29,9 @@ quit-after-last-window-closed = true
 
 macos-option-as-alt           = left
 
+background-opacity            = 0.75
+background-blur               = true
+
 # this can be removed after a fix is merged
 # https://github.com/ghostty-org/ghostty/issues/3646
 # Will be fixed in v1.0.1
