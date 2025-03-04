@@ -27,9 +27,7 @@ window-padding-y              = 16
 
 quit-after-last-window-closed = true
 
-macos-option-as-alt           = left
-
 background-opacity            = 0.75
 background-blur               = true
 
-macos-icon                    = glass
+config-file                   = ?mac

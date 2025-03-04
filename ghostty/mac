@@ -1,0 +1,4 @@
+# vi: ft=conf
+
+macos-option-as-alt = left
+macos-icon          = glass

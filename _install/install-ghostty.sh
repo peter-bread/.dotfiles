@@ -3,3 +3,12 @@
 mkdir -p "$XDG_CONFIG_HOME/ghostty"
 
 ln -sf "$DOTFILES/ghostty/config" "$XDG_CONFIG_HOME/ghostty/config"
+
+OS="$(uname -s)"
+
+case $OS in
+Darwin)
+  [ -f "$DOTFILES/ghostty/mac" ] &&
+    ln -sf "$DOTFILES/ghostty/mac" "$XDG_CONFIG_HOME/ghostty/mac"
+  ;;
+esac
