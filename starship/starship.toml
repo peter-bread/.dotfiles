@@ -44,14 +44,14 @@ diverged  = '[{${ahead_count} ${behind_count}}](bold #741ca3) '
 
 [shell]
 disabled       = false
-bash_indicator = "bash"
-fish_indicator = "fish"
-zsh_indicator  = "zsh"
+bash_indicator = 'bash'
+fish_indicator = 'fish'
+zsh_indicator  = 'zsh'
 
 [sudo]
 disabled = false
 format   = '[\(as [$symbol](bold italic underline fg:#ffff00)\) ]($style)'
-symbol   = "root"
+symbol   = 'root'
 
 [python]
 format = '[(\($virtualenv\) )]($style)'
