@@ -23,7 +23,8 @@ error_symbol   = '[󰄾](bold red)'
 style = 'bold italic blue'
 
 [fill]
-symbol = "─"
+symbol = '─'
+style  = 'bold #666666'
 
 [git_branch]
 format = ' on [$symbol$branch(:$remote_branch)]($style) '
