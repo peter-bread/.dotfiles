@@ -24,7 +24,7 @@ config.hide_tab_bar_if_only_one_tab = false
 
 config.window_frame = {
   font = wezterm.font({
-    family = "FiraCode Nerd Font",
+    family = "Fira Code",
     weight = "Bold",
   }),
   font_size = 13.0,
@@ -60,8 +60,7 @@ config.color_scheme = "Kanagawa (Gogh)"
 config.font_size = 18
 
 config.font = wezterm.font({
-  family = "FiraCode Nerd Font",
-  -- family = "JetBrainsMono Nerd Font",
+  family = "Fira Code",
   weight = "Book",
   harfbuzz_features = {
     "zero", -- 0 => zero with dot
