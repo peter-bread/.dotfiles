@@ -51,8 +51,6 @@ wezterm.on(
 
 -- Colorscheme ----------------------------------------------------------------
 
--- color_scheme = "rose-pine",
--- color_scheme = "tokyonight_night",
 config.color_scheme = "Kanagawa (Gogh)"
 
 -- Font -----------------------------------------------------------------------
