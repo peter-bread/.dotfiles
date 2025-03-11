@@ -30,7 +30,6 @@ style  = 'bold #666666'
 [git_branch]
 format = ' on [$symbol$branch(:$remote_branch)]($style) '
 
-# modify this to add counts and separate with spaces
 [git_status]
 format    = '([\[ $all_status$ahead_behind\]]($style) )'
 untracked = '[?$count](bold #cfcf15) '
