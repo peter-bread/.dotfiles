@@ -15,6 +15,7 @@ mkdir -p "$DEVELOPER"
 
 # all
 dot_install zsh
+dot_install bash
 dot_install scripts
 dot_install ghostty
 dot_install wezterm
