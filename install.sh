@@ -13,6 +13,7 @@ source ./_helpers/install_functions.sh
 
 mkdir -p "$DEVELOPER"
 
+# all
 dot_install zsh
 dot_install scripts
 dot_install ghostty
