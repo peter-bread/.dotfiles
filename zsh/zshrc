@@ -106,7 +106,7 @@ if command -v yq &>/dev/null && command -v gh &>/dev/null; then
     current_account=$(yq '.["github.com"].user' "$conf_file")
 
     function _gh_switch_helper() {
-      [[ -n $1 ]] && [[ $current_account != $1 ]] &&
+      [[ -n $1 ]] && [[ $current_account != "$1" ]] &&
         gh auth switch --user "$1" &>/dev/null
     }
 
