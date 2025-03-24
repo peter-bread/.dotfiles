@@ -1,5 +1,16 @@
+# Config file for Ubuntu
+
 [tools]
-go    = "latest"
-lua   = "latest"
-ruby  = "latest"
+# mise completion dependency
 usage = "latest"
+
+# programming language toolchains
+go   = "latest"
+lua  = "latest"
+ruby = "latest"
+
+# dev tools
+eza      = "latest"
+fd       = "latest"
+gh       = "latest"
+starship = "latest"
