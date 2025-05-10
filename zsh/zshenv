@@ -23,8 +23,10 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export NVIM_APPNAME="peter.nvim"
 
+# man pages
 # NOTE: might need to move this to zshrc so this is only set if nvim executable is found
 export MANPAGER='nvim +Man!'
+export MANWIDTH=80
 
 # browser
 export BROWSER="Brave Browser"
