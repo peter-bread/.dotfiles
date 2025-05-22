@@ -131,6 +131,11 @@ fi
 [ -f "$DOTFILES/zsh/aliases.sh" ] && source "$DOTFILES/zsh/aliases.sh"
 
 
+# Docker Aliases ==============================================================
+
+[ -f "$DOTFILES/zsh/docker.sh" ] && source "$DOTFILES/zsh/docker.sh"
+
+
 # Functions ===================================================================
 
 for file in $DOTFILES/zsh/functions/*(.); do
