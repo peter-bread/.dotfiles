@@ -1,7 +1,7 @@
 # vi: ft=gitconfig
 
 [user]
-	email      = petersheehan2003@gmail.com
+  email      = "145384599+peter-bread@users.noreply.github.com"
 	signingkey = ~/.ssh/personal/github-peter-bread.pub
 
 [core]
