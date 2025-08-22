@@ -41,11 +41,13 @@
 
 [alias]
 	a       = add
-	aa      = add -A
-	br      = branch
+	aa      = add -A .
+	au      = add -u
+  br      = branch
 	cm      = commit -m
 	co      = checkout
 	cob     = checkout -b
+  cobu    = "!f() { git checkout -b $1 && git push -u origin $1; }; f"
 	d       = diff
 	f       = fetch
 	l       = log --oneline --decorate --graph --max-count=10
@@ -55,6 +57,7 @@
 	pl      = pull
 	ps      = push
   re      = restore
+  reword  = commit --allow-empty --amend --only -m
 	st      = status -sb
 	unstage = reset HEAD --
 
