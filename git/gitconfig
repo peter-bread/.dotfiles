@@ -1,4 +1,4 @@
-# vi: ft=gitconfig
+# vi: ft=gitconfig noexpandtab
 
 [user]
 	name = Peter Sheehan
@@ -43,11 +43,11 @@
 	a       = add
 	aa      = add -A .
 	au      = add -u
-  br      = branch
+	br      = branch
 	cm      = commit -m
 	co      = checkout
 	cob     = checkout -b
-  cobu    = "!f() { git checkout -b $1 && git push -u origin $1; }; f"
+	cobu    = "!f() { git checkout -b $1 && git push -u origin $1; }; f"
 	d       = diff
 	f       = fetch
 	l       = log --oneline --decorate --graph --max-count=10
@@ -56,8 +56,8 @@
 	pr      = remote prune origin
 	pl      = pull
 	ps      = push
-  re      = restore
-  reword  = commit --allow-empty --amend --only -m
+	re      = restore
+	reword  = commit --allow-empty --amend --only -m
 	st      = status -sb
 	unstage = reset HEAD --
 
