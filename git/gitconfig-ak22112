@@ -1,4 +1,4 @@
-# vi: ft=gitconfig
+# vi: ft=gitconfig noexpandtab
 
 [user]
 	email      = "123549235+ak22112@users.noreply.github.com"

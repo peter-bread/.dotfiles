@@ -1,7 +1,7 @@
-# vi: ft=gitconfig
+# vi: ft=gitconfig noexpandtab
 
 [user]
-  email      = "145384599+peter-bread@users.noreply.github.com"
+	email      = "145384599+peter-bread@users.noreply.github.com"
 	signingkey = ~/.ssh/personal/github-peter-bread.pub
 
 [core]
