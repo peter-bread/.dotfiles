@@ -73,11 +73,14 @@
 	gpgsign = true
 
 [gpg]
-  format = ssh
+	format = ssh
+
+[gpg "ssh"]
+	allowedSignersFile = ~/.dotfiles/git/allowed_signers
 
 # scope git to home directory
 [includeIf "gitdir:~/"]
-  path = ~/.dotfiles/git/gitconfig-peter-bread
+	path = ~/.dotfiles/git/gitconfig-peter-bread
 
 [includeIf "gitdir:~/Developer/ak22112/"]
 	path = ~/.dotfiles/git/gitconfig-ak22112
