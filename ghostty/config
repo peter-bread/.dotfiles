@@ -3,6 +3,7 @@
 # keep an eye on this
 # https://github.com/ghostty-org/ghostty/discussions/3501
 font-family                   = Fira Code
+# font-family                   = JetBrains Mono
 font-style                    = Light
 font-size                     = 18
 
