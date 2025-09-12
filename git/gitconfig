@@ -82,5 +82,8 @@
 [includeIf "gitdir:~/"]
 	path = ~/.dotfiles/git/gitconfig-peter-bread
 
+[includeIf "gitdir:/opt/homebrew/Library/Taps/peter-bread/"]
+	path = ~/.dotfiles/git/gitconfig-peter-bread
+
 [includeIf "gitdir:~/Developer/ak22112/"]
 	path = ~/.dotfiles/git/gitconfig-ak22112
