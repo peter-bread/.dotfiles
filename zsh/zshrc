@@ -20,6 +20,8 @@ bindkey -e
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && \
   source "$HOME/.sdkman/bin/sdkman-init.sh"
 
+path=("$GOBIN" $path)
+
 
 # Mise-en-place ---------------------------------------------------------------
 
