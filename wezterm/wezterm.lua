@@ -57,20 +57,26 @@ config.color_scheme = "Kanagawa (Gogh)"
 
 config.font_size = 18
 
-config.font = wezterm.font({
-  family = "Fira Code",
-  weight = "Book",
-  harfbuzz_features = {
-    "zero", -- 0 => zero with dot
-    "ss05", -- @ => better [ AT ] symbol
-    "ss03", -- & => better [ ampersand ] symbol
-    -- "ss09", -- >>= <<= ||= |=
-    -- "cv25", -- .-
-    -- "cv26", -- :-
-    -- "cv32", -- .=
-    -- "cv27", -- []
-    -- "cv28", -- {. .}
-    -- "ss07", -- =~ !~
+config.font = wezterm.font_with_fallback({
+  {
+    family = "Fira Code",
+    weight = "Book",
+    harfbuzz_features = {
+      "zero", -- 0 => zero with dot
+      "ss05", -- @ => better [ AT ] symbol
+      "ss03", -- & => better [ ampersand ] symbol
+      -- "ss09", -- >>= <<= ||= |=
+      -- "cv25", -- .-
+      -- "cv26", -- :-
+      -- "cv32", -- .=
+      -- "cv27", -- []
+      -- "cv28", -- {. .}
+      -- "ss07", -- =~ !~
+    },
+  },
+  {
+    family = "Symbols Nerd Font",
+    weight = "Light",
   },
 })
 
