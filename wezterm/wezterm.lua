@@ -82,4 +82,6 @@ config.send_composed_key_when_right_alt_is_pressed = true -- right opt is normal
 config.disable_default_key_bindings = true
 config.keys = keys.keys
 
+config.enable_kitty_keyboard = true
+
 return config
