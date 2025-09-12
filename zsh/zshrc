@@ -88,41 +88,8 @@ fi
 
 # GH CLI ======================================================================
 
-# WARN: No error handling. Assumes both of these accounts are authenticated
-
-# TODO: Add error handling here, probably lead into another gamon rewrite,
-# which I will release as a new tool.
-# I want to make this more extensible too.
-# This will be a compiled binary so there is no dependency on `yq`
-
-# only create hook if `yq` and `gh` are installed
-if command -v yq &>/dev/null && command -v gh &>/dev/null; then
-
-  function _gh_switch() {
-
-    conf_file="${GH_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/gh}/hosts.yml"
-    [[ -f $conf_file ]] || return 1
-
-    current_account=$(yq '.["github.com"].user' "$conf_file")
-
-    function _gh_switch_helper() {
-      [[ -n $1 ]] && [[ $current_account != "$1" ]] &&
-        gh auth switch --user "$1" &>/dev/null
-    }
-
-    if [[ $PWD == "$HOME/Developer/ak22112"* ]]; then
-      _gh_switch_helper "ak22112"
-    else
-      _gh_switch_helper "peter-bread"
-    fi
-
-  }
-
-  autoload -U add-zsh-hook
-  add-zsh-hook chpwd _gh_switch
-
-  _gh_switch &>/dev/null
-
+if command -v gamon3 &>/dev/null; then
+  eval "$(gamon3 hook zsh)"
 fi
 
 

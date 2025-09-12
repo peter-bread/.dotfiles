@@ -1,13 +1,13 @@
 # DO NOT set PATH in this file: https://gist.github.com/Linerre/f11ad4a6a934dcf01ee8415c9457e7b2
 # Use $ZDOTDIR/.zshrc instead
 
-# dotfiles
+# Dotfiles.
 export DOTFILES="$HOME/.dotfiles"
 
-# development
+# Development.
 export DEVELOPER="$HOME/Developer"
 
-# xdg
+# XDG.
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
@@ -15,31 +15,36 @@ export XDG_STATE_HOME="$HOME/.local/state"
 export XDG_DATA_DIRS="/usr/local/share:/usr/share"
 export XDG_CONFIG_DIRS="/etc/xdg"
 
-# terminal
+# Terminal Emulator.
 export DESIRED_TERM_PROGRAM="Ghostty"
 
-# editor
+# Text Editor.
 export EDITOR="nvim"
 export VISUAL="nvim"
 export NVIM_APPNAME="peter.nvim"
 
-# man pages
+# Man pages.
 # NOTE: might need to move this to zshrc so this is only set if nvim executable is found
 export MANPAGER='nvim +Man!'
 export MANWIDTH=80
 
-# browser
-export BROWSER="Brave Browser"
+# Browser.
+# export BROWSER="Brave Browser"
+# export BROWSER="open"
+export BROWSER="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
 
-# zsh
+# Zsh.
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
 
-# starship prompt
+# Starship prompt.
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
 
-# gh cli
+# GitHub CLI.
 export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"
+
+# Gamon3.
+export GAMON3_CONFIG_DIR="$XDG_CONFIG_HOME/gamon3"
 
 # Go.
 export GOPATH="$HOME/go"
