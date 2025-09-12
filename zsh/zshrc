@@ -133,6 +133,8 @@ if command -v terraform &>/dev/null; then
   complete -C /opt/homebrew/bin/terraform terraform
 fi
 
+source <(tree-sitter complete --shell zsh)
+
 # Load Shell Completion
 autoload -Uz compinit
 compinit
