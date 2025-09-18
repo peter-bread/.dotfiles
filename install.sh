@@ -26,6 +26,7 @@ dot_install yamlfmt
 dot_install mise
 dot_install fastfetch
 dot_install neomutt
+dot_install gamon3
 
 case $OS in
 Darwin)
