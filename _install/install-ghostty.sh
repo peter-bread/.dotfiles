@@ -4,7 +4,7 @@ mkdir -p "$XDG_CONFIG_HOME/ghostty"
 
 ln -sf "$DOTFILES/ghostty/config" "$XDG_CONFIG_HOME/ghostty/config"
 
-ln -sf "$DOTFILES/ghostty/shaders" "$XDG_CONFIG_HOME/ghostty/shaders"
+ln -sfn "$DOTFILES/ghostty/shaders" "$XDG_CONFIG_HOME/ghostty/shaders"
 
 OS="$(uname -s)"
 
