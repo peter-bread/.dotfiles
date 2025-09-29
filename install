@@ -2,10 +2,51 @@
 
 set -Eeuo pipefail
 
+# Get system info.
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+# Install options.
 PRIME=0
 LINK=0
 PKGS=0
 SSH=0
+
+# Logging options.
+USE_COLORS=${USE_COLORS:-1}     # 1 = colored output,      0 = plain
+ENABLE_DEBUG=${ENABLE_DEBUG:-0} # 1 = show debug messages, 0 = hide
+DATE_FORMAT="%Y-%m-%d %H:%M:%S"
+
+# ANSI color codes.
+RESET="\e[0m"
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+CYAN="\e[36m"
+
+# Internal logging function.
+_log() {
+  local level="$1"
+  local msg="$2"
+  local color="$3"
+  local stream=${4:-1}
+  local timestamp
+  timestamp=$(date +"$DATE_FORMAT")
+
+  if [[ $USE_COLORS -eq 1 && -n "$color" ]]; then
+    printf "%s ${color}[%-7s]${RESET} %s\n" "$timestamp" "$level" "$msg" >&"$stream"
+  else
+    printf "%s [%-7s] %s\n" "$timestamp" "$level" "$msg" >&"$stream"
+  fi
+}
+
+# Public logging functions.
+info() { _log "INFO" "$1" "$BLUE"; }
+warn() { _log "WARN" "$1" "$YELLOW" 2; }
+error() { _log "ERROR" "$1" "$RED" 2; }
+success() { _log "SUCCESS" "$1" "$GREEN"; }
+debug() { if [[ $ENABLE_DEBUG -eq 1 ]]; then _log "DEBUG" "$1" "$CYAN" 2; fi; }
 
 show_help() {
   cat <<'EOF'
@@ -23,243 +64,241 @@ Options:
   --pkgs        Install packages
   --ssh         Generate SSH keys
 
+Environemnt Variables:
+  USE_COLORS      Control colored logging.
+                  1 = enable; 0 = disable (default: 1)
+
+  ENABLE_DEBUG    Control debug logging.
+                  1 = enable; 0 = disable (default: 0)
+
 Other:
   -h, --help    Print this help message
 EOF
   exit 0
 }
 
-while [[ $# -gt 0 ]]; do
-  case $1 in
-  --prime) PRIME=1 ;;
-  --link) LINK=1 ;;
-  --pkgs) PKGS=1 ;;
-  --ssh) SSH=1 ;;
-  -h | --help)
-    show_help
-    ;;
-  esac
-  shift
-done
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    --prime) PRIME=1 ;;
+    --link) LINK=1 ;;
+    --pkgs) PKGS=1 ;;
+    --ssh) SSH=1 ;;
+    -h | --help) show_help ;;
+    esac
+    shift
+  done
+}
 
 flag() {
   [[ $1 -eq 1 ]]
 }
 
-# The purpose of this script is to prime a system, MacOS or Linux, so it is in
-# a state where the main bootstrapping process can begin.
-#
-# This essentially boils down to making sure a few essential packages are
-# installed:
-# - git
-# - python3
-# - curl/wget
-# - tar/unzip/bzip2/xz
-#
-# For MacOS it is a bit more involved as some of these things are not available
-# OOTB, and there isn't even a builtin package manager.
-#
-# For Linux, it should just be a case of determining which package manager to
-# use and then installing the software.
-#
-# THE FOLLOWING SECTION COULD CHANGE. IF I EVER MAKE MY DOTFILES PUBLIC, THERE
-# WOULD ONLY BE ONE STAGE.
-#
-# This software is needed so the first stage of the bootstrap can be performed.
+prime_system() {
 
-OS=$(uname -s)
-ARCH=$(uname -m)
+  # The purpose of this script is to prime a system, MacOS or Linux, so it is in
+  # a state where the main bootstrapping process can begin.
+  #
+  # This essentially boils down to making sure a few essential packages are
+  # installed:
+  # - git
+  # - python3
+  # - curl/wget
+  # - tar/unzip/bzip2/xz
+  #
+  # For MacOS it is a bit more involved as some of these things are not available
+  # OOTB, and there isn't even a builtin package manager.
+  #
+  # For Linux, it should just be a case of determining which package manager to
+  # use and then installing the software.
 
-prime_macos() {
-  # if ! [[ $BASH == "/bin/bash" ]]; then
-  #   echo "Run this script with /bin/bash" >&2
-  #   exit 1
-  # fi
+  prime_macos() {
+    case $ARCH in
+    *arm*) PREFIX="/opt/homebrew" ;;
+    *x86_64*) PREFIX="/usr/local" ;;
+    *)
+      error "$ARCH CPU architecture is not supported"
+      return 1
+      ;;
+    esac
 
-  case $ARCH in
-  *arm*) PREFIX="/opt/homebrew" ;;
-  *x86_64*) PREFIX="/usr/local" ;;
-  *)
-    echo "$ARCH CPU architecture is not supported" >&2
-    exit 1
-    ;;
-  esac
+    info "OS      : $OS"
+    info "ARCH    : $ARCH"
+    info "PREFIX  : $PREFIX"
 
-  echo "OS      : $OS"
-  echo "ARCH    : $ARCH"
-  echo "PREFIX  : $PREFIX"
+    info "Checking if Homebrew is already installed..."
 
-  echo "Checking if Homebrew is already installed..."
-
-  if ! command -v "$PREFIX/bin/brew" &>/dev/null; then
-    echo "Homebrew not installed"
-    echo "Installing Homebrew. This will also install Xcode Command Line Tools if required..."
-    if ! /bin/bash -c \
-      "$(curl \
-        -fsSL \
-        https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
-      echo "Homebrew installation failed" >&2
-      exit 1
+    if ! command -v "$PREFIX/bin/brew" &>/dev/null; then
+      warn "Homebrew not installed"
+      info "Installing Homebrew. This will also install Xcode Command Line Tools if required..."
+      if ! /bin/bash -c \
+        "$(curl \
+          -fsSL \
+          https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+        error "Homebrew installation failed"
+        return 1
+      fi
+    else
+      info "Homebrew already installed"
     fi
-  else
-    echo "Homebrew already installed"
-  fi
 
-  echo "Adding brew to PATH..."
-  if ! command -v brew &>/dev/null; then
-    eval "$("$PREFIX/bin/brew" shellenv)"
-  fi
+    info "Adding brew to PATH..."
+    if ! command -v brew &>/dev/null; then
+      eval "$("$PREFIX/bin/brew" shellenv)"
+    fi
 
-  # Default: curl bzip2 tar unzip
-  # Xcode Command Line Tools: git python3
+    # Default: curl bzip2 tar unzip
+    # Xcode Command Line Tools: git python3
 
-  brew update
-  # brew upgrade
-  brew install \
-    wget \
-    xz
+    brew update
+    # brew upgrade
+    brew install \
+      wget \
+      xz
 
-  echo "MacOS primed successfully"
-}
-
-prime_linux() {
-  if ! [[ -f /etc/os-release ]]; then
-    echo "Couldn't determine Linux distro as /etc/os-release does not exist"
-    exit 1
-  fi
-
-  prime_ubuntu_debian() {
-    sudo apt-get update -y
-    sudo apt-get upgrade -y
-    sudo apt-get install -y \
-      git python3 \
-      curl wget \
-      tar unzip bzip2 xz
+    success "MacOS primed successfully"
   }
 
-  prime_fedora() {
-    echo "TODO: Implement Fedora"
-    exit 1
+  prime_linux() {
+    if ! [[ -f /etc/os-release ]]; then
+      error "Couldn't determine Linux distro as /etc/os-release does not exist"
+      return 1
+    fi
+
+    prime_ubuntu_debian() {
+      sudo apt-get update -y
+      sudo apt-get upgrade -y
+      sudo apt-get install -y \
+        git python3 \
+        curl wget \
+        tar unzip bzip2 xz-utils
+    }
+
+    prime_fedora() {
+      error "TODO: Implement Fedora"
+      return 1
+    }
+
+    prime_arch() {
+      error "TODO: Implement Arch"
+      return 1
+    }
+
+    prime_alpine() {
+      error "TODO: Implement Alpine"
+      return 1
+    }
+
+    # Load all data about OS into environment variables.
+    # This is clean and avoids any weird parsing.
+    # shellcheck disable=SC1091 # This file never exists on MacOS and the warning is annoying.
+    . /etc/os-release
+
+    # This is mainly for package managers. While it would probably make sense to
+    # use ID_LIKE, this is an optional field in the systemd specification.
+    # Therefore it is safer to just hardcode distros and use ID instead.
+    # See 'https://www.freedesktop.org/software/systemd/man/latest/os-release.html#ID_LIKE='.
+
+    case $ID in
+    ubuntu | debian) prime_ubuntu_debian ;;
+    fedora) prime_fedora ;;
+    arch) prime_arch ;;
+    alpine) prime_alpine ;;
+    *)
+      error "Unsupported distro: $ID"
+      return 1
+      ;;
+    esac
+
+    success "Linux primed successfully"
   }
 
-  prime_arch() {
-    echo "TODO: Implement Arch"
-    exit 1
-  }
-
-  prime_alpine() {
-    echo "TODO: Implement Alpine"
-    exit 1
-  }
-
-  # Load all data about OS into environment variables.
-  # This is clean and avoids any weird parsing.
-  # shellcheck disable=SC1091 # This file never exists on MacOS and the warning is annoying.
-  . /etc/os-release
-
-  # This is mainly for package managers. While it would probably make sense to
-  # use ID_LIKE, this is an optional field in the systemd specification.
-  # Therefore it is safer to just hardcode distros and use ID instead.
-  # See 'https://www.freedesktop.org/software/systemd/man/latest/os-release.html#ID_LIKE='.
-
-  case $ID in
-  ubuntu | debian) prime_ubuntu_debian ;;
-  fedora) prime_fedora ;;
-  arch) prime_arch ;;
-  alpine) prime_alpine ;;
-  *)
-    echo "Unsupported distro: $ID" >&2
-    exit 1
-    ;;
-  esac
-
-  echo "Linux primed successfully"
-
-}
-
-if flag "$PRIME"; then
   case $OS in
   Darwin) prime_macos ;;
   Linux) prime_linux ;;
   esac
 
-  echo "System primed successfully"
-fi
+  success "System primed successfully"
+}
 
 # TODO: Including checking requirements under prime option?
 
-echo "Checking required tools are available..."
+check_requirements() {
 
-################################################################################
-### DECLARE REQUIRED TOOLS
-################################################################################
+  info "Checking required tools are available..."
 
-# Array to track missing essentials.
-missing=()
+  ################################################################################
+  ### DECLARE REQUIRED TOOLS
+  ################################################################################
 
-# All of these are required.
-required=(git python3)
+  # Array to track missing essentials.
+  missing=()
 
-# At least one of these is required.
-downloaders=(curl wget)
+  # All of these are required.
+  # TODO: Can probably remove python3 since I'm not using Ansible.
+  required=(git python3)
 
-# These are recommended.
-archive_tools=(tar unzip xz bzip2)
+  # At least one of these is required.
+  downloaders=(curl wget)
 
-################################################################################
-### CHECK TOOLS
-################################################################################
+  # These are recommended.
+  archive_tools=(tar unzip xz bzip2)
 
-### Essential #############################################################
-# (all required)
+  ################################################################################
+  ### CHECK TOOLS
+  ################################################################################
 
-for cmd in "${required[@]}"; do
-  if ! command -v "$cmd" &>/dev/null; then
-    missing+=("$cmd")
-  fi
-done
+  ### Essential #############################################################
+  # (all required)
 
-### Downloader ############################################################
-# (require at least one)
-
-found=0
-
-for cmd in "${downloaders[@]}"; do
-  if command -v "$cmd" &>/dev/null; then
-    found=1
-    break
-  fi
-done
-
-if [[ $found -eq 0 ]]; then
-  missing+=("curl or wget")
-fi
-
-unset -v found
-
-### Archive Tools #########################################################
-# (optional, just warn)
-
-for cmd in "${archive_tools[@]}"; do
-  if ! command -v "$cmd" &>/dev/null; then
-    echo "Warning: $cmd is not installed" >&2
-  fi
-done
-
-################################################################################
-### REPORT RESULTS
-################################################################################
-
-# Report missing essentials
-if [[ ${#missing[@]} -ne 0 ]]; then
-  echo "Error: the following required tools are missing:" >&2
-  for cmd in "${missing[@]}"; do
-    echo "  - $cmd" >&2
+  for cmd in "${required[@]}"; do
+    if ! command -v "$cmd" &>/dev/null; then
+      missing+=("$cmd")
+    fi
   done
-  exit 1
-fi
 
-echo "All essential tools are installed"
+  ### Downloader ############################################################
+  # (require at least one)
+
+  found=0
+
+  for cmd in "${downloaders[@]}"; do
+    if command -v "$cmd" &>/dev/null; then
+      found=1
+      break
+    fi
+  done
+
+  if [[ $found -eq 0 ]]; then
+    missing+=("curl or wget")
+  fi
+
+  unset -v found
+
+  ### Archive Tools #########################################################
+  # (optional, just warn)
+
+  for cmd in "${archive_tools[@]}"; do
+    if ! command -v "$cmd" &>/dev/null; then
+      warn "$cmd is not installed"
+    fi
+  done
+
+  ################################################################################
+  ### REPORT RESULTS
+  ################################################################################
+
+  # Report missing essentials
+  if [[ ${#missing[@]} -ne 0 ]]; then
+    error "the following required tools are missing:"
+    for cmd in "${missing[@]}"; do
+      error "  - $cmd"
+    done
+    exit 1
+  fi
+
+  success "All essential tools are installed"
+}
 
 ################################################################################
 ################################################################################
@@ -267,68 +306,139 @@ echo "All essential tools are installed"
 ################################################################################
 ################################################################################
 
-DOTFILES=${DOTFILES:-$HOME/.dotfiles}
+setup_dotfiles_repo() {
+  if [[ -d $DOTFILES ]]; then
 
-if [[ -d $DOTFILES ]]; then
-  # git -C "$DOTFILES" rev-parse --is-inside-work-tree >/dev/null 2>&1
-  # git -C "$DOTFILES" pull
-  echo "$DOTFILES already exists"
-  echo "TODO: Prompt user for choice"
-else
-  git clone --branch=main "https://github.com/peter-bread/.dotfiles.git" "$DOTFILES"
-fi
+    info "Dotfiles already exist locally at $DOTFILES"
+    info "Pulling latest changes..."
 
-cd "$DOTFILES" || exit
+    before=$(git -C "$DOTFILES" rev-parse HEAD)
 
-if flag "$LINK"; then
-  # Make sure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*).
+    if ! git -C "$DOTFILES" pull; then #--rebase?
+      error "Pulling latest changes failed"
+      return 1
+    fi
+
+    success "Dotfiles repo updated successfully"
+
+    after=$(git -C "$DOTFILES" rev-parse HEAD)
+
+    if [[ $before != "$after" ]]; then
+      info "Repo updated, re-executing install script..."
+      exec "$DOTFILES/install" "$@"
+    fi
+
+  else
+
+    local url
+    url="https://github.com/peter-bread/.dotfiles.git"
+
+    info "Dotfiles do not exist locally at $DOTFILES"
+    info "Cloning $url into $DOTFILES"
+
+    if ! git clone --branch=main "$url" "$DOTFILES"; then
+      error "Cloning dotfiles failed"
+      return 1
+    fi
+
+    success "Dotfiles repo cloned successfully"
+
+  fi
+
+  success "Dotfiles repo setup successfully"
+}
+
+link_configs() {
+  # Ensure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*).
   source ./zsh/zshenv
 
+  # TODO: Move this logic to its own file or function?
   mkdir -p "$DEVELOPER"
 
-  RESET="\e[0m"
-
-  # ANSI color codes.
-  RED="\e[31m"
-  YELLOW="\e[33m"
-  BLUE="\e[34m"
-
-  function dot_link() {
+  dot_link() {
     local module=$1
     local file="$DOTFILES/_link/${module}"
 
     if [[ -f $file ]]; then
-      echo -e "${BLUE}=> Linking ${YELLOW}${module} ${BLUE}config...${RESET}"
+      # echo -e "${BLUE}=> Linking ${YELLOW}${module} ${BLUE}config...${RESET}"
+      info "Linking $module config..."
       # shellcheck disable=SC1090 # Doesn't really matter.
       . "$file"
     else
-      echo -e "${RED}=> Error: ${YELLOW}${module} ${RED}config does not exist${RESET}"
+      # echo -e "${RED}=> Error: ${YELLOW}${module} ${RED}config does not exist${RESET}"
+      error "$module config does not exist"
+      return 1
     fi
   }
 
   link_from_manifest() {
     local manifest=$1
-    [[ -f $manifest ]] || return
+
+    info "Attempting to link configs from $manifest"
+
+    if ! [[ -f $manifest ]]; then
+      error "$manifest does not exist"
+      return 1
+    fi
+
     while IFS= read -r item; do
       [[ -n $item && $item != \#* ]] || continue
-      dot_link "$item"
+      dot_link "$item" || return
     done <"$manifest"
+
+    success "Linked configs from $manifest"
   }
 
-  link_from_manifest MANIFEST.common
+  link_from_manifest MANIFEST.common || return
 
   case $OS in
-  Darwin) link_from_manifest MANIFEST.macos ;;
-  Linux) link_from_manifest MANIFEST.linux ;;
+  Darwin) link_from_manifest MANIFEST.macos || return ;;
+  Linux) link_from_manifest MANIFEST.linux || return ;;
   esac
-fi
 
-if flag "$PKGS"; then
-  # TODO: Install packages.
-  :
-fi
+  success "Configs linked successfully"
+}
 
-if flag "$SSH"; then
-  # TODO: Generate SSH keys and auth with GitHub CLI.
-  :
-fi
+install_pkgs() {
+  error "TODO: Install packages"
+  return 1
+}
+
+generate_ssh_keys() {
+  error "TODO: Generate SSH keys and auth with GitHub CLI"
+  return 1
+}
+
+main() {
+  parse_args "$@" || exit
+
+  if flag "$PRIME"; then
+    prime_system || exit
+  fi
+
+  check_requirements || exit
+
+  DOTFILES=${DOTFILES:-$HOME/.dotfiles}
+
+  setup_dotfiles_repo "$@" || exit
+
+  cd "$DOTFILES" || exit
+
+  if flag "$LINK"; then
+    link_configs || exit
+  fi
+
+  if flag "$PKGS"; then
+    # TODO: Install packages.
+    install_pkgs || exit
+  fi
+
+  if flag "$SSH"; then
+    # TODO: Generate SSH keys and auth with GitHub CLI.
+    generate_ssh_keys || exit
+  fi
+
+  success "$0 ${*:+${*} }completed successfully"
+}
+
+main "$@"
