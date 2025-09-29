@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+mkdir -p "$XDG_CONFIG_HOME/wezterm"
+
+ln -sfn "$DOTFILES/wezterm/wezterm.lua" "$XDG_CONFIG_HOME/wezterm/wezterm.lua"
+ln -sfn "$DOTFILES/wezterm/keys.lua" "$XDG_CONFIG_HOME/wezterm/keys.lua"

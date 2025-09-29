@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+mkdir -p "$XDG_CONFIG_HOME/git"
+
+ln -sfn "$DOTFILES/git/gitconfig" "$XDG_CONFIG_HOME/git/config"
+ln -sfn "$DOTFILES/git/gitignore" "$XDG_CONFIG_HOME/git/ignore"

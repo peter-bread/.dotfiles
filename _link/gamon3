@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+mkdir -p "$GAMON3_CONFIG_DIR"
+
+ln -sfn "$DOTFILES/gamon3/config.yaml" "$GAMON3_CONFIG_DIR/config.yaml"

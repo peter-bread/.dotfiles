@@ -1,27 +1,30 @@
 #!/usr/bin/env bash
 
 mkdir -p "$XDG_CONFIG_HOME/mise"
+mkdir -p "$XDG_CONFIG_HOME/mise/conf.d"
 
-ln -sf "$DOTFILES/mise/all.toml" "$XDG_CONFIG_HOME/mise/config.toml"
+ln -sfn "$DOTFILES/mise/all.toml" "$XDG_CONFIG_HOME/mise/config.toml"
 
 OS="$(uname -s)"
 
 case $OS in
 Darwin)
-  [ -f "$DOTFILES/mise/mac.toml" ] &&
-    ln -sf "$DOTFILES/mise/mac.toml" "$XDG_CONFIG_HOME/mise/conf.d/mac.toml"
+  if [ -f "$DOTFILES/mise/mac.toml" ]; then
+    ln -sfn "$DOTFILES/mise/mac.toml" "$XDG_CONFIG_HOME/mise/conf.d/mac.toml"
+  fi
   ;;
 
 Linux)
 
-  # use os-release file when possible
+  # Use os-release file when possible.
   if [[ -f /etc/os-release ]]; then
-    id=$(grep --color=never -ioP '^ID=\K.+' /etc/os-release)
+    . /etc/os-release
 
-    case $id in
+    case $ID in
     ubuntu)
-      [ -f "$DOTFILES/mise/ubuntu.toml" ] &&
-        ln -sf "$DOTFILES/mise/ubuntu.toml" "$XDG_CONFIG_HOME/mise/conf.d/ubuntu.toml"
+      if [ -f "$DOTFILES/mise/ubuntu.toml" ]; then
+        ln -sfn "$DOTFILES/mise/ubuntu.toml" "$XDG_CONFIG_HOME/mise/conf.d/ubuntu.toml"
+      fi
 
       # WARN:
       # do I want to be installing software here?

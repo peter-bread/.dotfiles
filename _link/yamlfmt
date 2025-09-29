@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+mkdir -p "$XDG_CONFIG_HOME/yamlfmt"
+
+ln -sfn "$DOTFILES/yamlfmt/yamlfmt.yaml" "$XDG_CONFIG_HOME/yamlfmt/yamlfmt.yaml"

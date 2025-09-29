@@ -1,0 +1,334 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+PRIME=0
+LINK=0
+PKGS=0
+SSH=0
+
+show_help() {
+  cat <<'EOF'
+Bootstrap script.
+
+This script will always check for required packages and exit if any are
+missing.
+
+Usage:
+  ./install [--prime] [--link] [--pkgs] [--ssh] [-h | --help]
+
+Options:
+  --prime       Ensure system has required packages installed
+  --link        Symlink config files
+  --pkgs        Install packages
+  --ssh         Generate SSH keys
+
+Other:
+  -h, --help    Print this help message
+EOF
+  exit 0
+}
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+  --prime) PRIME=1 ;;
+  --link) LINK=1 ;;
+  --pkgs) PKGS=1 ;;
+  --ssh) SSH=1 ;;
+  -h | --help)
+    show_help
+    ;;
+  esac
+  shift
+done
+
+flag() {
+  [[ $1 -eq 1 ]]
+}
+
+# The purpose of this script is to prime a system, MacOS or Linux, so it is in
+# a state where the main bootstrapping process can begin.
+#
+# This essentially boils down to making sure a few essential packages are
+# installed:
+# - git
+# - python3
+# - curl/wget
+# - tar/unzip/bzip2/xz
+#
+# For MacOS it is a bit more involved as some of these things are not available
+# OOTB, and there isn't even a builtin package manager.
+#
+# For Linux, it should just be a case of determining which package manager to
+# use and then installing the software.
+#
+# THE FOLLOWING SECTION COULD CHANGE. IF I EVER MAKE MY DOTFILES PUBLIC, THERE
+# WOULD ONLY BE ONE STAGE.
+#
+# This software is needed so the first stage of the bootstrap can be performed.
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+prime_macos() {
+  # if ! [[ $BASH == "/bin/bash" ]]; then
+  #   echo "Run this script with /bin/bash" >&2
+  #   exit 1
+  # fi
+
+  case $ARCH in
+  *arm*) PREFIX="/opt/homebrew" ;;
+  *x86_64*) PREFIX="/usr/local" ;;
+  *)
+    echo "$ARCH CPU architecture is not supported" >&2
+    exit 1
+    ;;
+  esac
+
+  echo "OS      : $OS"
+  echo "ARCH    : $ARCH"
+  echo "PREFIX  : $PREFIX"
+
+  echo "Checking if Homebrew is already installed..."
+
+  if ! command -v "$PREFIX/bin/brew" &>/dev/null; then
+    echo "Homebrew not installed"
+    echo "Installing Homebrew. This will also install Xcode Command Line Tools if required..."
+    if ! /bin/bash -c \
+      "$(curl \
+        -fsSL \
+        https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+      echo "Homebrew installation failed" >&2
+      exit 1
+    fi
+  else
+    echo "Homebrew already installed"
+  fi
+
+  echo "Adding brew to PATH..."
+  if ! command -v brew &>/dev/null; then
+    eval "$("$PREFIX/bin/brew" shellenv)"
+  fi
+
+  # Default: curl bzip2 tar unzip
+  # Xcode Command Line Tools: git python3
+
+  brew update
+  # brew upgrade
+  brew install \
+    wget \
+    xz
+
+  echo "MacOS primed successfully"
+}
+
+prime_linux() {
+  if ! [[ -f /etc/os-release ]]; then
+    echo "Couldn't determine Linux distro as /etc/os-release does not exist"
+    exit 1
+  fi
+
+  prime_ubuntu_debian() {
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
+    sudo apt-get install -y \
+      git python3 \
+      curl wget \
+      tar unzip bzip2 xz
+  }
+
+  prime_fedora() {
+    echo "TODO: Implement Fedora"
+    exit 1
+  }
+
+  prime_arch() {
+    echo "TODO: Implement Arch"
+    exit 1
+  }
+
+  prime_alpine() {
+    echo "TODO: Implement Alpine"
+    exit 1
+  }
+
+  # Load all data about OS into environment variables.
+  # This is clean and avoids any weird parsing.
+  # shellcheck disable=SC1091 # This file never exists on MacOS and the warning is annoying.
+  . /etc/os-release
+
+  # This is mainly for package managers. While it would probably make sense to
+  # use ID_LIKE, this is an optional field in the systemd specification.
+  # Therefore it is safer to just hardcode distros and use ID instead.
+  # See 'https://www.freedesktop.org/software/systemd/man/latest/os-release.html#ID_LIKE='.
+
+  case $ID in
+  ubuntu | debian) prime_ubuntu_debian ;;
+  fedora) prime_fedora ;;
+  arch) prime_arch ;;
+  alpine) prime_alpine ;;
+  *)
+    echo "Unsupported distro: $ID" >&2
+    exit 1
+    ;;
+  esac
+
+  echo "Linux primed successfully"
+
+}
+
+if flag "$PRIME"; then
+  case $OS in
+  Darwin) prime_macos ;;
+  Linux) prime_linux ;;
+  esac
+
+  echo "System primed successfully"
+fi
+
+# TODO: Including checking requirements under prime option?
+
+echo "Checking required tools are available..."
+
+################################################################################
+### DECLARE REQUIRED TOOLS
+################################################################################
+
+# Array to track missing essentials.
+missing=()
+
+# All of these are required.
+required=(git python3)
+
+# At least one of these is required.
+downloaders=(curl wget)
+
+# These are recommended.
+archive_tools=(tar unzip xz bzip2)
+
+################################################################################
+### CHECK TOOLS
+################################################################################
+
+### Essential #############################################################
+# (all required)
+
+for cmd in "${required[@]}"; do
+  if ! command -v "$cmd" &>/dev/null; then
+    missing+=("$cmd")
+  fi
+done
+
+### Downloader ############################################################
+# (require at least one)
+
+found=0
+
+for cmd in "${downloaders[@]}"; do
+  if command -v "$cmd" &>/dev/null; then
+    found=1
+    break
+  fi
+done
+
+if [[ $found -eq 0 ]]; then
+  missing+=("curl or wget")
+fi
+
+unset -v found
+
+### Archive Tools #########################################################
+# (optional, just warn)
+
+for cmd in "${archive_tools[@]}"; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "Warning: $cmd is not installed" >&2
+  fi
+done
+
+################################################################################
+### REPORT RESULTS
+################################################################################
+
+# Report missing essentials
+if [[ ${#missing[@]} -ne 0 ]]; then
+  echo "Error: the following required tools are missing:" >&2
+  for cmd in "${missing[@]}"; do
+    echo "  - $cmd" >&2
+  done
+  exit 1
+fi
+
+echo "All essential tools are installed"
+
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+
+DOTFILES=${DOTFILES:-$HOME/.dotfiles}
+
+if [[ -d $DOTFILES ]]; then
+  # git -C "$DOTFILES" rev-parse --is-inside-work-tree >/dev/null 2>&1
+  # git -C "$DOTFILES" pull
+  echo "$DOTFILES already exists"
+  echo "TODO: Prompt user for choice"
+else
+  git clone --branch=main "https://github.com/peter-bread/.dotfiles.git" "$DOTFILES"
+fi
+
+cd "$DOTFILES" || exit
+
+if flag "$LINK"; then
+  # Make sure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*).
+  source ./zsh/zshenv
+
+  mkdir -p "$DEVELOPER"
+
+  RESET="\e[0m"
+
+  # ANSI color codes.
+  RED="\e[31m"
+  YELLOW="\e[33m"
+  BLUE="\e[34m"
+
+  function dot_link() {
+    local module=$1
+    local file="$DOTFILES/_link/${module}"
+
+    if [[ -f $file ]]; then
+      echo -e "${BLUE}=> Linking ${YELLOW}${module} ${BLUE}config...${RESET}"
+      # shellcheck disable=SC1090 # Doesn't really matter.
+      . "$file"
+    else
+      echo -e "${RED}=> Error: ${YELLOW}${module} ${RED}config does not exist${RESET}"
+    fi
+  }
+
+  link_from_manifest() {
+    local manifest=$1
+    [[ -f $manifest ]] || return
+    while IFS= read -r item; do
+      [[ -n $item && $item != \#* ]] || continue
+      dot_link "$item"
+    done <"$manifest"
+  }
+
+  link_from_manifest MANIFEST.common
+
+  case $OS in
+  Darwin) link_from_manifest MANIFEST.macos ;;
+  Linux) link_from_manifest MANIFEST.linux ;;
+  esac
+fi
+
+if flag "$PKGS"; then
+  # TODO: Install packages.
+  :
+fi
+
+if flag "$SSH"; then
+  # TODO: Generate SSH keys and auth with GitHub CLI.
+  :
+fi

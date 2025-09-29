@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+mkdir -p "$(dirname "$STARSHIP_CONFIG")"
+
+ln -sfn "$DOTFILES/starship/starship.toml" "$STARSHIP_CONFIG"

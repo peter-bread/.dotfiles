@@ -1,4 +1,6 @@
-.PHONY: install
+.PHONY: link
 
-install:
-	@bash ./install.sh
+# TODO: Is Makefile even needed any more?
+
+link:
+	./install --link

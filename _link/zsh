@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+mkdir -p "$ZDOTDIR"
+mkdir -p "$ZSH_COMPLETIONS"
+
+ln -sfn "$DOTFILES/zsh/zshenv" "$HOME/.zshenv"
+ln -sfn "$DOTFILES/zsh/zshrc" "$ZDOTDIR/.zshrc"
+ln -sfn "$DOTFILES/zsh/zprofile" "$ZDOTDIR/.zprofile"
+
+# Link custom zsh completions
+for comp in "$DOTFILES"/zsh/completions/_*; do
+  ln -sfn "$comp" "$ZSH_COMPLETIONS/$(basename "$comp")"
+done
