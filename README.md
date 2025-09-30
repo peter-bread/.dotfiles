@@ -1,5 +1,10 @@
 # .dotfiles
 
+> [!WARNING]
+> This README is now out of date.
+>
+> Will update soon.
+
 Managing my dotfiles.
 
 <!--toc:ignore-->
