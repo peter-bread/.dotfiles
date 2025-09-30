@@ -2,6 +2,7 @@
 
 mkdir -p "$HOME/.local/bin"
 
-for script in "$DOTFILES"/scripts/*.sh; do
-  ln -sfn "$script" "$HOME/.local/bin/$(basename "${script%.*}")"
-done
+while IFS= read -r -d '' file; do
+  [[ -x "$file" ]] || continue
+  ln -sfn "$file" "$HOME/.local/bin/$(basename "$file")"
+done < <(find "$DOTFILES/scripts" -type f ! -name '*.md' -print0)
