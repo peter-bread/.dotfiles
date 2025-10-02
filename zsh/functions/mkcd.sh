@@ -3,5 +3,5 @@
 # create new directory and cd into it
 
 function mkcd() {
-  builtin mkdir "$@" && buildin cd
+  builtin mkdir "$@" && builtin cd
 }
