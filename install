@@ -401,8 +401,19 @@ link_configs() {
 }
 
 install_pkgs() {
-  error "TODO: Install packages"
-  return 1
+  case $OS in
+  Darwin)
+    cat ./packages/brew/Brewfile | head -n15
+    error "TODO: Install packages on MacOS"
+    return 1
+    ;;
+  Linux)
+    error "TODO: Install packages on Linux"
+    return 1
+    ;;
+  esac
+
+  success "Packages installed successfully"
 }
 
 generate_ssh_keys() {
