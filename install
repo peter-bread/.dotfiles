@@ -52,8 +52,10 @@ show_help() {
   cat <<'EOF'
 Bootstrap script.
 
-This script will always check for required packages and exit if any are
-missing.
+Without any options provided, this script will check if required tools are
+installed and will then clone or pull dotfiles repository to ~/.dotfiles.
+
+Options can be provided to enable extra functionality.
 
 Usage:
   ./install [--prime] [--link] [--pkgs] [--ssh] [-h | --help]
@@ -64,15 +66,14 @@ Options:
   --pkgs        Install packages
   --ssh         Generate SSH keys
 
+  -h, --help    Print this help message
+
 Environemnt Variables:
   USE_COLORS      Control colored logging.
                   1 = enable; 0 = disable (default: 1)
 
   ENABLE_DEBUG    Control debug logging.
                   1 = enable; 0 = disable (default: 0)
-
-Other:
-  -h, --help    Print this help message
 EOF
   exit 0
 }
