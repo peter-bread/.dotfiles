@@ -1,0 +1,36 @@
+# Web browser focusing on privacy
+cask "brave-browser"
+# Voice and text chat software
+cask "discord"
+# App to build and share containerised applications and microservices
+cask "docker-desktop"
+# Text editor
+cask "emacs-app"
+# Web browser
+cask "firefox"
+# null
+cask "font-fira-code"
+# null
+cask "font-jetbrains-mono"
+# null
+cask "font-symbols-only-nerd-font"
+# Terminal emulator that uses platform-native UI and GPU acceleration
+cask "ghostty"
+# Web browser
+cask "google-chrome"
+# Open-source software for live streaming and screen recording
+cask "obs"
+# Tool to reverse the direction of scrolling
+cask "scroll-reverser"
+# Tool that provides consistent, highly configurable symbols for apps
+cask "sf-symbols"
+# Music streaming service
+cask "spotify"
+# Virtual machines UI using QEMU
+cask "utm"
+# Open-source code editor
+cask "visual-studio-code"
+# Native desktop client for WhatsApp
+cask "whatsapp"
+# Open-source version of the X.Org X Window System
+cask "xquartz"

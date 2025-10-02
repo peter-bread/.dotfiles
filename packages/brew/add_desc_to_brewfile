@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+INPUT_FILE=""
+MODE=""
+
+show_help() {
+  echo "Usage: $0 -i <input_file> -m <formula|cask>"
+  exit 1
+}
+
+if [[ $# -ne 4 ]]; then
+  show_help
+fi
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+  -i)
+    INPUT_FILE=$2
+    shift 2
+    ;;
+  -m)
+    MODE=$2
+    shift 2
+    ;;
+  *) show_help ;;
+  esac
+done
+
+if ! [[ -f $INPUT_FILE ]]; then
+  echo "$INPUT_FILE does not exist"
+  exit 1
+fi
+
+input=$INPUT_FILE
+output="${INPUT_FILE}.described"
+
+case $MODE in
+formula)
+  start="brew"
+  query="formulae"
+  ;;
+cask)
+  start="cask"
+  query="casks"
+  ;;
+*)
+  echo "$MODE is invalid. Use 'formula' or 'cask'"
+  exit 1
+  ;;
+
+esac
+
+# Count total lines that contain brew formulae
+total=$(grep -c "^$start \"" "$input")
+count=0
+
+true >"$output" # Truncate output file.
+
+# TODO: Skip or replace existing descriptions.
+
+while read -r line; do
+  # Skip lines that aren't brew formulae/casks.
+  pkg=$(echo "$line" | sed -n "s/^$start \"\([^\"]*\)\".*/\1/p")
+  if [ "$pkg" != "" ]; then
+    # Increment counter.
+    count=$((count + 1))
+    # Fetch description.
+    desc=$(brew info --"$MODE" --json=v2 "$pkg" | jq -r ".${query}[0].desc")
+    echo "# $desc" >>"$output"
+    echo "$line" >>"$output"
+    # Print progress
+    echo "[$count/$total] $pkg"
+  else
+    # Non-formula lines copied as-is.
+    echo "$line" >>"$output"
+  fi
+done <"$input"
