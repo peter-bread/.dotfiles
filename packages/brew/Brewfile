@@ -41,9 +41,9 @@ brew "lazydocker"
 brew "lazygit"
 brew "less"
 brew "make"
-brew "mas"
+brew "mas" if OS.mac?
 brew "mise"
-brew "ncurses" # Remove on MacOS >=14.
+brew "ncurses" if MacOS.verion < :sonoma
 brew "neomutt"
 brew "neovim"
 brew "nushell"

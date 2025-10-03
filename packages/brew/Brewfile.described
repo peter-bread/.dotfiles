@@ -80,11 +80,11 @@ brew "less"
 # Utility for directing compilation
 brew "make"
 # Mac App Store command-line interface
-brew "mas"
+brew "mas" if OS.mac?
 # Polyglot runtime manager (asdf rust clone)
 brew "mise"
 # Text-based UI library
-brew "ncurses" # Remove on MacOS >=14.
+brew "ncurses" if MacOS.version < :sonoma
 # E-mail reader with support for Notmuch, NNTP and much more
 brew "neomutt"
 # Ambitious Vim-fork focused on extensibility and agility
