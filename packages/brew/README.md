@@ -2,7 +2,8 @@
 
 Declarative interface for installing packages.
 
-I have split my packages into multiple `Brewfile`s.
+Packages have been split into multiple `Brewfile`s depending on what type of
+package they are:
 
 | Brewfile          | Description        | MacOS | Linux |
 | ----------------- | ------------------ | ----- | ----- |
@@ -11,11 +12,12 @@ I have split my packages into multiple `Brewfile`s.
 | `Brewfile.mas`    | Mac App Store Apps | ✅    | ❌    |
 | `Brewfile.vscode` | VS Code Extensions | ✅    | ✅    |
 
-I primarily intend to use this on MacOS.
+Primarily intended to be used on MacOS.
 
 On Linux, it's probably better to use the system package manager where possible.
 
 ---
 
 [Offical Website](https://docs.brew.sh/Brew-Bundle-and-Brewfile)
+&middot
 [Advanced Brewfiles](https://docs.brew.sh/Brew-Bundle-and-Brewfile#advanced-brewfiles)
