@@ -43,7 +43,7 @@ brew "less"
 brew "make"
 brew "mas" if OS.mac?
 brew "mise"
-brew "ncurses" if MacOS.verion < :sonoma
+brew "ncurses" if OS.mac? && MacOS.verion < :sonoma
 brew "neomutt"
 brew "neovim"
 brew "nushell"

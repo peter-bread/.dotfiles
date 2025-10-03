@@ -84,7 +84,7 @@ brew "mas" if OS.mac?
 # Polyglot runtime manager (asdf rust clone)
 brew "mise"
 # Text-based UI library
-brew "ncurses" if MacOS.version < :sonoma
+brew "ncurses" if OS.mac? && MacOS.version < :sonoma
 # E-mail reader with support for Notmuch, NNTP and much more
 brew "neomutt"
 # Ambitious Vim-fork focused on extensibility and agility
