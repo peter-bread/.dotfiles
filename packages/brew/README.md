@@ -19,5 +19,5 @@ On Linux, it's probably better to use the system package manager where possible.
 ---
 
 [Offical Website](https://docs.brew.sh/Brew-Bundle-and-Brewfile)
-&middot
+&centerdot;
 [Advanced Brewfiles](https://docs.brew.sh/Brew-Bundle-and-Brewfile#advanced-brewfiles)
