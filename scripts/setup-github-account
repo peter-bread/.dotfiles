@@ -1,27 +1,66 @@
 #!/usr/bin/env bash
 
-CATEGORY=""
+set -Eeuo pipefail
+
+EXPECTED_ARGS=1
+
+ARGS=()
 ACCOUNT=""
+
+CATEGORY=""
 COMMENT=""
 PASSPHRASE=""
+DIR=""
 
 show_help() {
   cat <<'EOF'
-Generate SSH keys, authenticate with GitHub via gh CLI and create a new
-directory under \$DEVELOPER.
+Generate SSH keys, authenticate with GitHub via the CLI and (optionally) create
+a new directory for the account.
 
 Usage:
-  setup-github-account --account <account> [--category <category>] [--comment <comment>] [--passphrase <passphrase>]
+  setup-github-account [--category <category>] [--comment <comment>]
+                       [--passphrase <passphrase>] [--dir <dir>]
+                       <account>
+
+Arguments:
+  account         Name of GitHub account
 
 Options:
-  --account     Name of GitHub account
-  --category    Sub directory to put it in ~/.ssh (Defaults to ~/.ssh)
-  --comment     Comment for SSH key
-  --passphrase  Passphrase for SSH key
+  --category      Sub directory under ~/.ssh to store the SSH key pair
+  --comment       Comment for SSH key
+  --passphrase    Passphrase for SSH key
+  --dir           Where to create directory for this account
 
-  -h, --help    Print this help message
+  -h, --help      Print this help message
+
+Examples:
+  setup-github-account john-smith
+      Creates ~/.ssh/github-john-smith{,.pub} with no comment and no passphrase
+
+  setup-github-account john-smith --category work
+      Creates ~/.ssh/work/github-john-smith{,.pub} with no comment and no
+      passphrase
+
+  setup-github-account john-smith --comment="john.smith@work.com" --passphrase "donkey"
+      Creates ~/.ssh/github-john-smith{,.pub} with the comment "john.smith@work.com"
+      as and passphrase "donkey"
+
+  setup-github-account john-smith --dir ~/work
+      Creates ~/.ssh/github-john-smith{,.pub} with no comment and no passphrase
+      and creates the directory ~/work/john-smith/ if it does not already exist.
 EOF
   exit 0
+}
+
+# Expands ~ to $HOME.
+#
+# Example:
+#   VAR="~/go"
+#   VAR=$(expand_path "$VAR")
+expand_path() {
+  local path="$1"
+  [[ $path == "~"* ]] && path="${path/#\~/$HOME}"
+  echo "$path"
 }
 
 check_requirements() {
@@ -48,43 +87,100 @@ check_requirements() {
 }
 
 parse_args() {
-  # TODO: More robust parsing.
+
+  require_arg() {
+    local name="$1"
+    local token="$2"
+    local next="${3-}"
+    local value=""
+
+    # Handle --flag=value form.
+    if [[ $token == *=* ]]; then
+      value="${token#*=}"
+    else
+      # Handle --flag value form.
+      value="$next"
+    fi
+
+    if [[ -z $value ]]; then
+      echo "Error: $name requires a non-empty value" >&2
+      return 1
+    fi
+
+    echo "$value"
+  }
 
   while [[ $# -gt 0 ]]; do
     case $1 in
-    --category)
-      CATEGORY=$2
-      shift
-      ;;
-    --category=*)
-      CATEGORY="${1#*=}"
+
+    # LONG OPTION ARGUMENTS
+
+    --category | --category=*)
+      CATEGORY=$(require_arg --category "$1" "${2-}") || return
+      [[ $1 != *=* ]] && shift # Only shift extra if not --flag=value form.
       ;;
 
-    --account)
-      ACCOUNT=$2
-      shift
-      ;;
-    --account=*)
-      ACCOUNT="${1#*=}"
+    --comment | --comment=*)
+      COMMENT=$(require_arg --comment "$1" "${2-}") || return
+      [[ $1 != *=* ]] && shift
       ;;
 
-    --comment)
-      COMMENT=$2
-      shift
+    --passphrase | --passphrase=*)
+      PASSPHRASE=$(require_arg --passphrase "$1" "${2-}") || return
+      [[ $1 != *=* ]] && shift
       ;;
-    --comment=*)
-      COMMENT="${1#*=}"
+
+    --dir | --dir=*)
+      DIR=$(require_arg --dir "$1" "${2-}") || return
+      [[ $1 != *=* ]] && shift
       ;;
+
+    # OPTIONS
 
     -h | --help) show_help ;;
+
+    -*)
+      echo "Unexpected option: $1"
+      return 1
+      ;;
+
+    # POSITIONAL ARGUMENTS
+
+    *)
+      ARGS+=("$1")
+      ;;
+
     esac
+
     shift
   done
 
-  CATEGORY=${CATEGORY:-.}
+  if [[ ${#ARGS[@]} -lt $EXPECTED_ARGS ]]; then
+    echo "Error: expected $((EXPECTED_ARGS - ${#ARGS[@]})) more argument(s)" >&2
+    return 1
+  fi
 
-  if [[ $ACCOUNT == "" ]]; then
-    echo "Error: --account accepts non-empty strings"
+  if [[ ${#ARGS[@]} -gt $EXPECTED_ARGS ]]; then
+    echo "Error: unexpected extra positional arguments: ${ARGS[*]:1}" >&2
+    return 1
+  fi
+
+  # Set default values.
+  ACCOUNT="${ARGS[0]:-}"
+  CATEGORY="${CATEGORY:-.}"
+  COMMENT="${COMMENT-}"
+  PASSPHRASE="${PASSPHRASE-}"
+  DIR="$(expand_path "${DIR:-}")"
+
+  # # Check required arguments.
+  # if [[ -z $ACCOUNT ]]; then
+  #   echo "Error: argument <account> must be provided and must be non-empty"
+  #   return 1
+  # fi
+
+  # if ! [[ $ACCOUNT =~ ^[a-zA-Z0-9-]+$ ]]; then
+  if ! [[ $ACCOUNT =~ ^[a-zA-Z0-9][a-zA-Z0-9-]*$ ]]; then
+    echo "Error: argument <account> may only start with an alphanumeric character and may only contain alphanumeric characters and hyphens"
     return 1
   fi
 
@@ -92,31 +188,25 @@ parse_args() {
 
 github_ssh_auth() {
 
-  # TODO: Just use variables ACCOUNT, CATEGORY... directly instead of passing them as args?
+  local ssh_location="$HOME/.ssh/$CATEGORY"
+  local keyfile="$ssh_location/github-$ACCOUNT"
 
-  local account=$1
-  local category=$2
-  local comment=$3
-  local passphrase=$4
-
-  local location="$HOME/.ssh/$category"
-  local keyfile="$location/github-$account"
-
-  mkdir -p "$location"
+  mkdir -p "$ssh_location"
 
   generate_ssh_key() {
     ssh-keygen \
       -t ed25519 \
       -f "$keyfile" \
-      -C "$comment" \
-      -N "$passphrase"
+      -C "$COMMENT" \
+      -N "$PASSPHRASE"
   }
 
   github_login() {
     gh auth login \
       --git-protocol ssh \
+      --scopes "admin:public_key,admin:ssh_signing_key" \
       --skip-ssh-key \
-      --scopes "admin:public_key,admin:ssh_signing_key"
+      --clipboard
   }
 
   github_add_ssh_key() {
@@ -136,7 +226,7 @@ github_ssh_auth() {
   github_add_ssh_key signing
   github_reset_scope
 
-  mkdir -p "$DEVELOPER/$account"
+  [[ -n $DIR ]] && mkdir -p "$DIR/$ACCOUNT"
 }
 
 main() {
@@ -144,7 +234,7 @@ main() {
 
   parse_args "$@" || exit
 
-  echo github_ssh_auth "$ACCOUNT" "$CATEGORY" "$COMMENT" "$PASSPHRASE"
+  github_ssh_auth || exit
 }
 
 main "$@"
