@@ -203,15 +203,17 @@ github_ssh_auth() {
 
   github_login() {
     gh auth login \
+      --hostname github.com \
       --git-protocol ssh \
       --scopes "admin:public_key,admin:ssh_signing_key" \
       --skip-ssh-key \
+      --web \
       --clipboard
   }
 
   github_add_ssh_key() {
     gh ssh-key add \
-      "$keyfile" \
+      "$keyfile.pub" \
       --title "$(whoami)@$(uname -n)" \
       --type "${1}"
   }
