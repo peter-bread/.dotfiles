@@ -227,6 +227,7 @@ github_ssh_auth() {
   github_add_ssh_key authentication
   github_add_ssh_key signing
   github_reset_scope
+  gh auth setup-git
 
   [[ -n $DIR ]] && mkdir -p "$DIR/$ACCOUNT"
 }
