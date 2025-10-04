@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+
+CATEGORY=""
+ACCOUNT=""
+COMMENT=""
+PASSPHRASE=""
+
+show_help() {
+  cat <<'EOF'
+Generate SSH keys, authenticate with GitHub via gh CLI and create a new
+directory under \$DEVELOPER.
+
+Usage:
+  setup-github-account --account <account> [--category <category>] [--comment <comment>] [--passphrase <passphrase>]
+
+Options:
+  --account     Name of GitHub account
+  --category    Sub directory to put it in ~/.ssh (Defaults to ~/.ssh)
+  --comment     Comment for SSH key
+  --passphrase  Passphrase for SSH key
+
+  -h, --help    Print this help message
+EOF
+  exit 0
+}
+
+check_requirements() {
+  local required=(
+    gh
+    ssh-keygen
+  )
+
+  local missing=()
+
+  for cmd in "${required[@]}"; do
+    if ! command -v "$cmd" &>/dev/null; then
+      local missing+=("$cmd")
+    fi
+  done
+
+  if [[ ${#missing[@]} -ne 0 ]]; then
+    echo "Error: the following required tools are missing:"
+    for cmd in "${missing[@]}"; do
+      echo "  - $cmd"
+    done
+    return 1
+  fi
+}
+
+parse_args() {
+  # TODO: More robust parsing.
+
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    --category)
+      CATEGORY=$2
+      shift
+      ;;
+    --category=*)
+      CATEGORY="${1#*=}"
+      ;;
+
+    --account)
+      ACCOUNT=$2
+      shift
+      ;;
+    --account=*)
+      ACCOUNT="${1#*=}"
+      ;;
+
+    --comment)
+      COMMENT=$2
+      shift
+      ;;
+    --comment=*)
+      COMMENT="${1#*=}"
+      ;;
+
+    -h | --help) show_help ;;
+    esac
+    shift
+  done
+
+  CATEGORY=${CATEGORY:-.}
+
+  if [[ $ACCOUNT == "" ]]; then
+    echo "Error: --account accepts non-empty strings"
+    return 1
+  fi
+
+}
+
+github_ssh_auth() {
+
+  # TODO: Just use variables ACCOUNT, CATEGORY... directly instead of passing them as args?
+
+  local account=$1
+  local category=$2
+  local comment=$3
+  local passphrase=$4
+
+  local location="$HOME/.ssh/$category"
+  local keyfile="$location/github-$account"
+
+  mkdir -p "$location"
+
+  generate_ssh_key() {
+    ssh-keygen \
+      -t ed25519 \
+      -f "$keyfile" \
+      -C "$comment" \
+      -N "$passphrase"
+  }
+
+  github_login() {
+    gh auth login \
+      --git-protocol ssh \
+      --skip-ssh-key \
+      --scopes "admin:public_key,admin:ssh_signing_key"
+  }
+
+  github_add_ssh_key() {
+    gh ssh-key add \
+      "$keyfile" \
+      --title "$(whoami)@$(uname -n)" \
+      --type "${1}"
+  }
+
+  github_reset_scope() {
+    gh auth refresh --reset-scopes
+  }
+
+  generate_ssh_key
+  github_login
+  github_add_ssh_key authentication
+  github_add_ssh_key signing
+  github_reset_scope
+
+  mkdir -p "$DEVELOPER/$account"
+}
+
+main() {
+  check_requirements || exit
+
+  parse_args "$@" || exit
+
+  echo github_ssh_auth "$ACCOUNT" "$CATEGORY" "$COMMENT" "$PASSPHRASE"
+}
+
+main "$@"
