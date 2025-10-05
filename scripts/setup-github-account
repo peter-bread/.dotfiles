@@ -217,12 +217,15 @@ github_ssh_auth() {
   github_add_ssh_key() {
     gh ssh-key add \
       "$keyfile.pub" \
-      --title "$(whoami)@$(uname -n)" \
+      --title "$comment" \
       --type "${1}"
   }
 
   github_reset_scope() {
-    gh auth refresh --reset-scopes
+    gh auth refresh \
+      --hostname github.com \
+      --reset-scopes \
+      --clipboard
   }
 
   generate_ssh_key
