@@ -26,10 +26,10 @@ Arguments:
   account         Name of GitHub account
 
 Options:
-  --category      Sub directory under ~/.ssh to store the SSH key pair
-  --comment       Comment for SSH key
-  --passphrase    Passphrase for SSH key
-  --dir           Where to create directory for this account
+  --category      Sub directory under ~/.ssh to store the SSH key pair (Default: .)
+  --comment       Comment for SSH key (Default: "$(whoami)@$(hostname -s):<account>@github:$(date +%Y-%m-%d)")
+  --passphrase    Passphrase for SSH key (Default: "")
+  --dir           Where to create directory for this account (Default: "")
 
   -h, --help      Print this help message
 
@@ -191,13 +191,16 @@ github_ssh_auth() {
   local ssh_location="$HOME/.ssh/$CATEGORY"
   local keyfile="$ssh_location/github-$ACCOUNT"
 
+  local comment
+  comment="$(whoami)@$(hostname -s):${ACCOUNT}@github:$(date +%Y-%m-%d)"
+
   mkdir -p "$ssh_location"
 
   generate_ssh_key() {
     ssh-keygen \
       -t ed25519 \
       -f "$keyfile" \
-      -C "$COMMENT" \
+      -C "${COMMENT:-$comment}" \
       -N "$PASSPHRASE"
   }
 
