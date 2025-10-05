@@ -6,11 +6,18 @@ set -Eeuo pipefail
 OS=$(uname -s)
 ARCH=$(uname -m)
 
-# Install options.
+# POSITIONAL ARGUMENTS
+EXPECTED_ARGS=0
+ARGS=()
+
+# OPTIONS
 PRIME=0
 MODULES=0
 PKGS=0
 GITHUB=0
+
+# OPTION ARGUMENTS
+NVIM=""
 
 # Logging options.
 USE_COLORS=${USE_COLORS:-1}     # 1 = colored output,      0 = plain
@@ -58,13 +65,21 @@ installed and will then clone or pull dotfiles repository to ~/.dotfiles.
 Options can be provided to enable extra functionality.
 
 Usage:
-  ./install [--prime] [--modules] [--pkgs] [--github] [-h | --help]
+  ./install [--prime] [--modules] [--pkgs] [--github] [--nvim <repo_name>] [-h | --help]
 
 Options:
   --prime       Ensure system has required packages installed
   --modules     Install modules from MANIFEST.* files
   --pkgs        Install packages
   --github      Authenticate with GitHub on this device
+  --nvim        Clone Neovim config as specified by <repo_name>
+
+                The <repo_name> argument can be one of:
+                  - A short name (e.g. "peter.nvim"), resolved as:
+                      https://github.com/peter-bread/<repo_name>.git
+                  - A full "owner/repo" pair (e.g. "someone/other.nvim"), resolved as:
+                      https://github.com/<owner>/<repo_name>.git
+                  - A full Git URL (e.g. "https://github.com/user/repo.git"), HTTPS or SSH, used as-is
 
   -h, --help    Print this help message
 
@@ -79,20 +94,66 @@ EOF
 }
 
 parse_args() {
+
+  require_arg() {
+    local name="$1"
+    local token="$2"
+    local next="${3-}"
+    local value=""
+
+    # Handle --flag=value form.
+    if [[ $token == *=* ]]; then
+      value="${token#*=}"
+    else
+      # Handle --flag value form.
+      value="$next"
+    fi
+
+    if [[ -z $value ]]; then
+      error "$name requires a non-empty value"
+      return 1
+    fi
+
+    echo "$value"
+  }
   while [[ $# -gt 0 ]]; do
     case $1 in
     --prime) PRIME=1 ;;
     --modules) MODULES=1 ;;
     --pkgs) PKGS=1 ;;
     --github) GITHUB=1 ;;
+    --nvim | --nvim=*)
+      NVIM=$(require_arg --nvim "$1" "${2-}") || return
+      [[ $1 != *=* ]] && shift # Only shift extra if not --flag=value form.
+      ;;
     -h | --help) show_help ;;
+    -*)
+      error "Unexpected option: $1"
+      return 1
+      ;;
+    *) ARGS+=("$1") ;;
     esac
     shift
   done
+
+  if [[ ${#ARGS[@]} -lt $EXPECTED_ARGS ]]; then
+    error "Expected $((EXPECTED_ARGS - ${#ARGS[@]})) more argument(s)"
+    return 1
+  fi
+
+  if [[ ${#ARGS[@]} -gt $EXPECTED_ARGS ]]; then
+    error "Unexpected extra positional arguments: ${ARGS[*]:$((EXPECTED_ARGS))}"
+    return 1
+  fi
+
 }
 
 flag() {
   [[ $1 -eq 1 ]]
+}
+
+flag_arg() {
+  [[ -n $1 ]]
 }
 
 prime_system() {
@@ -343,8 +404,7 @@ setup_dotfiles_repo() {
 
   else
 
-    local url
-    url="https://github.com/peter-bread/.dotfiles.git"
+    local url="https://github.com/peter-bread/.dotfiles.git"
 
     info "Dotfiles do not exist locally at $DOTFILES"
     info "Cloning $url into $DOTFILES"
@@ -366,6 +426,7 @@ install_modules() {
   source ./zsh/zshenv
 
   # TODO: Move this logic to its own file or function?
+  # This will be moved to a new `dirs` module and placed in `dirs/install`.
   mkdir -p "$HOME/opt"
   mkdir -p "$HOME/.local/bin"
   mkdir -p "$DEVELOPER"
@@ -412,6 +473,7 @@ install_modules() {
   case $OS in
   Darwin) install_from_manifest MANIFEST.macos || return ;;
   Linux) install_from_manifest MANIFEST.linux || return ;;
+  # TODO: Use /etc/os-release for distro-specific manifests?
   esac
 
   success "Modules installed successfully"
@@ -437,9 +499,85 @@ setup_personal_github() {
   local account="peter-bread"
   local category="personal"
 
+  # TODO: Add logging.
+
   ./scripts/setup-github-account "$account" \
     --category "$category" \
     --dir "${DEVELOPER:-$HOME/Developer}"
+}
+
+setup_neovim() {
+
+  info "Downloading Neovim config..."
+
+  is_full_url() {
+    local input="$1"
+    [[ "$input" =~ ^(https://|git@) ]]
+  }
+
+  local input="$NVIM"
+  local url
+
+  if is_full_url "$input"; then
+    url="$input"
+  elif [[ "$input" == */* ]]; then
+    url="https://github.com/$input"
+  else
+    url="https://github.com/peter-bread/$input"
+  fi
+
+  if [[ $url != *.git ]]; then
+    url="${url}.git"
+  fi
+
+  info "Resolved Neovim Git repository URL: $url"
+
+  repo="${url##*/}"
+  repo="${repo%.git}"
+
+  info "Resolved Neovim Git repository name: $repo"
+
+  dir="${XDG_CONFIG_HOME:-$HOME/.config}/$repo"
+
+  info "Resolved Neovim install location: $dir"
+
+  if [[ -d $dir ]]; then
+
+    info "$dir already exists"
+    info "Pulling latest changes..."
+
+    if ! git -C "dir" pull; then
+      error "Pulling latest changes failed"
+      return 1
+    fi
+
+    success "Neovim config updated successfully"
+
+  else
+
+    info "$dir does not exist"
+    info "Cloning $url into $dir"
+
+    if ! git clone --branch=main "$url" "$dir"; then
+      error "Cloning neovim config failed"
+      return 1
+    fi
+
+    success "Neovim config ($repo) cloned successfully"
+
+  fi
+
+  if command -v nvim &>/dev/null; then
+    warn "TODO: Attempt nvim headless setup"
+    # Need to get existing or set NVIM_APPNAME.
+    # TODO: Add an `install-headless` script to my neovim configs.
+    # If the script exists, run it.
+    # Else return.
+    # This script should also check dependencies for neovim and plugins, e.g.
+    # tree-sitter-cli, tar/unzip, wget/curl, toolchains for mason packages etc
+    return 1
+  fi
+
 }
 
 main() {
@@ -468,6 +606,10 @@ main() {
 
   if flag "$GITHUB"; then
     setup_personal_github || exit
+  fi
+
+  if flag_arg "$NVIM"; then
+    setup_neovim || exit
   fi
 
   success "$0 ${*:+${*} }completed successfully"
