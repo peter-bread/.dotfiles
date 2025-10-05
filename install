@@ -8,7 +8,7 @@ ARCH=$(uname -m)
 
 # Install options.
 PRIME=0
-LINK=0
+MODULES=0
 PKGS=0
 GITHUB=0
 
@@ -58,11 +58,11 @@ installed and will then clone or pull dotfiles repository to ~/.dotfiles.
 Options can be provided to enable extra functionality.
 
 Usage:
-  ./install [--prime] [--link] [--pkgs] [--github] [-h | --help]
+  ./install [--prime] [--modules] [--pkgs] [--github] [-h | --help]
 
 Options:
   --prime       Ensure system has required packages installed
-  --link        Symlink config files
+  --modules     Install modules from MANIFEST.* files
   --pkgs        Install packages
   --github      Authenticate with GitHub on this device
 
@@ -82,7 +82,7 @@ parse_args() {
   while [[ $# -gt 0 ]]; do
     case $1 in
     --prime) PRIME=1 ;;
-    --link) LINK=1 ;;
+    --modules) MODULES=1 ;;
     --pkgs) PKGS=1 ;;
     --github) GITHUB=1 ;;
     -h | --help) show_help ;;
@@ -361,7 +361,7 @@ setup_dotfiles_repo() {
   success "Dotfiles repo setup successfully"
 }
 
-link_configs() {
+install_modules() {
   # Ensure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*).
   source ./zsh/zshenv
 
@@ -372,26 +372,27 @@ link_configs() {
   mkdir -p "$DEVELOPER/probe"
   mkdir -p "$DEVELOPER/thirdparty"
 
-  dot_link() {
+  dot_install() {
     local module=$1
-    local file="$DOTFILES/_link/${module}"
+    local file="$DOTFILES/${module}/install"
 
     if [[ -f $file ]]; then
       # echo -e "${BLUE}=> Linking ${YELLOW}${module} ${BLUE}config...${RESET}"
-      info "Linking $module config..."
+      info "Installing $module module..."
+      # TODO: Should this script be sourced or executed?
       # shellcheck disable=SC1090 # Doesn't really matter.
       . "$file"
     else
       # echo -e "${RED}=> Error: ${YELLOW}${module} ${RED}config does not exist${RESET}"
-      error "$module config does not exist"
+      error "$module module does not exist"
       return 1
     fi
   }
 
-  link_from_manifest() {
+  install_from_manifest() {
     local manifest=$1
 
-    info "Attempting to link configs from $manifest"
+    info "Attempting to install modules from $manifest"
 
     if ! [[ -f $manifest ]]; then
       error "$manifest does not exist"
@@ -400,20 +401,20 @@ link_configs() {
 
     while IFS= read -r item; do
       [[ -n $item && $item != \#* ]] || continue
-      dot_link "$item" || return
+      dot_install "$item" || return
     done <"$manifest"
 
-    success "Linked configs from $manifest"
+    success "Installed modules from $manifest"
   }
 
-  link_from_manifest MANIFEST.common || return
+  install_from_manifest MANIFEST.common || return
 
   case $OS in
-  Darwin) link_from_manifest MANIFEST.macos || return ;;
-  Linux) link_from_manifest MANIFEST.linux || return ;;
+  Darwin) install_from_manifest MANIFEST.macos || return ;;
+  Linux) install_from_manifest MANIFEST.linux || return ;;
   esac
 
-  success "Configs linked successfully"
+  success "Modules installed successfully"
 }
 
 install_pkgs() {
@@ -456,8 +457,8 @@ main() {
 
   cd "$DOTFILES" || exit
 
-  if flag "$LINK"; then
-    link_configs || exit
+  if flag "$MODULES"; then
+    install_modules || exit
   fi
 
   if flag "$PKGS"; then
