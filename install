@@ -10,7 +10,7 @@ ARCH=$(uname -m)
 PRIME=0
 LINK=0
 PKGS=0
-SSH=0
+GITHUB=0
 
 # Logging options.
 USE_COLORS=${USE_COLORS:-1}     # 1 = colored output,      0 = plain
@@ -58,13 +58,13 @@ installed and will then clone or pull dotfiles repository to ~/.dotfiles.
 Options can be provided to enable extra functionality.
 
 Usage:
-  ./install [--prime] [--link] [--pkgs] [--ssh] [-h | --help]
+  ./install [--prime] [--link] [--pkgs] [--github] [-h | --help]
 
 Options:
   --prime       Ensure system has required packages installed
   --link        Symlink config files
   --pkgs        Install packages
-  --ssh         Generate SSH keys
+  --github      Authenticate with GitHub on this device
 
   -h, --help    Print this help message
 
@@ -84,7 +84,7 @@ parse_args() {
     --prime) PRIME=1 ;;
     --link) LINK=1 ;;
     --pkgs) PKGS=1 ;;
-    --ssh) SSH=1 ;;
+    --github) GITHUB=1 ;;
     -h | --help) show_help ;;
     esac
     shift
@@ -155,7 +155,8 @@ prime_system() {
     # brew upgrade
     brew install \
       wget \
-      xz
+      xz \
+      gh
 
     success "MacOS primed successfully"
   }
@@ -173,6 +174,17 @@ prime_system() {
         git python3 \
         curl wget \
         tar unzip bzip2 xz-utils
+
+      # Install latest version of GitHub CLI.
+      (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) &&
+        sudo mkdir -p -m 755 /etc/apt/keyrings &&
+        out=$(mktemp) && wget -nv -O"$out" https://cli.github.com/packages/githubcli-archive-keyring.gpg &&
+        cat "$out" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null &&
+        sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg &&
+        sudo mkdir -p -m 755 /etc/apt/sources.list.d &&
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null &&
+        sudo apt update &&
+        sudo apt install gh -y
     }
 
     prime_fedora() {
@@ -237,7 +249,7 @@ check_requirements() {
 
   # All of these are required.
   # TODO: Can probably remove python3 since I'm not using Ansible.
-  required=(git python3)
+  required=(git python3 gh)
 
   # At least one of these is required.
   downloaders=(curl wget)
@@ -354,7 +366,11 @@ link_configs() {
   source ./zsh/zshenv
 
   # TODO: Move this logic to its own file or function?
+  mkdir -p "$HOME/opt"
+  mkdir -p "$HOME/.local/bin"
   mkdir -p "$DEVELOPER"
+  mkdir -p "$DEVELOPER/probe"
+  mkdir -p "$DEVELOPER/thirdparty"
 
   dot_link() {
     local module=$1
@@ -416,9 +432,13 @@ install_pkgs() {
   success "Packages installed successfully"
 }
 
-generate_ssh_keys() {
-  error "TODO: Generate SSH keys and auth with GitHub CLI"
-  return 1
+setup_personal_github() {
+  local account="peter-bread"
+  local category="personal"
+
+  ./scripts/setup-github-account "$account" \
+    --category "$category" \
+    --dir "${DEVELOPER:-$HOME/Developer}"
 }
 
 main() {
@@ -445,9 +465,8 @@ main() {
     install_pkgs || exit
   fi
 
-  if flag "$SSH"; then
-    # TODO: Generate SSH keys and auth with GitHub CLI.
-    generate_ssh_keys || exit
+  if flag "$GITHUB"; then
+    setup_personal_github || exit
   fi
 
   success "$0 ${*:+${*} }completed successfully"
