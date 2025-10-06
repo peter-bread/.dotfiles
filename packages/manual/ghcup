@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# Install GHCup:
+# - non-interactive
+# - does not modify bashrc
+# - installs recommended versions of ghc, cabal, stack and HLS
+# - (by default) stack integration is enabled
+
+source "$DOTFILES/_helpers/general"
+
+info "Installing GHCup"
+
+export BOOTSTRAP_HASKELL_NONINTERACTIVE=1 # Non-interactive install.
+export BOOTSTRAP_HASKELL_ADJUST_BASHRC=1  # Do NOT modify bashrc.
+
+export BOOTSTRAP_HASKELL_INSTALL_HLS=1 # Install HLS.
+
+export BOOTSTRAP_HASKELL_GHC_VERSION="recommended"
+export BOOTSTRAP_HASKELL_CABAL_VERSION="recommended"
+export BOOTSTRAP_HASKELL_STACK_VERSION="recommended"
+export BOOTSTRAP_HASKELL_HLS_VERSION="recommended"
+
+if unavailable curl; then
+  error "curl is required"
+  exit 1
+fi
+
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+
+info "Installing GHCup shell completions..."
+
+info "Installing GHCup Zsh completions..."
+
+# shellcheck disable=SC2153 # This is not a spelling mistake. ZSH_COMPLETIONS is inherited from environment.
+mkdir -p "$ZSH_COMPLETIONS"
+
+curl -fsSL https://raw.githubusercontent.com/haskell/ghcup-hs/refs/heads/master/scripts/shell-completions/zsh \
+  >"$ZSH_COMPLETIONS/_ghcup"
+
+success "GHCup Zsh completions installed"
+
+info "Installing GHCup Bash completions..."
+
+BASH_COMPLETIONS="${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions"
+mkdir -p "$BASH_COMPLETIONS"
+
+curl -fsSL https://raw.githubusercontent.com/haskell/ghcup-hs/refs/heads/master/scripts/shell-completions/bash \
+  >"$BASH_COMPLETIONS/ghcup"
+
+success "GHCup Bash completions installed"
+
+success "GHCup shell completions installed"
+
+success "GHCup installed"
