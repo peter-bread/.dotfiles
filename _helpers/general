@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Logging options.
+USE_COLORS=${USE_COLORS:-1}     # 1 = colored output,      0 = plain
+ENABLE_DEBUG=${ENABLE_DEBUG:-0} # 1 = show debug messages, 0 = hide
+DATE_FORMAT="%Y-%m-%d %H:%M:%S"
+
+# ANSI color codes.
+RESET="\e[0m"
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+CYAN="\e[36m"
+
+# Internal logging function.
+_log() {
+  local level="$1"
+  local msg="$2"
+  local color="$3"
+  local stream=${4:-1}
+  local timestamp
+  timestamp=$(date +"$DATE_FORMAT")
+
+  if [[ $USE_COLORS -eq 1 && -n "$color" ]]; then
+    printf "%s ${color}[%-7s]${RESET} %s\n" "$timestamp" "$level" "$msg" >&"$stream"
+  else
+    printf "%s [%-7s] %s\n" "$timestamp" "$level" "$msg" >&"$stream"
+  fi
+}
+
+# Public logging functions.
+info() { _log "INFO" "$1" "$BLUE"; }
+warn() { _log "WARN" "$1" "$YELLOW" 2; }
+error() { _log "ERROR" "$1" "$RED" 2; }
+success() { _log "SUCCESS" "$1" "$GREEN"; }
+debug() { if [[ $ENABLE_DEBUG -eq 1 ]]; then _log "DEBUG" "$1" "$CYAN" 2; fi; }
+
+available() {
+  [[ -n "$1" ]] && command -v -- "$1" &>/dev/null
+}
+
+unavailable() {
+  ! available "$1"
+}
