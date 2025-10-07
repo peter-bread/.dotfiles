@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+# Install Neovim `VERSION` into `PREFIX`.
+
+source "$DOTFILES/_helpers/general"
+
+PREFIX="${PREFIX:-/usr/local/}"
+VERSION="${VERSION:-latest}"
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+REPO="neovim/neovim"
+
+case $OS in
+Darwin) OS="macos" ;;
+Linux) OS="linux" ;;
+esac
+
+case $ARCH in
+*arm*) ARCH="arm64" ;;
+*x86_64*) ARCH="x86_64" ;;
+esac
+
+if [[ $VERSION == "latest" ]]; then
+  VERSION=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | jq -r '.tag_name')
+fi
+
+VERSION=${VERSION#v}
+
+if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  error "$VERSION is invalid SemVer. It should be of the form X.Y.Z"
+  exit 1
+fi
+
+TMP=$(mktemp -d)
+
+cleanup() {
+  info "Cleaning up"
+  rm -rf "$TMP"
+}
+
+trap cleanup EXIT
+
+download "https://github.com/$REPO/releases/download/v$VERSION/nvim-$OS-$ARCH.tar.gz" "$TMP/neovim"
+
+tar xvf "$TMP/neovim"
+
+sudo mkdir "$PREFIX/{bin,lib,share}"
+sudo cp -r "$TMP/neovim/{bin,lib,share}" "$PREFIX"
