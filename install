@@ -427,7 +427,7 @@ setup_dotfiles_repo() {
   fi
 
   # Expose important environment variables.
-  . ./zsh/zshenv
+  . "$DOTFILES/zsh/zshenv"
 
   success "Dotfiles repo setup successfully"
 }
