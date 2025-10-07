@@ -582,7 +582,7 @@ setup_neovim() {
     info "Attempting Neovim headless setup..."
     if [[ -x $dir/scripts/install ]]; then
       if "$dir/scripts/install"; then
-        sucess "Neovim headless setup successful"
+        success "Neovim headless setup successful"
       else
         error "Neovim headless setup failed"
         return 1
