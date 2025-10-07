@@ -579,14 +579,20 @@ setup_neovim() {
   fi
 
   if available nvim; then
-    warn "TODO: Attempt nvim headless setup"
-    # Need to get existing or set NVIM_APPNAME.
-    # TODO: Add an `install-headless` script to my neovim configs.
-    # If the script exists, run it.
-    # Else return.
-    # This script should also check dependencies for neovim and plugins, e.g.
-    # tree-sitter-cli, tar/unzip, wget/curl, toolchains for mason packages etc
-    return 1
+    info "Attempting Neovim headless setup..."
+    if [[ -x $dir/scripts/install ]]; then
+      if "$dir/scripts/install"; then
+        sucess "Neovim headless setup successful"
+      else
+        error "Neovim headless setup failed"
+        return 1
+      fi
+    else
+      warn "Neovim headless installation script could not be found"
+    fi
+  else
+    warn "Neovim not installed"
+    warn "Skipping headless setup"
   fi
 
 }
