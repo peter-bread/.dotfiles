@@ -22,16 +22,8 @@ case $ARCH in
 *x86_64*) ARCH="x86_64" ;;
 esac
 
-if [[ $VERSION == "latest" ]]; then
-  VERSION=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | jq -r '.tag_name')
-fi
-
-VERSION=${VERSION#v}
-
-if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  error "$VERSION is invalid SemVer. It should be of the form X.Y.Z"
-  exit 1
-fi
+NAME="nvim-$OS-$ARCH"
+EXT="tar.gz"
 
 TMP=$(mktemp -d)
 
@@ -42,9 +34,7 @@ cleanup() {
 
 trap cleanup EXIT
 
-download "https://github.com/$REPO/releases/download/v$VERSION/nvim-$OS-$ARCH.tar.gz" "$TMP/neovim"
+EXTRACTED=$(download_from_github "$TMP" "$REPO" "$VERSION" "$NAME" "$EXT")
 
-tar xvf "$TMP/neovim"
-
-sudo mkdir "$PREFIX/{bin,lib,share}"
-sudo cp -r "$TMP/neovim/{bin,lib,share}" "$PREFIX"
+sudo mkdir -p "$PREFIX"/{bin,lib,share}
+sudo cp -r "$EXTRACTED/$NAME"/{bin,lib,share} "$PREFIX"

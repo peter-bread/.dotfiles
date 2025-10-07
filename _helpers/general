@@ -57,3 +57,31 @@ download() {
     exit 1
   fi
 }
+
+# Currently this only works for tar.gz tarballs.
+# TODO: Support other archive formats: tar.xz, tbz, zip etc.
+download_from_github() {
+  local tmp=$1
+  local repo=$2
+  local version=$3
+  local name=$4
+  local ext=$5
+
+  if [[ $version == "latest" ]]; then
+    version=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.tag_name')
+  fi
+
+  version=${version#v}
+
+  # TODO: Allow for more complex SemVer, e.g. alphas, betas etc.
+  if ! [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    error "$version is invalid SemVer. It should be of the form X.Y.Z"
+    exit 1
+  fi
+
+  download "https://github.com/$repo/releases/download/v$version/$name.$ext" "$tmp/$name.$ext"
+
+  tar xvf "$tmp/$name.$ext" -C "$tmp"
+
+  echo "$tmp/$name"
+}
