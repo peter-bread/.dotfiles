@@ -498,6 +498,10 @@ install_pkgs() {
     return 1
     ;;
   Linux)
+    export PREFIX="$HOME/.local"
+    VERSION="stable" ./packages/manual/neovim
+    unset PREFIX
+
     error "TODO: Install packages on Linux"
     return 1
     ;;

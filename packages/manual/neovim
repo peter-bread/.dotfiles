@@ -2,15 +2,27 @@
 
 # Install Neovim `VERSION` into `PREFIX`.
 
+# Get Helper Functions #########################################################
+
 source "$DOTFILES/_helpers/general"
+
+# Set repository name ##########################################################
+
+REPO="neovim/neovim"
+
+# Ensure PREFIX and VERSION are set ############################################
 
 PREFIX="${PREFIX:-/usr/local/}"
 VERSION="${VERSION:-latest}"
 
+info "Attempting to install neovim@$VERSION into $PREFIX..."
+
+# Get System Info ##############################################################
+
 OS=$(uname -s)
 ARCH=$(uname -m)
 
-REPO="neovim/neovim"
+# Establish name of release asset ##############################################
 
 case $OS in
 Darwin) OS="macos" ;;
@@ -20,10 +32,15 @@ esac
 case $ARCH in
 *arm*) ARCH="arm64" ;;
 *x86_64*) ARCH="x86_64" ;;
+*)
+  error "Neovim does not support this OS: $OS"
+  exit 1
 esac
 
 NAME="nvim-$OS-$ARCH"
 EXT="tar.gz"
+
+# Prepare temporary directory ##################################################
 
 TMP=$(mktemp -d)
 
@@ -34,7 +51,22 @@ cleanup() {
 
 trap cleanup EXIT
 
-EXTRACTED=$(download_from_github "$TMP" "$REPO" "$VERSION" "$NAME" "$EXT")
+# Download release asset from GitHub ###########################################
 
-sudo mkdir -p "$PREFIX"/{bin,lib,share}
-sudo cp -r "$EXTRACTED/$NAME"/{bin,lib,share} "$PREFIX"
+info "TMP:      $TMP"
+info "REPO:     $REPO"
+info "VERSION:  $VERSION"
+info "NAME:     $NAME"
+info "EXT:      $EXT"
+
+if ! download_from_github "$TMP" "$REPO" "$VERSION" "$NAME" "$EXT"; then
+  error "Failed to download and extract Neovim tarball from GitHub"
+  exit 1
+fi
+
+# Install ######################################################################
+
+sudo mkdir -p "$PREFIX"/{bin,lib,share} || exit
+sudo cp -r "$TMP/$NAME"/{bin,lib,share} "$PREFIX" || exit
+
+success "Installed Neovim successfully"
