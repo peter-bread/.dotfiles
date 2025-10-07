@@ -557,7 +557,7 @@ setup_neovim() {
     info "$dir already exists"
     info "Pulling latest changes..."
 
-    if ! git -C "dir" pull; then
+    if ! git -C "$dir" pull; then
       error "Pulling latest changes failed"
       return 1
     fi
