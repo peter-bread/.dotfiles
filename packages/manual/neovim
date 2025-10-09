@@ -30,11 +30,12 @@ Linux) OS="linux" ;;
 esac
 
 case $ARCH in
-*arm*) ARCH="arm64" ;;
-*x86_64*) ARCH="x86_64" ;;
+arm64 | aarch64) ARCH="arm64" ;;
+x86_64) ARCH="x86_64" ;;
 *)
-  error "Neovim does not support this OS: $OS"
+  error "Neovim does not support this CPU architecture: $ARCH"
   exit 1
+  ;;
 esac
 
 NAME="nvim-$OS-$ARCH"
