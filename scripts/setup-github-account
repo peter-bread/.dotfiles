@@ -1,54 +1,148 @@
 #!/usr/bin/env bash
 
+# TODO: Finish docs.
+
+################################################################################
+################################# DOCUMENTATION ################################
+################################################################################
+#
+# NAME
+#
+#     setup-github-account - Generate SSH keys and authenticate with GitHub
+#
+# SYNOPSIS
+#
+#     setup-github-account [--category <category>] [--comment <comment>] [--email <email>]
+#                          [--passphrase <passphrase>] [--base-dir <dirname>] [--gitconfig]
+#                          [--allowed-signers] <account>
+#
+# DESCRIPTION
+#
+# OPTIONS
+#     --category <category>
+
+#     --comment <comment>
+
+#     --passphrase <passphrase>
+
+#     --base-dir <dirname>
+
+#     --gitconfig
+#         The script prints two blocks: ACCOUNT_GITCONFIG and INCLUDEIF_DIRECTIVE,
+#         each wrapped in unique start/end markers:
+#
+#         >>> ACCOUNT_GITCONFIG
+#         ... gitconfig block ...
+#         <<< ACCOUNT_GITCONFIG
+#
+#         >>> INCLUDEIF_DIRECTIVE
+#         ... includeIf block ...
+#         <<< INCLUDEIF_DIRECTIVE
+#
+#         ACCOUNT_GITCONFIG is always generated.
+#         INCLUDEIF_DIRECTIVE is only generated if `--base-dir` and `--email` are provided.
+#
+#         To extract blocks into separate files, use sed:
+#
+#           # Extract gitconfig block
+#           setup-github-account --gitconfig |
+#             sed -n '/^>>> ACCOUNT_GITCONFIG$/,/^<<< ACCOUNT_GITCONFIG$/p' |
+#             sed '1d;$d' > gitconfig.out
+#
+#           # Extract includeIf block
+#           setup-github-account --gitconfig --base_dir=<dirname> --email=<email> |
+#             sed -n '/^>>> INCLUDEIF_DIRECTIVE$/,/^<<< INCLUDEIF_DIRECTIVE$/p' |
+#             sed '1d;$d' > include.out
+#
+#         If you want to get both, it may be worth capturing the output then piping into sed separately:
+#
+#           data=$(setup-github-account --gitconfig --base_dir=<dirname> --email=<email>)
+#
+#           sed -n '/^>>> ACCOUNT_GITCONFIG$/,/^<<< ACCOUNT_GITCONFIG$/p' "$data" |
+#             sed '1d;$d' > gitconfig.out
+#
+#           sed -n '/^>>> INCLUDEIF_DIRECTIVE$/,/^<<< INCLUDEIF_DIRECTIVE$/p' "$data" |
+#             sed '1d;$d' > include.out
+#
+#         Of course you can also capture the sed output(s) in variables rather than files:
+#
+#           include_block=$(
+#             sed -n '/^>>> INCLUDEIF_DIRECTIVE$/,/^<<< INCLUDEIF_DIRECTIVE$/p' "$data" |
+#             sed '1d;$d'
+#           )
+#
+#         This ensures the blocks are easily reusable and editable.
+#
+################################################################################
+############################# ENF OF DOCUMENTATION #############################
+################################################################################
+
 set -Eeuo pipefail
 
+# POSITIONAL ARGUMENTS
 EXPECTED_ARGS=1
 
 ARGS=()
 ACCOUNT=""
 
+# OPTION ARGUMENTS
 CATEGORY=""
 COMMENT=""
 PASSPHRASE=""
-DIR=""
+BASE_DIR=""
+EMAIL=""
+
+# OPTION FLAGS
+GIT_CONFIG=0
+ALLOWED_SIGNERS=0
 
 show_help() {
-  cat <<'EOF'
-Generate SSH keys, authenticate with GitHub via the CLI and (optionally) create
-a new directory for the account.
+  cat <<-'EOF'
+		Generate SSH keys, authenticate with GitHub via the CLI and (optionally) create
+		a new directory for the account.
 
-Usage:
-  setup-github-account [--category <category>] [--comment <comment>]
-                       [--passphrase <passphrase>] [--dir <dir>]
-                       <account>
+		Usage:
+		  setup-github-account [--category <category>] [--comment <comment>] [--email <email>]
+		                       [--passphrase <passphrase>] [--base-dir <dirname>] [--gitconfig]
+		                       [--allowed-signers] <account>
 
-Arguments:
-  account         Name of GitHub account
+		Arguments:
+		  account         Name of GitHub account
 
-Options:
-  --category      Sub directory under ~/.ssh to store the SSH key pair (Default: .)
-  --comment       Comment for SSH key (Default: "$(whoami)@$(hostname -s):<account>@github:$(date +%Y-%m-%d)")
-  --passphrase    Passphrase for SSH key (Default: "")
-  --dir           Where to create directory for this account (Default: "")
+		Option Arguments:
+		  --category      Sub directory under ~/.ssh to store the SSH key pair (Default: "")
+		  --comment       Comment for SSH key (Default: "$(whoami)@$(hostname -s):<account>@github:$(date +%Y-%m-%d)")
+		  --passphrase    Passphrase for SSH key (Default: "")
+		  --base-dir      Base directory under which the account directory will be created
+		                  (the account name is automatically appended) (Default: "")
+		  --email         Email associated with account, should be of the form 123456789+<account>@users.noreply.github.com
+		                  This option is required if --allowed-signers AND/OR --gitconfig are provided
 
-  -h, --help      Print this help message
+		Option Flags:
+		  --gitconfig         Generate gitconfigs (prints ACCOUNT_GITCONFIG and INCLUDEIF_DIRECTIVE blocks)
+		  --allowed-signers   Append entry to ~/.ssh/allowed_signers
 
-Examples:
-  setup-github-account john-smith
-      Creates ~/.ssh/github-john-smith{,.pub} with no comment and no passphrase
+		  -h, --help      Print this help message
 
-  setup-github-account john-smith --category work
-      Creates ~/.ssh/work/github-john-smith{,.pub} with no comment and no
-      passphrase
+		For more detailed documentation, consult the script file itself:
+		  cat $(which setup-github-account)
 
-  setup-github-account john-smith --comment="john.smith@work.com" --passphrase "donkey"
-      Creates ~/.ssh/github-john-smith{,.pub} with the comment "john.smith@work.com"
-      as and passphrase "donkey"
+		Examples:
+		  setup-github-account john-smith
+		      Creates ~/.ssh/github-john-smith{,.pub} with no comment and no passphrase
 
-  setup-github-account john-smith --dir ~/work
-      Creates ~/.ssh/github-john-smith{,.pub} with no comment and no passphrase
-      and creates the directory ~/work/john-smith/ if it does not already exist.
-EOF
+		  setup-github-account john-smith --category work
+		      Creates ~/.ssh/work/github-john-smith{,.pub} with no comment and no
+		      passphrase
+
+		  setup-github-account john-smith --comment="john.smith@work.com" --passphrase "donkey"
+		      Creates ~/.ssh/github-john-smith{,.pub} with the comment "john.smith@work.com"
+		      as and passphrase "donkey"
+
+		  setup-github-account john-smith --base-dir ~/work
+		      Creates ~/.ssh/github-john-smith{,.pub} with no comment and no passphrase
+		      and creates the directory ~/work/john-smith/ if it does not already exist.
+	EOF
   exit 0
 }
 
@@ -60,6 +154,12 @@ EOF
 expand_path() {
   local path="$1"
   [[ $path == "~"* ]] && path="${path/#\~/$HOME}"
+  echo "$path"
+}
+
+unexpand_path() {
+  local path="$1"
+  path="${path/#$HOME/\~}"
   echo "$path"
 }
 
@@ -78,12 +178,20 @@ check_requirements() {
   done
 
   if [[ ${#missing[@]} -ne 0 ]]; then
-    echo "Error: the following required tools are missing:"
+    echo "Error: the following required tools are missing:" >&2
     for cmd in "${missing[@]}"; do
-      echo "  - $cmd"
+      echo "  - $cmd" >&2
     done
     return 1
   fi
+}
+
+flag() {
+  [[ $1 -eq 1 ]]
+}
+
+flag_arg() {
+  [[ -n $1 ]]
 }
 
 parse_args() {
@@ -130,12 +238,21 @@ parse_args() {
       [[ $1 != *=* ]] && shift
       ;;
 
-    --dir | --dir=*)
-      DIR=$(require_arg --dir "$1" "${2-}") || return
+    --base-dir | --base-dir=*)
+      BASE_DIR=$(require_arg --base-dir "$1" "${2-}") || return
+      [[ $1 != *=* ]] && shift
+      ;;
+
+    --email | --email=*)
+      EMAIL=$(require_arg --email "$1" "${2-}") || return
       [[ $1 != *=* ]] && shift
       ;;
 
     # OPTIONS
+
+    --gitconfig) GIT_CONFIG=1 ;;
+
+    --allowed-signers) ALLOWED_SIGNERS=1 ;;
 
     -h | --help) show_help ;;
 
@@ -161,34 +278,56 @@ parse_args() {
   fi
 
   if [[ ${#ARGS[@]} -gt $EXPECTED_ARGS ]]; then
-    echo "Error: unexpected extra positional arguments: ${ARGS[*]:1}" >&2
+    echo "Error: unexpected extra positional arguments: ${ARGS[*]:EXPECTED_ARGS}" >&2
     return 1
   fi
 
   # Set default values.
   ACCOUNT="${ARGS[0]:-}"
-  CATEGORY="${CATEGORY:-.}"
+  BASE_DIR="$(expand_path "${BASE_DIR:-}")"
+
+  # TODO: These probably aren't needed.
+  CATEGORY="${CATEGORY:-}"
   COMMENT="${COMMENT-}"
   PASSPHRASE="${PASSPHRASE-}"
-  DIR="$(expand_path "${DIR:-}")"
 
-  # # Check required arguments.
-  # if [[ -z $ACCOUNT ]]; then
-  #   echo "Error: argument <account> must be provided and must be non-empty"
-  #   return 1
-  # fi
-
-  # if ! [[ $ACCOUNT =~ ^[a-zA-Z0-9-]+$ ]]; then
   if ! [[ $ACCOUNT =~ ^[a-zA-Z0-9][a-zA-Z0-9-]*$ ]]; then
-    echo "Error: argument <account> may only start with an alphanumeric character and may only contain alphanumeric characters and hyphens"
+    echo "Error: argument <account> may only start with an alphanumeric character and may only contain alphanumeric characters and hyphens" >&2
+    return 1
+  fi
+
+  # `--email <email>` is required if `--gitconfig` is provided.
+  if flag "$GIT_CONFIG"; then
+    if ! flag_arg "$EMAIL"; then
+      echo "Error: --email <email> is required when --gitconfig is provided" >&2
+      return 1
+    fi
+  fi
+
+  # `--email <email>` is required if `--allowed-signers` is provided.
+  if flag "$ALLOWED_SIGNERS"; then
+    if ! flag_arg "$EMAIL"; then
+      echo "Error: --email <email> is required when --allowed-signers is provided" >&2
+      return 1
+    fi
+  fi
+
+  # Validate email.
+  if ! [[ $EMAIL =~ ^[0-9]+\+${ACCOUNT}@users\.noreply\.github\.com$ ]]; then
+    echo "Error: invalid GitHub email" >&2
+    echo "Email should be of the form 123456789+<account>@users.noreply.github.com" >&2
     return 1
   fi
 
 }
 
+# TODO: Refactor this into multiple functions that take arguments instead of
+# nested functions inheriting variables.
 github_ssh_auth() {
 
-  local ssh_location="$HOME/.ssh/$CATEGORY"
+  local ssh_location="$HOME/.ssh/${CATEGORY}"
+  ssh_location=${ssh_location%/}
+
   local keyfile="$ssh_location/github-$ACCOUNT"
 
   local comment
@@ -228,6 +367,48 @@ github_ssh_auth() {
       --clipboard
   }
 
+  generate_gitconfig() {
+    unexpanded_keyfile="$(unexpand_path "$keyfile")"
+    unexpanded_BASE_DIR="$(unexpand_path "$BASE_DIR")"
+
+    # Tab indent. Required to start lines with <TAB> when using <<- heredoc.
+    t=$'\t'
+
+    # TODO: Maybe add quoting to all values?
+
+    cat <<-EOF
+			>>> ACCOUNT_GITCONFIG
+			[user]
+			${t}email      = "$EMAIL"
+			${t}signingkey = $unexpanded_keyfile.pub
+
+			[core]
+			${t}sshCommand = ssh -i $unexpanded_keyfile -F /dev/null
+			<<< ACCOUNT_GITCONFIG
+		EOF
+
+    if [[ -n $BASE_DIR ]]; then
+      cat <<-EOF
+				>>> INCLUDEIF_DIRECTIVE
+				[includeIf "gitdir:$unexpanded_BASE_DIR/$ACCOUNT/"]
+				${t}path =
+				<<< INCLUDEIF_DIRECTIVE
+			EOF
+    fi
+  }
+
+  append_allowed_signers() {
+    line="$EMAIL namespaces=\"git\" $(awk '{print $1, $2}' "$keyfile".pub)"
+    allowed_signers_file="$HOME/.ssh/allowed_signers"
+
+    # Only append line if it does not already exist.
+    if ! [[ -f $allowed_signers_file ]] || ! grep -Fxq "$line" "$allowed_signers_file"; then
+      echo "$line" | tee -a "$allowed_signers_file"
+    else
+      echo "$line"
+    fi
+  }
+
   generate_ssh_key
   github_login
   github_add_ssh_key authentication
@@ -235,7 +416,18 @@ github_ssh_auth() {
   github_reset_scope
   gh auth setup-git
 
-  [[ -n $DIR ]] && mkdir -p "$DIR/$ACCOUNT"
+  if flag_arg "$BASE_DIR"; then
+    mkdir -p "$BASE_DIR/$ACCOUNT"
+  fi
+
+  if flag "$GIT_CONFIG"; then
+    generate_gitconfig
+  fi
+
+  if flag "$ALLOWED_SIGNERS"; then
+    append_allowed_signers
+  fi
+
 }
 
 main() {
