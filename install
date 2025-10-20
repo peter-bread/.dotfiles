@@ -518,7 +518,9 @@ setup_personal_github() {
 
   ./scripts/setup-github-account "$account" \
     --category "$category" \
-    --dir "${DEVELOPER:-$HOME/Developer}"
+    --dir "${DEVELOPER:-$HOME/Developer}" \
+    --email "145384599+peter-bread@users.noreply.github.com" \
+    --allowed-signers
 }
 
 setup_neovim() {
