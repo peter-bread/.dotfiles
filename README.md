@@ -3,7 +3,7 @@
 > [!WARNING]
 > This README is now out of date.
 >
-> Will update soon.
+> Will update soon. Promise.
 
 Managing my dotfiles.
 
