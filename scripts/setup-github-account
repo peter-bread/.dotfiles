@@ -540,24 +540,6 @@ github_reset_scope() {
     --clipboard
 }
 
-# github_set_credential_helper - Configure GitHub CLI to set up Git credential helper.
-#
-# Usage:
-#   github_set_credential_helper
-#
-# Arguments:
-#   None.
-#
-# Returns:
-#   Exit status of the `gh auth setup-git` command (0 on success, non-zero on failure).
-#
-# Side Effects:
-#   Configures Git to use the GitHub CLI as a credential helper for HTTPS Git operations.
-#   This allows Git to automatically use your GitHub authentication.
-github_set_credential_helper() {
-  gh auth setup-git
-}
-
 # append_allowed_signers - Append an SSH key to the allowed_signers file for signing verification.
 #
 # Usage:
@@ -667,7 +649,6 @@ main() {
     fi
 
     github_reset_scope || return
-    github_set_credential_helper || return
   fi
 
   # --base-dir
