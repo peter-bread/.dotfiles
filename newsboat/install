@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+mkdir -p "$XDG_CONFIG_HOME/newsboat"
+
+ln -sf "$DOTFILES/newsboat/urls" "$XDG_CONFIG_HOME/newsboat/urls"
+ln -sf "$DOTFILES/newsboat/config" "$XDG_CONFIG_HOME/newsboat/config"

@@ -1,0 +1,30 @@
+# https://newsboat.org/releases/2.41/docs/newsboat.html#_configuration
+
+# https://newsboat.org/releases/2.41/docs/newsboat.html#_key_bindings
+bind j everywhere down
+bind k everywhere up
+
+# https://newsboat.org/releases/2.41/docs/newsboat.html#_colors
+#     Element               FG        BG        Attributes
+color background            color217  color234
+
+color listnormal            color217  color234
+color listfocus             color217  color236
+
+color listnormal_unread     color217  color234  bold
+color listfocus_unread      color217  color236  bold
+
+color title                 color154  color234
+color info                  color154  color234
+
+color article               color217  color234
+
+# color hint-key
+# color hint-keys-delimiter
+# color hint-separator
+# color hint-description
+
+# browser "$BROWSER"
+browser "open"
+
+# vi: ft=conf
