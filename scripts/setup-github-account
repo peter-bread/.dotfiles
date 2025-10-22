@@ -1,168 +1,134 @@
 #!/usr/bin/env bash
 
-# TODO: Finish docs.
-
-################################################################################
-################################# DOCUMENTATION ################################
-################################################################################
-#
-# NAME
-#
-#     setup-github-account - Generate SSH keys and authenticate with GitHub
-#
-# SYNOPSIS
-#
-#     setup-github-account [--category <category>] [--comment <comment>] [--email <email>]
-#                          [--passphrase <passphrase>] [--base-dir <dirname>] [--gitconfig]
-#                          [--allowed-signers] <account>
-#
-# DESCRIPTION
-#
-# OPTIONS
-#     --category <category>
-
-#     --comment <comment>
-
-#     --passphrase <passphrase>
-
-#     --base-dir <dirname>
-
-#     --gitconfig
-#         The script prints two blocks: ACCOUNT_GITCONFIG and INCLUDEIF_DIRECTIVE,
-#         each wrapped in unique start/end markers:
-#
-#         >>> ACCOUNT_GITCONFIG
-#         ... gitconfig block ...
-#         <<< ACCOUNT_GITCONFIG
-#
-#         >>> INCLUDEIF_DIRECTIVE
-#         ... includeIf block ...
-#         <<< INCLUDEIF_DIRECTIVE
-#
-#         ACCOUNT_GITCONFIG is always generated.
-#         INCLUDEIF_DIRECTIVE is only generated if `--base-dir` and `--email` are provided.
-#
-#         To extract blocks into separate files, use sed:
-#
-#           # Extract gitconfig block
-#           setup-github-account --gitconfig |
-#             sed -n '/^>>> ACCOUNT_GITCONFIG$/,/^<<< ACCOUNT_GITCONFIG$/p' |
-#             sed '1d;$d' > gitconfig.out
-#
-#           # Extract includeIf block
-#           setup-github-account --gitconfig --base_dir=<dirname> --email=<email> |
-#             sed -n '/^>>> INCLUDEIF_DIRECTIVE$/,/^<<< INCLUDEIF_DIRECTIVE$/p' |
-#             sed '1d;$d' > include.out
-#
-#         If you want to get both, it may be worth capturing the output then piping into sed separately:
-#
-#           data=$(setup-github-account --gitconfig --base_dir=<dirname> --email=<email>)
-#
-#           sed -n '/^>>> ACCOUNT_GITCONFIG$/,/^<<< ACCOUNT_GITCONFIG$/p' "$data" |
-#             sed '1d;$d' > gitconfig.out
-#
-#           sed -n '/^>>> INCLUDEIF_DIRECTIVE$/,/^<<< INCLUDEIF_DIRECTIVE$/p' "$data" |
-#             sed '1d;$d' > include.out
-#
-#         Of course you can also capture the sed output(s) in variables rather than files:
-#
-#           include_block=$(
-#             sed -n '/^>>> INCLUDEIF_DIRECTIVE$/,/^<<< INCLUDEIF_DIRECTIVE$/p' "$data" |
-#             sed '1d;$d'
-#           )
-#
-#         This ensures the blocks are easily reusable and editable.
-#
-################################################################################
-############################# ENF OF DOCUMENTATION #############################
-################################################################################
-
 set -Eeuo pipefail
 
-# POSITIONAL ARGUMENTS
-EXPECTED_ARGS=1
+# ===============================
+# Script state and default values
+# ===============================
 
-ARGS=()
-ACCOUNT=""
+# -------------------------------
+# Positional arguments
+# -------------------------------
+EXPECTED_ARGS=1 # Number of required positional arguments (here: <account>)
+ARGS=()         # Array to hold positional arguments passed to the script
+ACCOUNT=""      # GitHub account name (first positional argument)
 
-# OPTION ARGUMENTS
-CATEGORY=""
-COMMENT=""
-PASSPHRASE=""
-BASE_DIR=""
-EMAIL=""
+# -------------------------------
+# Option arguments
+# -------------------------------
+CATEGORY=""   # Value of --category option (optional)
+PASSPHRASE="" # Value of --passphrase option (optional)
+BASE_DIR=""   # Value of --base-dir option (optional)
+EMAIL=""      # Value of --email option (optional, used with --allowed-signers)
 
-# OPTION FLAGS
-GIT_CONFIG=0
-ALLOWED_SIGNERS=0
+# -------------------------------
+# Option flags
+# -------------------------------
+GEN_KEYS=0        # Boolean flag for --gen-keys (1 if set)
+GITHUB_AUTH=0     # Boolean flag for --github-auth (1 if set)
+ADD_KEYS=0        # Boolean flag for --add-keys (1 if set; requires --github-auth)
+ALLOWED_SIGNERS=0 # Boolean flag for --allowed-signers (1 if set; requires --email)
 
+# show_help - Print usage information and exit.
 show_help() {
   cat <<-'EOF'
 		Generate SSH keys, authenticate with GitHub via the CLI and (optionally) create
 		a new directory for the account.
 
+	  Note: OPTION FLAGS define control behaviour.
+
 		Usage:
-		  setup-github-account [--category <category>] [--comment <comment>] [--email <email>]
-		                       [--passphrase <passphrase>] [--base-dir <dirname>] [--gitconfig]
-		                       [--allowed-signers] <account>
+      setup-github-account [--category=<category>] [--base-dir=<dirname>] [--email=<email>]
+                        [--passphrase=<passphrase>]
+                        [--gen-keys] [--github-auth] [--add-keys] [--allowed-signers]
+                        <account>
 
 		Arguments:
 		  account         Name of GitHub account
 
 		Option Arguments:
 		  --category      Sub directory under ~/.ssh to store the SSH key pair (Default: "")
-		  --comment       Comment for SSH key (Default: "$(whoami)@$(hostname -s):<account>@github:$(date +%Y-%m-%d)")
 		  --passphrase    Passphrase for SSH key (Default: "")
 		  --base-dir      Base directory under which the account directory will be created
 		                  (the account name is automatically appended) (Default: "")
 		  --email         Email associated with account, should be of the form 123456789+<account>@users.noreply.github.com
-		                  This option is required if --allowed-signers AND/OR --gitconfig are provided
+		                  This option is required if --allowed-signers is provided.
 
 		Option Flags:
-		  --gitconfig         Generate gitconfigs (prints ACCOUNT_GITCONFIG and INCLUDEIF_DIRECTIVE blocks)
+		  --gen-keys          Generate SSH key pair
+		  --github-auth       Authenticate with GitHub in browser
+      --add-keys          Add SSH key to GitHub account (for auth & signing)
 		  --allowed-signers   Append entry to ~/.ssh/allowed_signers
 
 		  -h, --help      Print this help message
 
 		For more detailed documentation, consult the script file itself:
 		  cat $(which setup-github-account)
-
-		Examples:
-		  setup-github-account john-smith
-		      Creates ~/.ssh/github-john-smith{,.pub} with no comment and no passphrase
-
-		  setup-github-account john-smith --category work
-		      Creates ~/.ssh/work/github-john-smith{,.pub} with no comment and no
-		      passphrase
-
-		  setup-github-account john-smith --comment="john.smith@work.com" --passphrase "donkey"
-		      Creates ~/.ssh/github-john-smith{,.pub} with the comment "john.smith@work.com"
-		      as and passphrase "donkey"
-
-		  setup-github-account john-smith --base-dir ~/work
-		      Creates ~/.ssh/github-john-smith{,.pub} with no comment and no passphrase
-		      and creates the directory ~/work/john-smith/ if it does not already exist.
 	EOF
   exit 0
 }
 
-# Expands ~ to $HOME.
+# expand_path - Expand a path starting with ~ to the full $HOME directory.
+#
+# Usage:
+#   full_path=$(expand_path <path>)
+#
+# Arguments:
+#   path  Path that may start with ~ to represent $HOME
+#
+# Returns:
+#   Prints the expanded path to stdout.
 #
 # Example:
 #   VAR="~/go"
-#   VAR=$(expand_path "$VAR")
+#   VAR=$(expand_path "$VAR")  # VAR="/home/username/go"
 expand_path() {
   local path="$1"
   [[ $path == "~"* ]] && path="${path/#\~/$HOME}"
   echo "$path"
 }
 
+# unexpand_path - Replace the $HOME prefix in a path with ~.
+#
+# Usage:
+#   short_path=$(unexpand_path <path>)
+#
+# Arguments:
+#   path  Full path that may start with $HOME
+#
+# Returns:
+#   Prints the path with $HOME replaced by ~, if applicable.
+#
+# Example:
+#   VAR="/home/username/go"
+#   VAR=$(unexpand_path "$VAR")  # VAR="~/go"
 unexpand_path() {
   local path="$1"
+  # [[ $path == "$HOME"* ]] && path="${path/#$HOME/\~}"
   path="${path/#$HOME/\~}"
   echo "$path"
 }
 
+# check_requirements - Verify that required command-line tools are installed.
+#
+# Usage:
+#   check_requirements
+#
+# Arguments:
+#   None.
+#
+# Returns:
+#   0 if all required tools are available.
+#   1 if any required tool is missing.
+#
+# Side Effects:
+#   Prints an error message to stderr listing missing tools if any are not found.
+#
+# Behavior:
+#   - Checks for the presence of commands listed in the `required` array.
+#   - Currently requires:
+#       - gh        (GitHub CLI)
+#       - ssh-keygen (OpenSSH key generation tool)
 check_requirements() {
   local required=(
     gh
@@ -186,16 +152,112 @@ check_requirements() {
   fi
 }
 
+# flag - Check if a boolean flag is provided (value is 1).
+#
+# Usage:
+#   if flag "$SOME_FLAG"; then
+#       echo "Flag is set"
+#   fi
+#
+# Arguments:
+#   $1  Value of the flag (1 means set, 0 or empty means unset)
+#
+# Returns:
+#   0 if the flag is 1 (true), 1 otherwise.
+#
+# Side Effects:
+#   None.
 flag() {
   [[ $1 -eq 1 ]]
 }
 
+# flag_arg - Check if a flag with an argument has been provided.
+#
+# Usage:
+#   if flag_arg "$FLAG_ARG"; then
+#       echo "Flag argument provided: $FLAG_ARG"
+#   fi
+#
+# Arguments:
+#   $1  Value of the flag argument
+#
+# Returns:
+#   0 if the argument is non-empty, 1 if empty or unset.
+#
+# Side Effects:
+#   None.
 flag_arg() {
   [[ -n $1 ]]
 }
 
+# parse_args - Parse command-line arguments, options, and flags for the script.
+#
+# Usage:
+#   parse_args "$@"
+#
+# Arguments:
+#   All script arguments, including:
+#     Long options with arguments: --category, --passphrase, --base-dir, --email
+#     Boolean flags: --gen-keys, --github-auth, --add-keys, --allowed-signers
+#     Positional arguments: <account>
+#
+# Outputs / Side Effects:
+#   Sets the following global variables:
+#     ACCOUNT        - The positional account argument.
+#     CATEGORY       - Value of --category, if provided.
+#     PASSPHRASE     - Value of --passphrase, if provided.
+#     BASE_DIR       - Value of --base-dir, expanded to full path.
+#     EMAIL          - Value of --email, if provided.
+#     GEN_KEYS       - 1 if --gen-keys flag is set, otherwise 0.
+#     GITHUB_AUTH    - 1 if --github-auth flag is set, otherwise 0.
+#     ADD_KEYS       - 1 if --add-keys flag is set, otherwise 0.
+#     ALLOWED_SIGNERS- 1 if --allowed-signers flag is set, otherwise 0.
+#     ARGS           - Array of positional arguments.
+#
+# Validations:
+#   - Requires exactly one positional argument: <account>
+#   - <account> must start with an alphanumeric character and contain only alphanumerics and hyphens.
+#   - If --add-keys is set, --github-auth must also be set.
+#   - If --allowed-signers is set, --email <email> must be provided.
+#   - If --email is provided, must match GitHub noreply email format:
+#       123456789+<account>@users.noreply.github.com
+#
+# Returns:
+#   0 on success.
+#   Non-zero if:
+#     - Required arguments are missing.
+#     - Invalid option or argument format.
+#     - Option dependencies are not satisfied.
+#     - Validation fails.
 parse_args() {
 
+  # require_arg - Extract the value for a flag that requires an argument.
+  #
+  # Usage:
+  #   value=$(require_arg <flag-name> <token> [next-token])
+  #
+  # Arguments:
+  #   flag-name   The name of the option (for error messages), e.g., --category
+  #   token       The current token being processed (could be --flag=value or --flag)
+  #   next-token  (Optional) The next token in the arguments list (used if the value is separate)
+  #
+  # Returns:
+  #   Prints the extracted value to stdout if non-empty.
+  #   Returns 1 and prints an error if the value is missing or empty.
+  #
+  # Behavior:
+  #   - Handles both forms:
+  #       --flag=value   (value extracted from the same token)
+  #       --flag value   (value taken from next token)
+  #   - If no value is provided, prints an error to stderr and returns non-zero.
+  #
+  # Example:
+  #   token="--category=work"
+  #   CATEGORY=$(require_arg --category "$token")  # CATEGORY="work"
+  #
+  #   token="--category"
+  #   next="work"
+  #   CATEGORY=$(require_arg --category "$token" "$next")  # CATEGORY="work"
   require_arg() {
     local name="$1"
     local token="$2"
@@ -228,11 +290,6 @@ parse_args() {
       [[ $1 != *=* ]] && shift # Only shift extra if not --flag=value form.
       ;;
 
-    --comment | --comment=*)
-      COMMENT=$(require_arg --comment "$1" "${2-}") || return
-      [[ $1 != *=* ]] && shift
-      ;;
-
     --passphrase | --passphrase=*)
       PASSPHRASE=$(require_arg --passphrase "$1" "${2-}") || return
       [[ $1 != *=* ]] && shift
@@ -248,9 +305,13 @@ parse_args() {
       [[ $1 != *=* ]] && shift
       ;;
 
-    # OPTIONS
+    # OPTION FLAGS
 
-    --gitconfig) GIT_CONFIG=1 ;;
+    --gen-keys) GEN_KEYS=1 ;;
+
+    --github-auth) GITHUB_AUTH=1 ;;
+
+    --add-keys) ADD_KEYS=1 ;;
 
     --allowed-signers) ALLOWED_SIGNERS=1 ;;
 
@@ -272,6 +333,8 @@ parse_args() {
     shift
   done
 
+  # Check that the correct number of arguments have been provided.
+
   if [[ ${#ARGS[@]} -lt $EXPECTED_ARGS ]]; then
     echo "Error: expected $((EXPECTED_ARGS - ${#ARGS[@]})) more argument(s)" >&2
     return 1
@@ -286,156 +349,336 @@ parse_args() {
   ACCOUNT="${ARGS[0]:-}"
   BASE_DIR="$(expand_path "${BASE_DIR:-}")"
 
-  # TODO: These probably aren't needed.
-  CATEGORY="${CATEGORY:-}"
-  COMMENT="${COMMENT-}"
-  PASSPHRASE="${PASSPHRASE-}"
-
+  # Validate account.
   if ! [[ $ACCOUNT =~ ^[a-zA-Z0-9][a-zA-Z0-9-]*$ ]]; then
     echo "Error: argument <account> may only start with an alphanumeric character and may only contain alphanumeric characters and hyphens" >&2
     return 1
   fi
 
-  # `--email <email>` is required if `--gitconfig` is provided.
-  if flag "$GIT_CONFIG"; then
-    if ! flag_arg "$EMAIL"; then
-      echo "Error: --email <email> is required when --gitconfig is provided" >&2
-      return 1
-    fi
-  fi
+  # Check option dependencies.
+  # If --foo requires both --bar and -baz, use one of:
+  #   if flag "$FOO" && (! flag "$BAR" || ! flag "$BAZ"); then :; fi
+  #   if flag "$FOO" && ! (flag "$BAR" && flag "$BAZ"); then :; fi
 
-  # `--email <email>` is required if `--allowed-signers` is provided.
-  if flag "$ALLOWED_SIGNERS"; then
-    if ! flag_arg "$EMAIL"; then
-      echo "Error: --email <email> is required when --allowed-signers is provided" >&2
-      return 1
-    fi
-  fi
-
-  # Validate email.
-  if ! [[ $EMAIL =~ ^[0-9]+\+${ACCOUNT}@users\.noreply\.github\.com$ ]]; then
-    echo "Error: invalid GitHub email" >&2
-    echo "Email should be of the form 123456789+<account>@users.noreply.github.com" >&2
+  # `--add-keys` requires `--github-auth`
+  if flag "$ADD_KEYS" && ! flag "$GITHUB_AUTH"; then
+    echo "Error: --github-auth is required when --add-keys is provided" >&2
     return 1
   fi
 
+  # `--allowed-signers` requires `--email <email>`.
+  if flag "$ALLOWED_SIGNERS" && ! flag_arg "$EMAIL"; then
+    echo "Error: --email <email> is required when --allowed-signers is provided" >&2
+    return 1
+  fi
+
+  # Validate email.
+  if flag_arg "$EMAIL"; then
+    if ! [[ $EMAIL =~ ^[0-9]+\+${ACCOUNT}@users\.noreply\.github\.com$ ]]; then
+      echo "Error: invalid GitHub email" >&2
+      echo "Email should be of the form 123456789+<account>@users.noreply.github.com" >&2
+      return 1
+    fi
+  fi
 }
 
-# TODO: Refactor this into multiple functions that take arguments instead of
-# nested functions inheriting variables.
-github_ssh_auth() {
+# get_keyfile - Construct the path to a GitHub SSH key for a given account and category.
+#
+# Usage:
+#   keyfile=$(get_keyfile <account> <category>)
+#
+# Arguments:
+#   account   GitHub account name (used in the key filename).
+#   category  Subdirectory under $HOME/.ssh where the key is stored.
+#
+# Returns:
+#   Prints the full path to the SSH key file.
+#
+# Side Effects:
+#   None. This function only constructs and outputs a string.
+get_keyfile() {
+  local account=$1
+  local category=$2
 
-  local ssh_location="$HOME/.ssh/${CATEGORY}"
+  local ssh_location="$HOME/.ssh/${category}"
   ssh_location=${ssh_location%/}
+  local keyfile="$ssh_location/github-$account"
 
-  local keyfile="$ssh_location/github-$ACCOUNT"
+  echo "$keyfile"
+}
+
+# get_comment - Generate a descriptive comment string for a GitHub SSH key.
+#
+# Usage:
+#   comment=$(get_comment <account>)
+#
+# Arguments:
+#   account  GitHub account name to include in the comment.
+#
+# Returns:
+#   Prints a comment string in the format:
+#     <username>@<hostname>:<account>@github:<YYYY-MM-DD>
+#
+# Side Effects:
+#   None. Only prints a formatted string.
+get_comment() {
+  local account=$1
 
   local comment
-  comment="$(whoami)@$(hostname -s):${ACCOUNT}@github:$(date +%Y-%m-%d)"
+  comment="$(whoami)@$(hostname -s):${account}@github:$(date +%Y-%m-%d)"
 
-  mkdir -p "$ssh_location"
+  echo "$comment"
+}
 
-  generate_ssh_key() {
-    ssh-keygen \
-      -t ed25519 \
-      -f "$keyfile" \
-      -C "${COMMENT:-$comment}" \
-      -N "$PASSPHRASE"
-  }
+# generate_ssh_key - Generate an SSH keypair using ed25519.
+#
+# Usage:
+#   generate_ssh_key <keyfile> <comment> <passphrase>
+#
+# Arguments:
+#   keyfile    Path to the private key file to create.
+#   comment    Comment to embed in the public key.
+#   passphrase Passphrase for the private key (can be unset or empty string).
+#
+# Returns:
+#   0 on success, non-zero if ssh-keygen fails.
+#
+# Side Effects:
+#   Creates the directory for the key if it doesn't exist.
+#   Writes the private key to ${keyfile} and public key to ${keyfile}.pub.
+generate_ssh_key() {
+  local keyfile=$1
+  local comment=$2
+  local passphrase=$3
 
-  github_login() {
-    gh auth login \
-      --hostname github.com \
-      --git-protocol ssh \
-      --scopes "admin:public_key,admin:ssh_signing_key" \
-      --skip-ssh-key \
-      --web \
-      --clipboard
-  }
+  mkdir -p "$(dirname "$keyfile")"
 
-  github_add_ssh_key() {
-    gh ssh-key add \
-      "$keyfile.pub" \
-      --title "$comment" \
-      --type "${1}"
-  }
+  ssh-keygen \
+    -t ed25519 \
+    -f "$keyfile" \
+    -C "$comment" \
+    -N "$passphrase"
+}
 
-  github_reset_scope() {
-    gh auth refresh \
-      --hostname github.com \
-      --reset-scopes \
-      --clipboard
-  }
+# github_login - Authenticate with GitHub CLI using SSH.
+#
+# Usage:
+#   github_login
+#
+# Arguments:
+#   None.
+#
+# Returns:
+#   Exit status of the `gh auth login` command (0 on success, non-zero on failure).
+#
+# Side Effects:
+#   Opens a web-based login flow and may copy an authentication token to the clipboard.
+#   Configures the GitHub CLI (`gh`) to use SSH for Git operations.
+github_login() {
+  gh auth login \
+    --hostname github.com \
+    --git-protocol ssh \
+    --scopes "admin:public_key,admin:ssh_signing_key" \
+    --skip-ssh-key \
+    --web \
+    --clipboard
+}
 
-  generate_gitconfig() {
-    unexpanded_keyfile="$(unexpand_path "$keyfile")"
-    unexpanded_BASE_DIR="$(unexpand_path "$BASE_DIR")"
+# github_add_ssh_key - Add a local SSH public key to GitHub using the GitHub CLI.
+#
+# Usage:
+#   github_add_ssh_key <keyfile> <comment> <type>
+#
+# Arguments:
+#   keyfile  Path to the private SSH key (the function will use the corresponding .pub file).
+#   comment  Comment or title for the SSH key on GitHub.
+#   type     Type of the SSH key (authentication|signing).
+#
+# Returns:
+#   Exit status of the operation:
+#     0 if the key was successfully added,
+#     1 if the private key file does not exist,
+#     or the exit status of `gh ssh-key add` if that fails.
+#
+# Side Effects:
+#   Calls `gh ssh-key add` to register the key with your GitHub account.
+#   Requires that GitHub CLI is authenticated.
+github_add_ssh_key() {
+  local keyfile=$1
+  local comment=$2
+  local type=$3
 
-    # Tab indent. Required to start lines with <TAB> when using <<- heredoc.
-    t=$'\t'
+  if ! [[ -f $keyfile ]]; then
+    echo "Error: $keyfile does not exist" >&2
+    return 1
+  fi
 
-    # TODO: Maybe add quoting to all values?
+  gh ssh-key add \
+    "$keyfile.pub" \
+    --title "$comment" \
+    --type "$type"
+}
 
-    cat <<-EOF
-			>>> ACCOUNT_GITCONFIG
-			[user]
-			${t}email      = "$EMAIL"
-			${t}signingkey = $unexpanded_keyfile.pub
+# github_reset_scope - Refresh GitHub CLI authentication and reset token scopes.
+#
+# Usage:
+#   github_reset_scope
+#
+# Arguments:
+#   None.
+#
+# Returns:
+#   Exit status of the `gh auth refresh` command (0 on success, non-zero on failure).
+#
+# Side Effects:
+#   Resets the authentication scopes for the GitHub CLI (`gh`) on github.com.
+#   Copies a refreshed authentication token to the clipboard.
+github_reset_scope() {
+  gh auth refresh \
+    --hostname github.com \
+    --reset-scopes \
+    --clipboard
+}
 
-			[core]
-			${t}sshCommand = ssh -i $unexpanded_keyfile -F /dev/null
-			<<< ACCOUNT_GITCONFIG
-		EOF
-
-    if [[ -n $BASE_DIR ]]; then
-      cat <<-EOF
-				>>> INCLUDEIF_DIRECTIVE
-				[includeIf "gitdir:$unexpanded_BASE_DIR/$ACCOUNT/"]
-				${t}path =
-				<<< INCLUDEIF_DIRECTIVE
-			EOF
-    fi
-  }
-
-  append_allowed_signers() {
-    line="$EMAIL namespaces=\"git\" $(awk '{print $1, $2}' "$keyfile".pub)"
-    allowed_signers_file="$HOME/.ssh/allowed_signers"
-
-    # Only append line if it does not already exist.
-    if ! [[ -f $allowed_signers_file ]] || ! grep -Fxq "$line" "$allowed_signers_file"; then
-      echo "$line" | tee -a "$allowed_signers_file"
-    else
-      echo "$line"
-    fi
-  }
-
-  generate_ssh_key
-  github_login
-  github_add_ssh_key authentication
-  github_add_ssh_key signing
-  github_reset_scope
+# github_set_credential_helper - Configure GitHub CLI to set up Git credential helper.
+#
+# Usage:
+#   github_set_credential_helper
+#
+# Arguments:
+#   None.
+#
+# Returns:
+#   Exit status of the `gh auth setup-git` command (0 on success, non-zero on failure).
+#
+# Side Effects:
+#   Configures Git to use the GitHub CLI as a credential helper for HTTPS Git operations.
+#   This allows Git to automatically use your GitHub authentication.
+github_set_credential_helper() {
   gh auth setup-git
-
-  if flag_arg "$BASE_DIR"; then
-    mkdir -p "$BASE_DIR/$ACCOUNT"
-  fi
-
-  if flag "$GIT_CONFIG"; then
-    generate_gitconfig
-  fi
-
-  if flag "$ALLOWED_SIGNERS"; then
-    append_allowed_signers
-  fi
-
 }
 
+# append_allowed_signers - Append an SSH key to the allowed_signers file for signing verification.
+#
+# Usage:
+#   append_allowed_signers <keyfile> <email>
+#
+# Arguments:
+#   keyfile  Path to the private SSH key (the function uses the corresponding .pub file).
+#   email    Email address to include in the allowed_signers entry.
+#
+# Returns:
+#   Exit status of the operations (0 on success, non-zero if any command fails).
+#
+# Side Effects:
+#   Appends a line to $HOME/.ssh/allowed_signers containing:
+#     <email> namespaces="git" <key-type> <key-data>
+#   Only appends the line if it does not already exist in the file.
+append_allowed_signers() {
+  local keyfile=$1
+  local email=$2
+
+  line="$email namespaces=\"git\" $(awk '{print $1, $2}' "$keyfile".pub)"
+  allowed_signers_file="$HOME/.ssh/allowed_signers"
+
+  # Only append line if it does not already exist.
+  if ! [[ -f $allowed_signers_file ]] || ! grep -Fxq "$line" "$allowed_signers_file"; then
+    echo "$line" >>"$allowed_signers_file"
+  fi
+}
+
+# create_account_dir - Create the account directory under a base directory if BASE_DIR is set.
+#
+# Usage:
+#   create_account_dir <base_dir> <account>
+#
+# Arguments:
+#   base_dir  Base directory path.
+#   account   Account name for the subdirectory.
+#
+# Returns:
+#   0 on success, non-zero if creation fails or base_dir is not set.
+create_account_dir() {
+  local base_dir=$1
+  local account=$2
+
+  if [[ -n $base_dir ]]; then
+    mkdir -p "$base_dir/$account" || return
+  fi
+}
+
+# main - Entry point for the script. Executes SSH key and GitHub setup based on flags and arguments.
+#
+# Usage:
+#   main "$@"
+#
+# Arguments:
+#   All script arguments, typically passed from the command line.
+#   Supported flags/options:
+#     --category=<category>        Category for SSH key organization
+#     --base-dir=<dirname>         Base directory for storing keys
+#     --email=<email>              GitHub noreply email (required for --allowed-signers)
+#     --passphrase=<passphrase>    Passphrase for the SSH key
+#     --gen-keys                   Generate an SSH keypair
+#     --github-auth                Authenticate with GitHub CLI
+#     --add-keys                   Add keys to GitHub (requires --github-auth)
+#     --allowed-signers            Append key to allowed_signers file (requires --email)
+#     <account>                    Positional argument: GitHub account name
+#
+# Behavior:
+#   1. Checks required tools (gh, ssh-keygen).
+#   2. Parses command-line arguments and validates dependencies.
+#   3. Computes paths and comments for the SSH key.
+#   4. Generates SSH keys if --gen-keys is set.
+#   5. Authenticates with GitHub if --github-auth is set.
+#      - Adds keys if --add-keys is set.
+#      - Refreshes scopes and sets Git credential helper.
+#   6. Creates account directory if --base-dir is set.
+#   7. Updates allowed_signers file if --allowed-signers is set.
+#
+# Returns:
+#   0 on success, non-zero if any operation fails.
 main() {
-  check_requirements || exit
+  check_requirements || return
 
-  parse_args "$@" || exit
+  parse_args "$@" || return
 
-  github_ssh_auth || exit
+  # setup-github-account [--category=<category>] [--base-dir=<dirname>] [--email=<email>] [--passphrase=<passphrase>]
+  #                      [--gen-keys] [--github-auth] [--add-keys] [--allowed-signers]
+  #                      <account>
+
+  keyfile=$(get_keyfile "$ACCOUNT" "$CATEGORY") || return
+
+  comment=$(get_comment "$ACCOUNT") || return
+
+  # --gen-keys
+  if flag "$GEN_KEYS"; then
+    generate_ssh_key "$keyfile" "$comment" "$PASSPHRASE" || return
+  fi
+
+  # --github-auth
+  if flag "$GITHUB_AUTH"; then
+    github_login || return
+
+    # --add-keys (--github-auth)
+    if flag "$ADD_KEYS"; then
+      github_add_ssh_key "$keyfile" "$comment" authentication || return
+      github_add_ssh_key "$keyfile" "$comment" signing || return
+    fi
+
+    github_reset_scope || return
+    github_set_credential_helper || return
+  fi
+
+  # --base-dir
+  if flag_arg "$BASE_DIR"; then
+    create_account_dir "$BASE_DIR" "$ACCOUNT" || return
+  fi
+
+  # --allowed-signers (--email)
+  if flag "$ALLOWED_SIGNERS"; then
+    append_allowed_signers "$keyfile" "$EMAIL" || return
+  fi
 }
 
-main "$@"
+main "$@" || exit
