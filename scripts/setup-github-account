@@ -35,13 +35,13 @@ show_help() {
 		Generate SSH keys, authenticate with GitHub via the CLI and (optionally) create
 		a new directory for the account.
 
-	  Note: OPTION FLAGS define control behaviour.
+		Note: OPTION FLAGS define control behaviour.
 
 		Usage:
-      setup-github-account [--category=<category>] [--base-dir=<dirname>] [--email=<email>]
-                        [--passphrase=<passphrase>]
-                        [--gen-keys] [--github-auth] [--add-keys] [--allowed-signers]
-                        <account>
+		  setup-github-account [--category=<category>] [--base-dir=<dirname>] [--email=<email>]
+		                    [--passphrase=<passphrase>]
+		                    [--gen-keys] [--github-auth] [--add-keys] [--allowed-signers]
+		                    <account>
 
 		Arguments:
 		  account         Name of GitHub account
@@ -57,7 +57,7 @@ show_help() {
 		Option Flags:
 		  --gen-keys          Generate SSH key pair
 		  --github-auth       Authenticate with GitHub in browser
-      --add-keys          Add SSH key to GitHub account (for auth & signing)
+		  --add-keys          Add SSH key to GitHub account (for auth & signing)
 		  --allowed-signers   Append entry to ~/.ssh/allowed_signers
 
 		  -h, --help      Print this help message
