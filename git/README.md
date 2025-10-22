@@ -23,7 +23,7 @@ Additional machine-specific configuration can be put in `~/.config/git/local`.
 This file can contain `includeIf` directives, which should look for config
 files in `~/.config/git/local.d/`.
 
-See comment in [./gitconfig] example.
+See comment in [gitconfig](./gitconfig) example.
 
 ---
 
