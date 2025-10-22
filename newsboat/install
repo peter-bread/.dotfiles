@@ -2,5 +2,5 @@
 
 mkdir -p "$XDG_CONFIG_HOME/newsboat"
 
-ln -sf "$DOTFILES/newsboat/urls" "$XDG_CONFIG_HOME/newsboat/urls"
-ln -sf "$DOTFILES/newsboat/config" "$XDG_CONFIG_HOME/newsboat/config"
+ln -sfn "$DOTFILES/newsboat/urls" "$XDG_CONFIG_HOME/newsboat/urls"
+ln -sfn "$DOTFILES/newsboat/config" "$XDG_CONFIG_HOME/newsboat/config"
