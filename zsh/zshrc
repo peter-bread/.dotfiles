@@ -142,6 +142,16 @@ compinit
 # this doesn't have any functionality yet
 # alias f='find ~ ~/Developer/peter-bread ~/Developer/ak22112 ~/.config -mindepth 1 -maxdepth 1 -type d | sed "s|$HOME|~|g" | fzf'
 
+# Browser =====================================================================
+
+case $(uname -s) in
+Darwin)
+  # Actual default browser must be set manually:
+  # System Settings -> Desktop & Dock -> Default Web Browser
+  export BROWSER="open"
+  ;;
+esac
+
 
 # Extra Stuff =================================================================
 

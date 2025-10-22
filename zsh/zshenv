@@ -28,11 +28,6 @@ export NVIM_APPNAME="peter.nvim"
 export MANPAGER='nvim +Man!'
 export MANWIDTH=80
 
-# Browser.
-# export BROWSER="Brave Browser"
-# export BROWSER="open"
-export BROWSER="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
-
 # Zsh.
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
