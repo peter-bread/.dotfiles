@@ -76,7 +76,7 @@
 	format = ssh
 
 [gpg "ssh"]
-	allowedSignersFile = ~/.dotfiles/git/allowed_signers
+	allowedSignersFile = ~/.ssh/allowed_signers
 
 ; Always include personal GitHub account configuration.
 [include]
