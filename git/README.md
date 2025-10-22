@@ -13,8 +13,17 @@ accidentally commit files that should **never** be included in version control.
 
 These are account specific settings, i.e. email and SSH command.
 
-`peter-bread` is my main account and is scoped to my home directory,
-and `ak22112` only works in `~/Developer/ak22112`.
+`peter-bread` is my main account.
+`ak22112` is my secondary (previously university) account and only works in `~/Developer/ak22112`.
+
+## `~/.config/git/local`
+
+Additional machine-specific configuration can be put in `~/.config/git/local`.
+
+This file can contain `includeIf` directives, which should look for config
+files in `~/.config/git/local.d/`.
+
+See comment in [./gitconfig] example.
 
 ---
 
