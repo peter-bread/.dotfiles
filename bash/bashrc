@@ -7,7 +7,9 @@
 
 # Languages -------------------------------------------------------------------
 
-[ -d "$(brew --prefix ruby)/bin" ] && PATH="$(brew --prefix ruby)/bin:$PATH"
+if command -v brew &>/dev/null; then
+  [ -d "$(brew --prefix ruby)/bin" ] && PATH="$(brew --prefix ruby)/bin:$PATH"
+fi
 
 [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
 
@@ -15,6 +17,8 @@
 
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] &&
   source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Mise-en-place ---------------------------------------------------------------
 
@@ -38,7 +42,8 @@ fi
 # GH CLI ======================================================================
 
 if command -v gamon3 &>/dev/null; then
-  eval "$(gamon3 hook bash)"
+  :
+  # eval "$(gamon3 hook bash)"
 fi
 
 if [[ -s $HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh ]]; then
