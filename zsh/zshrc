@@ -70,12 +70,8 @@ fi
 
 # Aliases =====================================================================
 
-[ -f "$DOTFILES/zsh/aliases.sh" ] && source "$DOTFILES/zsh/aliases.sh"
-
-
-# Docker Aliases ==============================================================
-
-[ -f "$DOTFILES/zsh/docker.sh" ] && source "$DOTFILES/zsh/docker.sh"
+[ -f "$DOTFILES/zsh/aliases" ] && source "$DOTFILES/zsh/aliases"
+[ -f "$DOTFILES/zsh/docker_aliases" ] && source "$DOTFILES/zsh/docker_aliases"
 
 
 # Functions ===================================================================

@@ -1,19 +1,11 @@
-#!/usr/bin/env bash
-
-# =============================================================================
-# ================= Permanent =================================================
-# =============================================================================
+# vi: ft=zsh
 
 # Shell Utility Commands ------------------------------------------------------
 alias c='clear'
 alias home='cd && clear'
 alias h='cd && clear'
 
-alias so='source'
-
 alias cat='bat'
-
-alias ez='exec zsh'
 
 if command -v delta >/dev/null 2>&1; then
   alias g='git'
@@ -35,12 +27,3 @@ alias ll='ls -l'
 
 # Repository/Project Shortcuts ------------------------------------------------
 alias peter='cd $HOME/Developer/peter-bread/peter-bread'
-
-# =============================================================================
-# ================= Temporary =================================================
-# =============================================================================
-
-# Repository/Project Shortcuts
-alias diss='cd $DEVELOPER/ak22112/Year3/tb2/project/program-generator'
-
-alias climate='cd $DEVELOPER/peter-bread/climate'
