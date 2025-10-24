@@ -1,8 +1,38 @@
 #!/usr/bin/env bash
 
-mkdir -p "$HOME/.local/bin"
+BIN="$HOME/.local/bin"
 
+# Ensure user bin directory exists.
+mkdir -p "$BIN"
+
+# Create symlinks.
 while IFS= read -r -d '' file; do
-  [[ -x "$file" ]] || continue
-  ln -sfn "$file" "$HOME/.local/bin/$(basename "$file")"
-done < <(find "$DOTFILES/scripts" -type f ! -name '*.md' -print0)
+  [[ -x $file ]] || continue
+  ln -sfn "$file" "$BIN/$(basename "$file")"
+done < <(
+  find "$DOTFILES/scripts" \
+    -type f \
+    ! -name '*.*' \
+    ! -name 'install' \
+    -print0
+)
+# To check perms in `find`:
+# \( -perm +111 -o -perm /111 \) \
+
+# Prune any stale symlinks.
+for link in "$BIN/"*; do
+  if [[ -L $link && ! -e $link ]]; then
+    rm "$link"
+  fi
+done
+
+# # Alternative using `fd` instead of `find`.
+# while IFS= read -r -d '' file; do
+#   ln -sfn "$file" "$HOME/.local/bin/$(basename "$file")"
+# done < <(
+#   fd . "$DOTFILES/scripts" \
+#     --type x \
+#     --exclude '*.*' \
+#     --exclude 'install' \
+#     --print0
+# )
