@@ -1,41 +1,7 @@
-#!/usr/bin/env zsh
+# vi: ft=zsh
 
+# Emacs bindings.
 bindkey -e
-
-
-# PATH ========================================================================
-
-# Git scripts (add custom git commands)
-# path+=("$DOTFILES/git/git-scripts")
-
-
-# Languages -------------------------------------------------------------------
-
-[ -d "$(brew --prefix ruby)/bin" ] && path=("$(brew --prefix ruby)/bin" $path)
-
-[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
-
-[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && \
-  source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-path=("$GOBIN" $path)
-
-
-# Mise-en-place ---------------------------------------------------------------
-
-if command -v mise &>/dev/null; then
-  eval "$(mise activate zsh)"     # Interactive Usage
-  eval "$(mise hook-env -s zsh)"  # Usage in this script
-fi
-
-
-# General ---------------------------------------------------------------------
-
-# User-specific scripts and executables
-mkdir -p "$HOME/.local/bin"
-path=("$HOME/.local/bin" $path)
 
 
 # ZSH Plugin Manager (Zap) ====================================================
@@ -59,11 +25,11 @@ plug "Aloxaf/fzf-tab"
 
 # History =====================================================================
 
-setopt hist_ignore_space    # Commands not saved if they are prepended with a space
-setopt hist_ignore_all_dups # Remove all duplicate commands from history
-setopt hist_save_no_dups    # Do not write duplicate commands to history file
-setopt hist_ignore_dups     # Ignore duplicate commands in history
-setopt hist_find_no_dups    # Do not display duplicate commands during history search
+setopt hist_ignore_space    # Commands not saved if they are prepended with a space.
+setopt hist_ignore_all_dups # Remove all duplicate commands from history.
+setopt hist_save_no_dups    # Do not write duplicate commands to history file.
+setopt hist_ignore_dups     # Ignore duplicate commands in history.
+setopt hist_find_no_dups    # Do not display duplicate commands during history search.
 
 
 # Keybinds ====================================================================
@@ -74,11 +40,18 @@ bindkey '^n' history-search-forward
 
 # fzf Tab Completion ==========================================================
 
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # case insensitive completion
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # Case insensitive completion.
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview \
   'eza --color=always --icons=always --group-directories-first --git $realpath'
+
+
+# Mise ========================================================================
+
+if command -v mise &>/dev/null; then
+  eval "$(mise activate zsh)"
+fi
 
 
 # Starship Prompt =============================================================
@@ -114,33 +87,34 @@ done
 
 # Shell Integrations ==========================================================
 
-# enable fzf shell integration
 source <(fzf --zsh)
 
 
 # Completion ==================================================================
 
-# Homebrew Completion
-if type brew &>/dev/null; then
-  fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
-fi
-
 # User-specifc Completion
 mkdir -p "$ZSH_COMPLETIONS"
 fpath=("$ZSH_COMPLETIONS" $fpath)
-
-if command -v terraform &>/dev/null; then
-  complete -C /opt/homebrew/bin/terraform terraform
-fi
-
-source <(tree-sitter complete --shell zsh)
 
 # Load Shell Completion
 autoload -Uz compinit
 compinit
 
-# this doesn't have any functionality yet
-# alias f='find ~ ~/Developer/peter-bread ~/Developer/ak22112 ~/.config -mindepth 1 -maxdepth 1 -type d | sed "s|$HOME|~|g" | fzf'
+# Only source tree-sitter completions if the complete subcommand exists.
+if tree-sitter complete -h &>/dev/null; then
+  source <(tree-sitter complete --shell zsh)
+fi
+
+# TODO: Move to functions file.
+p() {
+  local selection full_path prefix final
+  prefix="$DEVELOPER/peter-bread"
+  full_path=$(find "$prefix" -mindepth 1 -maxdepth 1 -type d)
+  selection=$(echo "$full_path" | sed "s|$prefix/||" | fzf)
+  final="$prefix/$selection"
+ 
+  cd "$final" && nvim "$final"
+}
 
 # Browser =====================================================================
 
@@ -150,6 +124,7 @@ Darwin)
   # System Settings -> Desktop & Dock -> Default Web Browser
   export BROWSER="open"
   ;;
+Linux) ;;
 esac
 
 
@@ -157,4 +132,9 @@ esac
 
 if [[ $TERM_PROGRAM == "ghostty" ]]; then
   export EZA_ICON_SPACING=2
+fi
+
+# Only use Neovim as manpager if it is available.
+if command -v nvim &>/dev/null; then
+  export MANPAGER='nvim +Man!'
 fi

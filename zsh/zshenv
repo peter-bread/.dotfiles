@@ -24,8 +24,6 @@ export VISUAL="nvim"
 export NVIM_APPNAME="peter.nvim"
 
 # Man pages.
-# NOTE: might need to move this to zshrc so this is only set if nvim executable is found
-export MANPAGER='nvim +Man!'
 export MANWIDTH=80
 
 # Zsh.
