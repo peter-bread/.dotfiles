@@ -7,3 +7,4 @@ default_config_filename = ".mise.toml"
 [tools]
 node   = ["lts", "20", "18"]
 python = ["latest", "3.12", "3.11"]
+ruby   = "latest"
