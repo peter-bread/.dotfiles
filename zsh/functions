@@ -1,0 +1,112 @@
+# vi: ft=zsh
+
+# TODO: Probably rewrite this in Go, then use a YAML file
+# to map aliases to directories. Could combine with `my`.
+function dev() {
+  if [[ -z $DEVELOPER ]]; then
+    echo "Error: \$DEVELOPER environment variable is not set."
+    return 1
+  fi
+  case $1 in
+  "")
+    cd "$DEVELOPER" || return
+    ;;
+  a)
+    cd "$DEVELOPER"/ak22112 || return
+    ;;
+  p)
+    cd "$DEVELOPER"/peter-bread || return
+    ;;
+  *)
+    echo "Error: Invalid argument. Use 'a' or 'p'."
+    ;;
+  esac
+}
+
+# TODO: Probably rewrite this in Go, then use a YAML file
+# to map aliases to directories. Could combine with `dev`.
+function my() {
+  function _show_help_my() {
+    echo -e "Go to \e[1mmy\e[0m important places."
+    echo
+    echo -e "\e[1;4mUsage\e[0m: my <place>"
+    echo
+    echo -e "\e[1;4mPlaces\e[0m:"
+    echo "  d, dots, dotfiles     cd to \$DOTFILES"
+    echo "  n, nvim, neovim       cd to nvim config"
+  }
+
+  if [[ -z $1 ]]; then
+    _show_help_my
+    return 1
+  fi
+
+  case $1 in
+  h | -h | help | --help)
+    _show_help_my
+    ;;
+  d | dots | dotfiles)
+    cd "$DOTFILES" || return 1
+    ;;
+  n | nvim | neovim)
+    cd "$XDG_CONFIG_HOME/$NVIM_APPNAME" || return 1
+    ;;
+  *)
+    echo -e "\e[31mError: Not a valid option right now :(\n\nSee 'my help'.\e[0m"
+    return 1
+    ;;
+  esac
+}
+
+# cd to root of git repo.
+function cdgit() {
+  cd "$(git rev-parse --show-toplevel)" || return
+}
+
+# Create new directory and cd into it.
+function mkcd() {
+  builtin mkdir "$@" && builtin cd || return
+}
+
+
+# Activate python venv,
+function activate() {
+
+  red="\e[0;31m"
+  yellow="\e[33m"
+  bold="\e[1m"
+  underline="\e[4m"
+  reset="\e[0m"
+
+  if [[ -z $1 ]]; then
+    activate ".venv"
+  else
+    if [[ $1 == "-h" || $1 == "--help" ]]; then
+      echo "usage: activate [ -h | --help ] [<venv_name>]"
+      echo
+      echo -e "\tactivate               attempts to activate .venv"
+      echo -e "\tactivate <venv_name>   attempts to activate <venv_name>"
+      echo -e "\tactivate -h, --help    prints help"
+      return 1
+    fi
+    if [[ -f ${1}/bin/activate ]]; then
+      source "${1}/bin/activate"
+    else
+      echo -e "${red}Error: ${1}/bin/activate does not exist.${reset}\n"
+      echo -e "${bold}${underline}Hints:${reset}"
+      echo -e "${yellow}Did you use the right virtual environment name?"
+      echo -e "Are you in the right directory to activate the virtual environment?"
+      echo -e "Have you made a virtual environment?${reset}"
+    fi
+  fi
+}
+
+# Broken yazi function.
+# function y() {
+#   tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+#   yazi "$@" --cwd-file="$tmp"
+#   if cwd="$(cat -- "$tmp")" && [ "$cwd" != "" ] && [ "$cwd" != "$PWD" ]; then
+#     cd -- "$cwd" || exit
+#   fi
+#   rm -f -- "$tmp"
+# }

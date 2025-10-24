@@ -76,9 +76,7 @@ fi
 
 # Functions ===================================================================
 
-for file in $DOTFILES/zsh/functions/*(.); do
-  source "$file"
-done
+[ -f "$DOTFILES/zsh/functions" ] && source "$DOTFILES/zsh/functions"
 
 
 # Shell Integrations ==========================================================
