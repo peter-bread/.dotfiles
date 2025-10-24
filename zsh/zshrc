@@ -99,16 +99,6 @@ if tree-sitter complete -h &>/dev/null; then
   source <(tree-sitter complete --shell zsh)
 fi
 
-# TODO: Move to functions file.
-p() {
-  local selection full_path prefix final
-  prefix="$DEVELOPER/peter-bread"
-  full_path=$(find "$prefix" -mindepth 1 -maxdepth 1 -type d)
-  selection=$(echo "$full_path" | sed "s|$prefix/||" | fzf)
-  final="$prefix/$selection"
- 
-  cd "$final" && nvim "$final"
-}
 
 # Browser =====================================================================
 
