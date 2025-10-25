@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-# Checks if current directory is in a git repo.
-function is_git_repo() {
-  git rev-parse --is-inside-work-tree >/dev/null 2>&1
-}
-
 function neovim() {
 
   function _show_help() {
@@ -97,14 +92,6 @@ function neovim() {
     ;;
 
   esac
-}
-
-function get_wifi_ip_addr() {
-  ipconfig getifaddr en0
-}
-
-function get_wifi_ip_addr2() {
-  networksetup -getinfo Wi-Fi | rg "^IP address:" | awk '{print $3}'
 }
 
 # Create a file and any missing parent directories.
