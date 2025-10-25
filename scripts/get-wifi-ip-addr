@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-OS=$(uname -s)
-
-case $OS in
-Darwin) ipconfig getifaddr en0 ;; # networksetup -getinfo Wi-Fi | rg "^IP address:" | awk '{print $3}'
-*) ;;
-esac

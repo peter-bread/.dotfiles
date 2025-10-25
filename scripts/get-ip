@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+import socket
+import sys
+
+
+def get_primary_ip():
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            return s.getsockname()[0]  # pyright:ignore[reportAny] `getsockname` returns `_RetAddress` which is an alias for Any.
+    except Exception:
+        return None
+
+
+ip = get_primary_ip()
+
+if ip:
+    print(ip)  # pyright:ignore[reportAny]
+    sys.exit(0)
+else:
+    print("No IP address found.", file=sys.stderr)
+    sys.exit(1)
