@@ -120,7 +120,6 @@ lctrl + lalt - d : open -a "Discord"
 
 lctrl + lalt - s : open -a "Spotify"
 
-# lctrl + lalt - b : open -a "Brave Browser"
-lctrl + lalt - b : "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+lctrl + lalt - b : browser="$(browserctl get --name-only)"; open -a "$browser"
 
 lctrl + lalt - o : open -a "Microsoft Outlook"
