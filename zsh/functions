@@ -108,7 +108,7 @@ p() {
   selection=$(echo "$full_path" | sed "s|$prefix/||" | fzf)
   final="$prefix/$selection"
  
-  cd "$final"
+  cd "$final" && clear
   # cd "$final" && nvim "$final"
 }
 
