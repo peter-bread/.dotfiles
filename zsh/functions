@@ -108,7 +108,8 @@ p() {
   selection=$(echo "$full_path" | sed "s|$prefix/||" | fzf)
   final="$prefix/$selection"
  
-  cd "$final" && nvim "$final"
+  cd "$final"
+  # cd "$final" && nvim "$final"
 }
 
 # Broken yazi function.
