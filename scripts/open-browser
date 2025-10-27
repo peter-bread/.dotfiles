@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Launch default browser.
+
+OS=$(uname -s)
+
+case $OS in
+Darwin)
+  if ! command -v browserctl &>/dev/null; then
+    echo "Error: browserctl not installed"
+    exti 1
+  fi
+  open -a "$(browserctl get --name-only)"
+  ;;
+Linux)
+  echo "Error: not implemented yet"
+  exti 1
+  ;;
+*)
+  echo "Error: unsupported operating system: $OS"
+  exti 1
+  ;;
+esac
