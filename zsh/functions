@@ -34,7 +34,7 @@ function my() {
     echo -e "\e[1;4mPlaces\e[0m:"
     echo "  d, dots, dotfiles     cd to \$DOTFILES"
     echo "  n, nvim, neovim       cd to nvim config"
-    echo "  s, sys                cd to ~/.system_maintenance"
+    echo "  t, todo               cd to ~/.todo"
   }
 
   if [[ -z $1 ]]; then
@@ -46,7 +46,7 @@ function my() {
   h | -h | help | --help) _show_help_my                                 ;;
   d | dots | dotfiles)    cd "$DOTFILES"                      || return ;;
   n | nvim | neovim)      cd "$XDG_CONFIG_HOME/$NVIM_APPNAME" || return ;;
-  s | sys)                cd "$HOME/.system_maintenance"      || return ;;
+  t | todo)               cd "$HOME/.todo"                    || return ;;
   *)
     echo -e "\e[31mError: Not a valid option right now :(\n\nSee 'my help'.\e[0m"
     return 1
