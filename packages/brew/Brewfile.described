@@ -65,6 +65,8 @@ brew "go"
 brew "go-task"
 # Deliver Go binaries as fast and easily as possible
 brew "goreleaser"
+# Command-line benchmarking tool
+brew "hyperfine"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
 # Serializes the output of command-line tools to structured JSON output
