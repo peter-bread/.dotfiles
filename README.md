@@ -161,7 +161,7 @@ The top level consists of a few key things:
 | ----------------- | ------------------------------------------------------------ |
 | `install`         | Entry point; clones repo, options to do more                 |
 | `MANIFEST.*`      | Files containing lists of modules to be installed on each OS |
-| `_*`              | Directories that are not modules                             |
+| `_*`              | Repo utilities; _NOT_ modules                                |
 | other directories | Modules containing config files and install scripts          |
 
 Each module consists of:
@@ -174,9 +174,16 @@ Each module consists of:
 
 <!-- markdownlint-restore -->
 
+[Packages](./packages/) is a special module in that it does _NOT_ have an
+`install` script. It contains files and scripts used to install software.
+
+It can be used by using the `--pkgs` option with the top-level `install`
+script.
+
 ## Neovim
 
 My Neovim configuration is in its own repository
 [here](https://github.com/peter-bread/peter.nvim).
 
-It can be cloned manually or by using the `--nvim` option with `install`.
+It can be cloned manually or by using the `--nvim` option with the top-level
+`install` script.
