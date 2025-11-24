@@ -10,44 +10,29 @@ Managing my dotfiles.
 
 - [Setup](#setup)
 - [File Structure](#file-structure)
-- [Where's Neovim Config???](#wheres-neovim-config)
+- [Neovim](#neovim)
 <!--toc:end-->
 
 ## Setup
 
-<!--toc:ignore-->
+Ensure `bash` is available.
 
-### Bootstrap
+Download and execute [`install`](./install).
 
-Use bootstrap script on a new machine (if available):
+Using `curl`:
 
-```sh
-curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh | bash
+```bash
+curl -fsSL https://raw.githubusercontent.com/peter-bread/.dotfiles/refs/heads/main/install | bash
 ```
 
-<!--toc:ignore-->
+Using `wget`:
 
-### Manual
-
-Clone the repo:
-
-```sh
-git clone git@github.com:peter-bread/.dotfiles.git ~/.dotfiles
+```bash
+wget -qO- https://raw.githubusercontent.com/peter-bread/.dotfiles/refs/heads/main/install | bash
 ```
 
-Change to directory:
-
-```sh
-cd ~/.dotfiles
-```
-
-Run the install script:
-
-```sh
-make install
-```
-
-Restart shell.
+If on a super minimal system, you may need to download on a another machine and
+transfer with a USB.
 
 ## File Structure
 
@@ -102,7 +87,7 @@ script. They can also be invoked manually using the `dotfiles` command.
 └── install.sh
 ```
 
-## Where's Neovim Config???
+## Neovim
 
 My neovim configuration is in its own repository [here](https://github.com/peter-bread/peter.nvim).
 
