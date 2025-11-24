@@ -10,7 +10,6 @@ Managing my dotfiles.
 
 - [Setup](#setup)
 - [File Structure](#file-structure)
-- [Example](#example)
 - [Where's Neovim Config???](#wheres-neovim-config)
 <!--toc:end-->
 
@@ -101,46 +100,6 @@ script. They can also be invoked manually using the `dotfiles` command.
 │   ├── install-wezterm.sh
 │   └── install-starship.sh
 └── install.sh
-```
-
-## Example
-
-Below is a simple example of how the config files might be installed:
-
-<!--toc:ignore-->
-
-### `install.sh`
-
-```sh
-# make sure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*)
-source ./zsh/zshenv
-```
-
-<!--toc:ignore-->
-
-### `install/install-zsh.sh`
-
-```sh
-# make directory for zsh config files
-mkdir -p "$ZDOTDIR"
-
-# .zshenv MUST be placed in $HOME directory
-ln -sf "$DOTFILES/zsh/zshenv" "$HOME/.zshenv"
-
-# .zshrc MUST be placed in $ZDOTDIR directory
-ln -sf "$DOTFILES/zsh/zshrc" "$ZDOTDIR/.zshrc"
-```
-
-<!--toc:ignore-->
-
-### `install/install-wezterm.sh`
-
-```sh
-# make directory for wezterm config
-mkdir -p "$XDG_CONFIG_HOME/wezterm"
-
-# place wezterm config file in that directory
-ln -sf "$DOTFILES/wezterm/wezterm.lua" "$XDG_CONFIG_HOME/wezterm/wezterm.lua"
 ```
 
 ## Where's Neovim Config???
