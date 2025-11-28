@@ -8,9 +8,10 @@ mkdir -p "$BIN"
 # Create symlinks.
 while IFS= read -r -d '' file; do
   [[ -x $file ]] || continue
-  ln -sfn "$file" "$BIN/$(basename "$file")"
+  target=$(realpath "$file")
+  ln -sfn "$target" "$BIN/$(basename "$file")"
 done < <(
-  find "$DOTFILES/scripts" \
+  find -L "$DOTFILES/scripts" \
     -type f \
     ! -name '*.*' \
     ! -name 'install' \
