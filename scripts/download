@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+download() {
+  local url=$1
+  local output=$2
+
+  if command -v curl >/dev/null 2>&1; then
+    if [[ $output == "-" ]]; then
+      # stdout
+      curl -fsSL "$url"
+    elif [[ -z $output ]]; then
+      # auto name
+      curl -fsSLO "$url"
+    else
+      # specific name
+      curl -fsSLo "$output" "$url"
+    fi
+  elif command -v wget >/dev/null 2>&1; then
+    if [[ $output == "-" ]]; then
+      # stdout
+      wget -qO- "$url"
+    elif [[ -z $output ]]; then
+      # auto name
+      wget -q "$url"
+    else
+      # specific name
+      wget -qO "$output" "$url"
+    fi
+  else
+    echo "Error: neither curl nor wget is installed" >&2
+    return 1
+  fi
+}
+
+download "$@"
