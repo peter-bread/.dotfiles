@@ -2,23 +2,28 @@
 
 show_help() {
   cat <<'EOF'
-Usage: download URL [OUTPUT]
+Usage:
+  download URL
+  download URL OUTPUT
+  download URL -
 
-OUTPUT can be:
-  -     Write to stdout
-  ""    Save using remote filename
-  FILE  Save to specific filename
+Arguments:
+  URL          Required. The URL to download.
+
+  OUTPUT
+    (omitted)  Save using the remote filename (curl -O / wget default)
+    FILE       Save to the specified filename
+    -          Write file to stdout
 
 Examples:
-  download https://example.com/file.tar.gz -              (stdout)
-  download https://example.com/file.tar.gz                (remote filename)
-  download https://example.com/file.tar.gz file.tar.gz    (specific filename)
+  download https://example.com/file.tar.gz
+  download https://example.com/file.tar.gz outfile.tar.gz
+  download https://example.com/file.tar.gz -
 
 Notes:
   - Uses curl if available; otherwise wget.
-  - curl is run with -f (fail on HTTP errors), -s (silent),
-    -S (show errors), -L (follow redirects).
-  - wget is run quietly (-q) but exits nonzero on HTTP errors.
+  - curl uses: -f -s -S -L
+  - wget uses: -q, and fails automatically on HTTP errors
 EOF
 }
 
