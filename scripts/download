@@ -1,35 +1,89 @@
 #!/usr/bin/env bash
 
+show_help() {
+  cat <<'EOF'
+Usage: download URL [OUTPUT]
+
+OUTPUT can be:
+  -     Write to stdout
+  ""    Save using remote filename
+  FILE  Save to specific filename
+
+Examples:
+  download https://example.com/file.tar.gz -              (stdout)
+  download https://example.com/file.tar.gz                (remote filename)
+  download https://example.com/file.tar.gz file.tar.gz    (specific filename)
+
+Notes:
+  - Uses curl if available; otherwise wget.
+  - curl is run with -f (fail on HTTP errors), -s (silent),
+    -S (show errors), -L (follow redirects).
+  - wget is run quietly (-q) but exits nonzero on HTTP errors.
+EOF
+}
+
+available() {
+  [[ -n $1 ]] && command -v -- "$1" >/dev/null 2>&1
+}
+
+error_curl_wget_not_installed() {
+  echo "Error: neither curl nor wget is installed" >&2
+  return 1
+}
+
+download_to_stdout() {
+  local url=$1
+
+  if available curl; then
+    curl -fsSL "$url"
+  elif available wget; then
+    wget -qO- "$url"
+  else
+    error_curl_wget_not_installed || return
+  fi
+}
+
+download_to_remote_filename() {
+  local url=$1
+
+  if available curl; then
+    curl -fsSLO "$url"
+  elif available wget; then
+    wget -q "$url"
+  else
+    error_curl_wget_not_installed || return
+  fi
+}
+
+download_to_custom_filename() {
+  local url=$1
+  local output=$2
+
+  if available curl; then
+    curl -fsSLo "$output" "$url"
+  elif available wget; then
+    wget -qO "$output" "$url"
+  else
+    error_curl_wget_not_installed || return
+  fi
+}
+
 download() {
   local url=$1
   local output=$2
 
-  if command -v curl >/dev/null 2>&1; then
-    if [[ $output == "-" ]]; then
-      # stdout
-      curl -fsSL "$url"
-    elif [[ -z $output ]]; then
-      # auto name
-      curl -fsSLO "$url"
-    else
-      # specific name
-      curl -fsSLo "$output" "$url"
-    fi
-  elif command -v wget >/dev/null 2>&1; then
-    if [[ $output == "-" ]]; then
-      # stdout
-      wget -qO- "$url"
-    elif [[ -z $output ]]; then
-      # auto name
-      wget -q "$url"
-    else
-      # specific name
-      wget -qO "$output" "$url"
-    fi
-  else
-    echo "Error: neither curl nor wget is installed" >&2
-    return 1
-  fi
+  case "$url" in
+  -h | --help | "")
+    show_help
+    return 0
+    ;;
+  esac
+
+  case $output in
+  -) download_to_stdout "$url" || return ;;
+  "") download_to_remote_filename "$url" || return ;;
+  *) download_to_custom_filename "$url" "$output" || return ;;
+  esac
 }
 
-download "$@"
+download "$@" || exit
