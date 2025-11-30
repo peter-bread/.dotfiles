@@ -3,8 +3,10 @@
 show_help() {
   cat <<'EOF'
 Usage:
+  download <url> [- | FILE]
+
   download URL
-  download URL OUTPUT
+  download URL FILE
   download URL -
 
 Arguments:
@@ -21,7 +23,7 @@ Examples:
   download https://example.com/file.tar.gz -
 
 Notes:
-  - Uses curl if available; otherwise wget.
+  - Uses tools in the following order: curl, wget, python3
   - curl uses: -f -s -S -L
   - wget uses: -q, and fails automatically on HTTP errors
 EOF
@@ -32,7 +34,7 @@ available() {
 }
 
 error_curl_wget_not_installed() {
-  echo "Error: neither curl nor wget is installed" >&2
+  echo "Error: none of curl, wget or python3 are installed" >&2
   return 1
 }
 
@@ -43,6 +45,15 @@ download_to_stdout() {
     curl -fsSL "$url"
   elif available wget; then
     wget -qO- "$url"
+  elif available python3; then
+    python3 <<-EOF
+			import sys, urllib.request
+
+			url = "${url}"
+
+			with urllib.request.urlopen(url) as r:
+			    sys.stdout.buffer.write(r.read())
+		EOF
   else
     error_curl_wget_not_installed || return
   fi
@@ -55,6 +66,15 @@ download_to_remote_filename() {
     curl -fsSLO "$url"
   elif available wget; then
     wget -q "$url"
+  elif available python3; then
+    python3 <<-EOF
+			import os, urllib.request
+
+			url = "${url}"
+			filename = os.path.basename(url)
+
+			urllib.request.urlretrieve(url, filename)
+		EOF
   else
     error_curl_wget_not_installed || return
   fi
@@ -68,6 +88,15 @@ download_to_custom_filename() {
     curl -fsSLo "$output" "$url"
   elif available wget; then
     wget -qO "$output" "$url"
+  elif available python3; then
+    python3 <<-EOF
+			import urllib.request
+
+			url = "${url}"
+			out = "${output}"
+
+			urllib.request.urlretrieve(url, out)
+		EOF
   else
     error_curl_wget_not_installed || return
   fi
