@@ -33,7 +33,7 @@ available() {
   [[ -n $1 ]] && command -v -- "$1" >/dev/null 2>&1
 }
 
-error_curl_wget_not_installed() {
+error_no_tool_installed() {
   echo "Error: none of curl, wget or python3 are installed" >&2
   return 1
 }
@@ -55,7 +55,7 @@ download_to_stdout() {
 			    sys.stdout.buffer.write(r.read())
 		EOF
   else
-    error_curl_wget_not_installed || return
+    error_no_tool_installed || return
   fi
 }
 
@@ -76,7 +76,7 @@ download_to_remote_filename() {
 			urllib.request.urlretrieve(url, filename)
 		EOF
   else
-    error_curl_wget_not_installed || return
+    error_no_tool_installed || return
   fi
 }
 
@@ -98,7 +98,7 @@ download_to_custom_filename() {
 			urllib.request.urlretrieve(url, out)
 		EOF
   else
-    error_curl_wget_not_installed || return
+    error_no_tool_installed || return
   fi
 }
 
