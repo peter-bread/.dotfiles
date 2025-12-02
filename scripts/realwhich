@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# TODO: Support -a option from which(1).
+# TODO: Make this script more robust.
+
+[[ -n $1 ]] && realpath "$(which "$1")"
