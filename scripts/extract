@@ -1,0 +1,205 @@
+#!/usr/bin/env bash
+
+# set -Eeuo pipefail
+
+# Unified extraction.
+#
+# Should handle zip files and tarballs, using multiple compression algorithms.
+# Should always extract into a sub directory, should not dump all content into
+# current directory.
+
+show_help() {
+  cat <<'EOF'
+Extract archives into a sensible directory.
+
+If the archive contains a single top-level directory, that directory will be
+extracted into the current directory. Otherwise, a new directory named after
+the archive (without extensions) will be created for extraction.
+
+Usage:
+  extract <archive>
+
+Arguments:
+  ARCHIVE      Required. The archive to extract.
+
+Examples:
+  # Archive has a single top-level directory
+  $ extract my-archive.tar.gz
+
+  # Archive does not have a single top-level directory
+  $ extract README-LICENSE-example.tar.gz
+  # Creates a directory named "README-LICENSE-example" for extraction
+
+Notes:
+  - Uses libarchive bsdtar if available
+  - TODO: fallback to GNU Tar and unzip
+EOF
+}
+
+available() {
+  [[ -n "$1" ]] && command -v -- "$1" &>/dev/null
+}
+
+_has_top_level_dir() {
+  local prefixes=$1
+
+  local count
+  count=$(echo "$prefixes" | sed 's|^\./||' | awk -F/ 'NF { print $1 }' | sort -u | wc -l)
+
+  # count=$(echo "$prefixes" | sed 's|^\./||' | grep -v '^$' | cut -d/ -f1 | sort -u | wc -l)
+
+  # TODO: If there is a top-level directory, echo it so it can be captured and used for logging.
+
+  [[ $count -eq 1 ]] && return 0 || return 1
+}
+
+archive_basename() {
+  local file=$1
+  file=$(basename "$file")
+
+  local exts=(
+    .tar.gz .tgz
+    .tar.bz2 .tbz2
+    .tar.xz .txz
+    .tar.zst .tzst
+    .tar.lzma .tar.lz
+    .tar
+    .zip
+  )
+
+  local ext
+  for ext in "${exts[@]}"; do
+    if [[ $file == *"$ext" ]]; then
+      echo "${file%"$ext"}"
+      return
+    fi
+  done
+
+  # TODO: Error/warn if unrecognised extension?
+
+  # Fallback: remove whatever the last extension is.
+  echo "${file%.*}"
+}
+
+do_bsdtar() {
+  local archive=$1
+  local prefixes
+  local base
+
+  # This is some funky stuff for reading archives from stdin rather than from
+  # the filesystem. This works fine when the archive has a top-level directory,
+  # but fails otherwise. This is because on stdin there is no way to get the
+  # filename, unless it is precomputed.
+  #
+  # local tmp
+  # if [[ $archive == "-" ]]; then
+  #   tmp=$(mktemp) || return
+  #   trap 'rm -f -- "${tmp:-}"; trap - RETURN' RETURN
+  #   cat - >"$tmp" || return
+  #   archive=$tmp
+  # fi
+
+  prefixes=$(bsdtar tf "$archive") || return
+
+  if _has_top_level_dir "$prefixes"; then
+    bsdtar xf "$archive"
+  else
+    base=$(archive_basename "$archive")
+    mkdir -p "$base"
+    bsdtar xf "$archive" -C "$base"
+  fi
+}
+
+# GNU Tar Compression Options
+
+# Compression options
+#     -a, --auto-compress
+#            Use archive suffix to determine the compression program.
+#
+#     -I, --use-compress-program=COMMAND
+#            Filter data through COMMAND.  It must accept the -d option, for
+#            decompression.  The argument can contain command line options.
+#
+#     -j, --bzip2
+#            Filter the archive through bzip2(1).
+#
+#     -J, --xz
+#            Filter the archive through xz(1).
+#
+#     --lzip Filter the archive through lzip(1).
+#
+#     --lzma Filter the archive through lzma(1).
+#
+#     --lzop Filter the archive through lzop(1).
+#
+#     --no-auto-compress
+#            Do not use archive suffix to determine the compression program.
+#
+#     -z, --gzip, --gunzip, --ungzip
+#            Filter the archive through gzip(1).
+#
+#     -Z, --compress, --uncompress
+#            Filter the archive through compress(1).
+#
+#     --zstd Filter the archive through zstd(1).
+
+_tar_has_top_level_dir() {
+  local archive=$1
+
+  local prefixes
+  prefixes=$(tar tf "$archive")
+
+  _has_top_level_dir "$prefixes"
+}
+
+_zip_has_top_level_dir() {
+  local archive=$1
+
+  local prefixes
+  prefixes=$(unzip -Z -1 "$archive")
+
+  _has_top_level_dir "$prefixes"
+}
+
+has_single_top_level_dir() {
+  local archive=$1
+
+  case $archive in
+  *.zip) _zip_has_top_level_dir "$archive" ;;
+  *) _tar_has_top_level_dir "$archive" ;;
+  esac
+}
+
+do_gnu_tar_and_unzip() {
+  echo "TODO: Implement logic for GNU Tar and unzip"
+  return 1
+}
+
+extract() {
+  local archive=$1
+
+  case "$archive" in
+  -h | --help | "")
+    show_help
+    return 0
+    ;;
+  esac
+
+  if [[ -z $archive ]]; then
+    echo "Error: no archive file provided" >&2
+    return 1
+  fi
+
+  if [[ ! -f $archive ]]; then
+    echo "Error: file not found: $archive" >&2
+    return 1
+  fi
+
+  if available bsdtar; then
+    do_bsdtar "$archive" || return
+  else
+    do_gnu_tar_and_unzip "$archive" || return
+  fi
+}
+
+extract "$@" || exit
