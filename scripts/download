@@ -2,6 +2,14 @@
 
 show_help() {
   cat <<'EOF'
+Download files from the Internet.
+
+This tool attempts to use curl, wget or python3 to download a file.
+This tool only has 3 output options (see below).
+
+This tool does not replace curl or wget. It supports and extremely limited
+subset of their capabilities.
+
 Usage:
   download <url> [- | FILE]
 
