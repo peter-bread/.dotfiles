@@ -1,0 +1,15 @@
+FROM ubuntu:26.04
+
+LABEL desc="Run local development version of dotfiles repo"
+
+ENV DEBIAN_FRONTEND=non-interactive \
+    DEV_USE_LOCAL=1
+
+RUN apt-get update && apt-get install -y \
+    sudo
+
+COPY . /root/.dotfiles
+
+WORKDIR /root/.dotfiles
+
+RUN [ "./install", "--prime" ]
