@@ -1,0 +1,12 @@
+# vi: ft=sh
+
+# Text Editor.
+export EDITOR="nvim"
+export VISUAL="nvim"
+export NVIM_APPNAME="peter.nvim"
+
+# Man pages.
+export MANWIDTH=80
+
+# Terminal Emulator.
+export DESIRED_TERM_PROGRAM="Ghostty"

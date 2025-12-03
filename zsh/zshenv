@@ -1,44 +1,13 @@
 # DO NOT set PATH in this file: https://gist.github.com/Linerre/f11ad4a6a934dcf01ee8415c9457e7b2
 # Use $ZDOTDIR/.zshrc instead
 
-# Dotfiles.
-export DOTFILES="$HOME/.dotfiles"
+safe_source() {
+  [[ -f $1 ]] && source "$1"
+}
 
-# Development.
-export DEVELOPER="$HOME/Developer"
+DOTFILES="$HOME/.dotfiles"
 
-# XDG.
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_STATE_HOME="$HOME/.local/state"
-export XDG_DATA_DIRS="/usr/local/share:/usr/share"
-export XDG_CONFIG_DIRS="/etc/xdg"
-
-# Terminal Emulator.
-export DESIRED_TERM_PROGRAM="Ghostty"
-
-# Text Editor.
-export EDITOR="nvim"
-export VISUAL="nvim"
-export NVIM_APPNAME="peter.nvim"
-
-# Man pages.
-export MANWIDTH=80
-
-# Zsh.
-export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
-export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
-
-# Starship prompt.
-export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
-
-# GitHub CLI.
-export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"
-
-# Gamon3.
-export GAMON3_CONFIG_DIR="$XDG_CONFIG_HOME/gamon3"
-
-# Go.
-export GOPATH="$HOME/go"
-export GOBIN="$GOPATH/bin"
+safe_source "$DOTFILES/env/common/non-interactive"
+safe_source "$DOTFILES/env/common/interactive"
+safe_source "$DOTFILES/env/zsh/non-interactive"
+safe_source "$DOTFILES/env/zsh/interactive"

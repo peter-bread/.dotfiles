@@ -1,0 +1,4 @@
+# vi: ft=sh
+
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"

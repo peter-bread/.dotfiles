@@ -1,0 +1,28 @@
+# vi: ft=sh
+
+# Dotfiles.
+export DOTFILES="$HOME/.dotfiles"
+
+# Development.
+export DEVELOPER="$HOME/Developer"
+
+# XDG.
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_DATA_DIRS="/usr/local/share:/usr/share"
+export XDG_CONFIG_DIRS="/etc/xdg"
+
+# Starship prompt.
+export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
+
+# GitHub CLI.
+export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"
+
+# Gamon3.
+export GAMON3_CONFIG_DIR="$XDG_CONFIG_HOME/gamon3"
+
+# Go.
+export GOPATH="$HOME/go"
+export GOBIN="$GOPATH/bin"

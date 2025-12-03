@@ -11,18 +11,21 @@ EXPECTED_ARGS=0
 ARGS=()
 
 # OPTIONS
-PRIME=0
-MODULES=0
-PKGS=0
-GITHUB=0
+: "${PRIME:=0}"
+: "${MODULES:=0}"
+: "${PKGS:=0}"
+: "${GITHUB:=0}"
 
 # OPTION ARGUMENTS
-NVIM=""
+: "${NVIM:=}"
 
 # Logging options.
-USE_COLORS=${USE_COLORS:-1}     # 1 = colored output,      0 = plain
-ENABLE_DEBUG=${ENABLE_DEBUG:-0} # 1 = show debug messages, 0 = hide
+: "${ENABLE_COLOR:=1}" # 1 = colored output,      0 = plain
+: "${ENABLE_DEBUG:=0}" # 1 = show debug messages, 0 = hide
 DATE_FORMAT="%Y-%m-%d %H:%M:%S"
+
+# Developer Options
+: "${DEV_USE_LOCAL:=0}"
 
 # ANSI color codes.
 RESET="\e[0m"
@@ -41,7 +44,7 @@ _log() {
   local timestamp
   timestamp=$(date +"$DATE_FORMAT")
 
-  if [[ $USE_COLORS -eq 1 && -n "$color" ]]; then
+  if [[ $ENABLE_COLOR -eq 1 && -n "$color" ]]; then
     printf "%s ${color}[%-7s]${RESET} %s\n" "$timestamp" "$level" "$msg" >&"$stream"
   else
     printf "%s [%-7s] %s\n" "$timestamp" "$level" "$msg" >&"$stream"
@@ -91,12 +94,27 @@ Options:
 
   -h, --help    Print this help message
 
-Environemnt Variables:
-  USE_COLORS      Control colored logging.
-                  1 = enable; 0 = disable (default: 1)
+Environment Variables:
+  These variables mirror the options above. Flags provided on the command line
+  take precedence over environment variables. All boolean variables default to 0
+  (disabled) unless otherwise noted.
 
-  ENABLE_DEBUG    Control debug logging.
-                  1 = enable; 0 = disable (default: 0)
+  Option Flags (0 = disable, 1 = enable):
+    PRIME       Enable system bootstrap to ensure required packages are installed
+    MODULES     Install modules from MANIFEST.* files
+    PKGS        Install packages
+    GITHUB      Authenticate with GitHub on this device
+
+  Option Arguments (string; default = empty):
+    NVIM        Neovim configuration repository to clone.
+
+  Logging and Output:
+    ENABLE_COLOR  Enable colored logging output (default: 1)
+    ENABLE_DEBUG  Enable debug logging (default: 0)
+
+  Developer / Advanced:
+    DEV_USE_LOCAL   Developer mode: do not attempt to clone/pull dotfiles repo.
+                    Useful when testing WIP scripts in a Docker container.
 EOF
   exit 0
 }
@@ -433,16 +451,13 @@ setup_dotfiles_repo() {
 }
 
 install_modules() {
-  # Ensure important environment variables are set ($DOTFILES, $ZDOTDIR, $XDG_*).
-  source ./zsh/zshenv
-
   # TODO: Move this logic to its own file or function?
   # This will be moved to a new `dirs` module and placed in `dirs/install`.
-  mkdir -p "$HOME/opt"
-  mkdir -p "$HOME/.local/bin"
-  mkdir -p "$DEVELOPER"
-  mkdir -p "$DEVELOPER/probe"
-  mkdir -p "$DEVELOPER/thirdparty"
+  # mkdir -p "$HOME/opt"
+  # mkdir -p "$HOME/.local/bin"
+  # mkdir -p "$DEVELOPER"
+  # mkdir -p "$DEVELOPER/probe"
+  # mkdir -p "$DEVELOPER/thirdparty"
 
   dot_install() {
     local module=$1
@@ -453,7 +468,7 @@ install_modules() {
       info "Installing $module module..."
       # TODO: Should this script be sourced or executed?
       # shellcheck disable=SC1090 # Doesn't really matter.
-      . "$file"
+      (. "$file")
     else
       # echo -e "${RED}=> Error: ${YELLOW}${module} ${RED}config does not exist${RESET}"
       error "$module module does not exist"
@@ -604,38 +619,48 @@ setup_neovim() {
 }
 
 main() {
-  parse_args "$@" || exit
+  parse_args "$@" || return
 
   if flag "$PRIME"; then
-    prime_system || exit
+    prime_system || return
   fi
 
-  check_requirements || exit
+  check_requirements || return
 
   DOTFILES=${DOTFILES:-$HOME/.dotfiles}
 
-  setup_dotfiles_repo "$@" || exit
+  # Skip pulling changes if testing local development version.
+  if flag "$DEV_USE_LOCAL"; then
+    warn "DEV_USE_LOCAL is a Developer-only option"
+    warn "Skipping dotfiles repo setup"
+    warn "Assuming local dotfiles repo exists"
+  else
+    setup_dotfiles_repo "$@" || return
+  fi
 
-  cd "$DOTFILES" || exit
+  cd "$DOTFILES" || return
+
+  # Export shell-agnostic, non-interactive environment variables.
+  source ./env/common/non-interactive
 
   if flag "$MODULES"; then
-    install_modules || exit
+    install_modules || return
   fi
 
   if flag "$PKGS"; then
     # TODO: Install packages.
-    install_pkgs || exit
+    install_pkgs || return
   fi
 
   if flag "$GITHUB"; then
-    setup_personal_github || exit
+    setup_personal_github || return
   fi
 
   if flag_arg "$NVIM"; then
-    setup_neovim || exit
+    setup_neovim || return
   fi
 
   success "$0 ${*:+${*} }completed successfully"
 }
 
-main "$@"
+main "$@" || exit

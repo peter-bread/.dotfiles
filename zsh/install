@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$DOTFILES"/env/zsh/non-interactive
+
 mkdir -p "$ZDOTDIR"
 mkdir -p "$ZSH_COMPLETIONS"
 
