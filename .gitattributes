@@ -1,4 +1,1 @@
-*gitconfig* linguist-language=gitconfig
-*gitignore* linguist-language=gitignore
-packages/brew/* linguist-language=Ruby
-packages/brew/*.md linguist-language=Markdown
+packages/brew/Brewfile* linguist-language=Ruby
