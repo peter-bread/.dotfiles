@@ -174,11 +174,26 @@ Each module consists of:
 
 <!-- markdownlint-restore -->
 
+### Special Modules
+
 [Packages](./packages/) is a special module in that it does _NOT_ have an
 `install` script. It contains files and scripts used to install software.
 
 It can be used by using the `--pkgs` option with the top-level `install`
 script.
+
+[Env](./env/) is a special module in that it does _NOT_ have an `install`
+script.
+
+The `env` module provides a unified environment layer that centralises
+shell-agnostic environment settings. Currently it defines environment
+variables, but it may later include aliases and POSIX-compatible helper
+functions for cross-shell consistency.
+
+These scripts are sourced by shell startup files, not executed.
+
+[Dirs](./dirs/) is a special module in that it only has an `install` script.
+This module is responsible for creating directories.
 
 ## Neovim
 
