@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+mkdir -p "$HOME/opt"
+
+# User-specific executables.
+mkdir -p "$HOME/.local/bin"
+
+# All code should live here.
+mkdir -p "$DEVELOPER"
+
+# Experiments.
+mkdir -p "$DEVELOPER/probe"
+
+# Third-party code, i.e. cloning other projects.
+mkdir -p "$DEVELOPER/thirdparty"

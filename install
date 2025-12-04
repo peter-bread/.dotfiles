@@ -444,20 +444,10 @@ setup_dotfiles_repo() {
 
   fi
 
-  # Expose important environment variables.
-  . "$DOTFILES/zsh/zshenv"
-
   success "Dotfiles repo setup successfully"
 }
 
 install_modules() {
-  # TODO: Move this logic to its own file or function?
-  # This will be moved to a new `dirs` module and placed in `dirs/install`.
-  # mkdir -p "$HOME/opt"
-  # mkdir -p "$HOME/.local/bin"
-  # mkdir -p "$DEVELOPER"
-  # mkdir -p "$DEVELOPER/probe"
-  # mkdir -p "$DEVELOPER/thirdparty"
 
   dot_install() {
     local module=$1
