@@ -1,3 +1,5 @@
+# vi: ft=dockerfile
+
 FROM ubuntu:26.04
 
 LABEL desc="Run local development version of dotfiles repo"
