@@ -68,12 +68,27 @@ Options:
 
   -h, --help    Print this help message
 
-Environemnt Variables:
-  USE_COLORS      Control colored logging.
-                  1 = enable; 0 = disable (default: 1)
+Environment Variables:
+  These variables mirror the options above. Flags provided on the command line
+  take precedence over environment variables. All boolean variables default to 0
+  (disabled) unless otherwise noted.
 
-  ENABLE_DEBUG    Control debug logging.
-                  1 = enable; 0 = disable (default: 0)
+  Option Flags (0 = disable, 1 = enable):
+    PRIME       Enable system bootstrap to ensure required packages are installed
+    MODULES     Install modules from MANIFEST.* files
+    PKGS        Install packages
+    GITHUB      Authenticate with GitHub on this device
+
+  Option Arguments (string; default = empty):
+    NVIM        Neovim configuration repository to clone.
+
+  Logging and Output:
+    ENABLE_COLOR  Enable colored logging output (default: 1)
+    ENABLE_DEBUG  Enable debug logging (default: 0)
+
+  Developer / Advanced:
+    DEV_USE_LOCAL   Developer mode: do not attempt to clone/pull dotfiles repo.
+                    Useful when testing WIP scripts in a Docker container.
 ```
 
 Ensure `bash` is available.
