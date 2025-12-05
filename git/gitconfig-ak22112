@@ -4,5 +4,8 @@
 	email      = "123549235+ak22112@users.noreply.github.com"
 	signingkey = ~/.ssh/bristol/github-ak22112.pub
 
-[core]
-	sshCommand = ssh -i ~/.ssh/bristol/github-ak22112 -F /dev/null
+[commit]
+	gpgsign = true
+
+[gpg]
+	format = ssh
