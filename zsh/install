@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$DOTFILES"/env/zsh/non-interactive
+source "$DOTFILES"/zsh/env/non-interactive
 
 mkdir -p "$ZDOTDIR"
 mkdir -p "$ZSH_COMPLETIONS"

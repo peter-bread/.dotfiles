@@ -7,7 +7,8 @@ safe_source() {
 
 DOTFILES="$HOME/.dotfiles"
 
-safe_source "$DOTFILES/env/common/non-interactive"
-safe_source "$DOTFILES/env/common/interactive"
-safe_source "$DOTFILES/env/zsh/non-interactive"
-safe_source "$DOTFILES/env/zsh/interactive"
+safe_source "$DOTFILES/env/non-interactive"
+safe_source "$DOTFILES/env/interactive"
+
+safe_source "$DOTFILES/zsh/env/non-interactive"
+safe_source "$DOTFILES/zsh/env/interactive"

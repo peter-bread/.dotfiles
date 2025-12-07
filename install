@@ -631,7 +631,7 @@ main() {
   cd "$DOTFILES" || return
 
   # Export shell-agnostic, non-interactive environment variables.
-  source ./env/common/non-interactive
+  source ./env/non-interactive
 
   if flag "$MODULES"; then
     install_modules || return
