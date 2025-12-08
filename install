@@ -453,18 +453,25 @@ install_modules() {
 
   dot_install() {
     local module=$1
-    local file="$DOTFILES/${module}/install"
+
+    local dir="$DOTFILES/${module}"
+    local file="$dir/install"
 
     if [[ -f $file ]]; then
-      # echo -e "${BLUE}=> Linking ${YELLOW}${module} ${BLUE}config...${RESET}"
       info "Installing $module module..."
-      # TODO: Should this script be sourced or executed?
+
+      # TODO: This script should be executed.
+      # Issue: https://github.com/peter-bread/.dotfiles/issues/33
+
       # shellcheck disable=SC1090 # Doesn't really matter.
       (. "$file")
     else
-      # echo -e "${RED}=> Error: ${YELLOW}${module} ${RED}config does not exist${RESET}"
-      error "$module module does not exist"
-      return 1
+      if [[ -d $dir ]]; then
+        warn "$module module does not contain an install script"
+      else
+        error "$module module does not exist"
+        return 1
+      fi
     fi
   }
 
