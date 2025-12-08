@@ -29,9 +29,10 @@ done
 
 # # Alternative using `fd` instead of `find`.
 # while IFS= read -r -d '' file; do
-#   ln -sfn "$file" "$HOME/.local/bin/$(basename "$file")"
+#   target=$(realpath "$file")
+#   echo ln -sfn "$target" "$BIN/$(basename "$file")"
 # done < <(
-#   fd . "$DOTFILES/scripts" \
+#   fd -L . "$DOTFILES/scripts" \
 #     --type x \
 #     --exclude '*.*' \
 #     --exclude 'install' \
