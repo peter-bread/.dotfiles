@@ -458,15 +458,21 @@ install_modules() {
     local file="$dir/install"
 
     if [[ -f $file ]]; then
-      info "Installing $module module..."
-
-      # TODO: This script should be executed.
-      # Issue: https://github.com/peter-bread/.dotfiles/issues/33
-
-      # shellcheck disable=SC1090 # Doesn't really matter.
-      (. "$file")
+      if [[ -x $file ]]; then
+        info "Installing $module module..."
+        if "$file"; then
+          success "Installed $module module successfully"
+        else
+          error "Failed to install $module module"
+          return 1
+        fi
+      else
+        warn "$module module contains a non-executable install script"
+      fi
     else
       if [[ -d $dir ]]; then
+        # If the module exists but has no install script, it is likely a
+        # "special" module. In this case, documentation should be consulted.
         warn "$module module does not contain an install script"
       else
         error "$module module does not exist"
