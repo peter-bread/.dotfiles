@@ -44,19 +44,19 @@ unavailable() {
   ! available "$1"
 }
 
-download() {
-  local url="$1"
-  local output="$2"
-
-  if command -v curl >/dev/null 2>&1; then
-    curl -sSL -o "$output" "$url"
-  elif command -v wget >/dev/null 2>&1; then
-    wget -q -O "$output" "$url"
-  else
-    error "Neither curl nor wget is installed." >&2
-    return 1
-  fi
-}
+# download() {
+#   local url="$1"
+#   local output="$2"
+#
+#   if command -v curl >/dev/null 2>&1; then
+#     curl -sSL -o "$output" "$url"
+#   elif command -v wget >/dev/null 2>&1; then
+#     wget -q -O "$output" "$url"
+#   else
+#     error "Neither curl nor wget is installed." >&2
+#     return 1
+#   fi
+# }
 
 # Download (and extract) assets from GitHub Releases.
 # Args:
@@ -79,7 +79,7 @@ download_from_github() {
     version=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.tag_name')
   fi
 
-  download "https://github.com/$repo/releases/download/$version/$name.$ext" "$tmp/$name.$ext" || return
+  "$DOTFILES"/scripts/download "https://github.com/$repo/releases/download/$version/$name.$ext" "$tmp/$name.$ext" || return
 
   tar xvf "$tmp/$name.$ext" -C "$tmp" &>/dev/null || return
 }
