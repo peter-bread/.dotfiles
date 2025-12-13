@@ -189,26 +189,45 @@ Each module consists of:
 
 <!-- markdownlint-restore -->
 
+### Modules
+
+There are three types of modules:
+
+- Config
+- Data
+- Actions
+
+| Module Type | Files | Install | Description                                                           |
+| ----------- | ----- | ------- | --------------------------------------------------------------------- |
+| Config      | ✅    | ✅      | Config files for tools that need to be symlinked to correct locations |
+| Data        | ✅    | ❌      | Files that are used by other modules or scripts                       |
+| Actions     | ❌    | ✅      | Perform operations, e.g. creating directories                         |
+
+Data and Actions are classed as "Special" modules.
+
+Data modules should _NOT_ be included in `MANIFEST` files.
+
 ### Special Modules
 
-[Packages](./packages/) is a special module in that it does _NOT_ have an
-`install` script. It contains files and scripts used to install software.
+Most modules are Config modules, however there are some Special modules.
 
-It can be used by using the `--pkgs` option with the top-level `install`
-script.
+#### Data
 
-[Env](./env/) is a special module in that it does _NOT_ have an `install`
-script.
+[Packages](./packages/) contains files and scripts used to install software. It
+can be used by using the `--pkgs` option with the top-level `install` script.
 
-The `env` module provides a unified environment layer that centralises
+[Env](./env/) provides a unified environment layer that centralises
 shell-agnostic environment settings. Currently it defines environment
 variables, but it may later include aliases and POSIX-compatible helper
 functions for cross-shell consistency.
 
-These scripts are sourced by shell startup files, not executed.
+These scripts are sourced by shell startup files in the `bash` and `zsh`
+modules, not executed.
 
-[Dirs](./dirs/) is a special module in that it only has an `install` script.
-This module is responsible for creating directories.
+#### Actions
+
+[Dirs](./dirs/) is responsible for creating directories to ensure a consistent
+work environment.
 
 ## Neovim
 
