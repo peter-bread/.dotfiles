@@ -17,13 +17,13 @@ $character
 add_newline = true
 
 [character]
+success_symbol = '[󰶻 ](bold green)'
+error_symbol   = '[ ](bold red)'
 # success_symbol = '[»](bold green)'
 # success_symbol = '[󰄾 ](bold green)'
 # success_symbol = '[ ](bold green)'
 # success_symbol = '[ ](bold green)'
 # success_symbol = '[󰄾 ](bold green)'
-success_symbol = '[󰶻 ](bold green)'
-error_symbol   = '[ ](bold red)'
 # error_symbol   = '[󱈸 ](bold red)'
 # error_symbol   = '[! ](bold red)'
 
@@ -67,4 +67,5 @@ format   = '[\(as [$symbol](bold italic underline fg:#ffff00)\) ]($style)'
 symbol   = 'root'
 
 [python]
+# Show currently active virtual environment.
 format = '[(\($virtualenv\) )]($style)'
