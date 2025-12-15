@@ -11,10 +11,18 @@ $git_state\
 $git_status
 $shell\
 $shlvl\
+$status\
 $character
 """
 
 add_newline = true
+
+# May change this in the future.
+[status]
+disabled       = false
+success_style  = 'bold green'
+success_symbol = "n/a"                    # This is only set to get status to appear on success.
+format         = '[\[$status\]]($style) '
 
 [character]
 success_symbol = '[󰶻 ](bold green)'
