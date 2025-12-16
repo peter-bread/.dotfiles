@@ -454,29 +454,29 @@ install_modules() {
   dot_install() {
     local module=$1
 
-    local dir="$DOTFILES/${module}"
-    local file="$dir/install"
+    local module_dir="$DOTFILES/${module}"
+    local module_install="$module_dir/install"
 
-    if [[ ! -d $dir ]]; then
+    if [[ ! -d $module_dir ]]; then
       error "$module module does not exist"
       return 1
     fi
 
     # If the module exists but has no install script, it is likely a
     # "special" module. In this case, documentation should be consulted.
-    if [[ ! -f $file ]]; then
+    if [[ ! -f $module_install ]]; then
       warn "$module module does not contain an install script. Skipping..."
       return
     fi
 
-    if [[ ! -x $file ]]; then
+    if [[ ! -x $module_install ]]; then
       warn "$module module contains a non-executable install script. Skipping..."
       return
     fi
 
     info "Installing $module module..."
 
-    if "$file"; then
+    if "$module_install"; then
       success "Installed $module module successfully"
     else
       error "Failed to install $module module"
