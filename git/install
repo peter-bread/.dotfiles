@@ -2,5 +2,9 @@
 
 mkdir -p "$XDG_CONFIG_HOME/git"
 
+# Machine-specific config.
+mkdir -p "$XDG_CONFIG_HOME/git/local.d"
+touch "$XDG_CONFIG_HOME/git/local"
+
 ln -sfn "$DOTFILES/git/gitconfig" "$XDG_CONFIG_HOME/git/config"
 ln -sfn "$DOTFILES/git/gitignore" "$XDG_CONFIG_HOME/git/ignore"

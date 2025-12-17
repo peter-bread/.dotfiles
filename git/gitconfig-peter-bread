@@ -4,5 +4,8 @@
 	email      = "145384599+peter-bread@users.noreply.github.com"
 	signingkey = ~/.ssh/personal/github-peter-bread.pub
 
-[core]
-	sshCommand = ssh -i ~/.ssh/personal/github-peter-bread -F /dev/null
+[commit]
+	gpgsign = true
+
+[gpg]
+	format = ssh

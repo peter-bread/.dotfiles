@@ -1,0 +1,8 @@
+# vi: ft=sshconfig
+
+# Version-controlled, nothing sensitive.
+Include config.d/*.conf
+
+# Local, private, machine- or identiy-specific secrets.
+# Not version-controlled.
+Include config.local

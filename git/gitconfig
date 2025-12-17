@@ -33,6 +33,10 @@
 	minus-emph-style = "syntax #733d22 bold"
 	syntax-theme     = "OneHalfDark"
 
+	side-by-side             = true
+	line-numbers-plus-style  = "#234d87 bold"
+	line-numbers-minus-style = "#733d22 bold"
+
 [merge]
 	conflictStyle = zdiff3
 
@@ -70,12 +74,6 @@
 	helper = 
 	helper = !/usr/bin/env gh auth git-credential
 
-[commit]
-	gpgsign = true
-
-[gpg]
-	format = ssh
-
 [gpg "ssh"]
 	allowedSignersFile = ~/.ssh/allowed_signers
 
@@ -83,9 +81,21 @@
 [include]
 	path = ~/.dotfiles/git/gitconfig-peter-bread
 
-; Include secondary account if in specific directory.
-; TODO: Remove this if I ever delete this account.
-[includeIf "gitdir:~/Developer/ak22112/"]
+; Overrides for ak22112:
+
+; SSH key selection.
+; Assumes `Host github-ak22112` is declared in ~/.ssh/config.
+[url "git@github-ak22112:ak22112/"]
+	insteadOf = git@github.com:ak22112/
+
+[url "git@github-ak22112:spe-uob/"]
+	insteadOf = git@github.com:spe-uob/
+
+; Git config selection.
+[includeIf "hasconfig:remote.*.url:git@github.com:ak22112/*"]
+	path = ~/.dotfiles/git/gitconfig-ak22112
+
+[includeIf "hasconfig:remote.*.url:git@github.com:spe-uob/*"]
 	path = ~/.dotfiles/git/gitconfig-ak22112
 
 ; Any machine-specific config, not tracked in version control.

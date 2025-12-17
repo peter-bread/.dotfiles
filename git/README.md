@@ -2,7 +2,15 @@
 
 ## `gitconfig`
 
-This is the main config file for all git settings.
+This is the main config file for all Git settings.
+
+Personal GitHub account config is included unconditionally.
+
+Other accounts can then override this:
+
+- Define an alias in SSH config, e.g. `Host github-work`.
+- Add `url.*.insteadOf` and `includeIf.hasconfig:*.path` directives to gitconfig
+  (main or local, depending on privacy).
 
 ## `gitignore`
 
@@ -11,10 +19,10 @@ accidentally commit files that should **never** be included in version control.
 
 ## `gitconfig-*`
 
-These are account specific settings, i.e. email and SSH command.
+These are account specific settings, i.e. email, SSH/GPG signing.
 
-`peter-bread` is my main account.
-`ak22112` is my secondary (previously university) account and only works in `~/Developer/ak22112`.
+- `peter-bread` is my main account.
+- `ak22112` is my secondary (previously university) account.
 
 ## `~/.config/git/local`
 
@@ -24,6 +32,10 @@ This file can contain `includeIf` directives, which should look for config
 files in `~/.config/git/local.d/`.
 
 See comment in [gitconfig](./gitconfig) example.
+
+## Other Config Methods
+
+See [GIT.md](./GIT.md) for information about other potential setups.
 
 ---
 
