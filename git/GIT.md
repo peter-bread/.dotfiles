@@ -1,5 +1,7 @@
 # Two Approaches
 
+Documentation for different approaches. Currently using Option 3.
+
 ## 1. All Git Config
 
 ```gitconfig
