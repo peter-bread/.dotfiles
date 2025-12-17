@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+SSH_DIR=$HOME/.ssh
+SSH_CONFIG_DIR=$SSH_DIR/config.d
+
+mkdir -p "$SSH_CONFIG_DIR"
+
+ln -sfn "$DOTFILES"/ssh/config "$SSH_DIR"/config
+ln -sfn "$DOTFILES"/ssh/github.conf "$SSH_CONFIG_DIR"/github.conf
+# ln -sfn "$DOTFILES"/ssh/ghostty.conf "$SSH_CONFIG_DIR"/ghostty.conf
+
+# Create local SSH config file if it doesn't already exist.
+SSH_LOCAL_CONFIG_FILE=$SSH_DIR/config.local
+
+if ! [[ -f $SSH_LOCAL_CONFIG_FILE ]]; then
+  touch "$SSH_LOCAL_CONFIG_FILE"
+fi
