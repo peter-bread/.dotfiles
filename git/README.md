@@ -33,6 +33,10 @@ files in `~/.config/git/local.d/`.
 
 See comment in [gitconfig](./gitconfig) example.
 
+## Other Config Methods
+
+See [GIT.md](./GIT.md) for information about other potential setups.
+
 ---
 
 [Git Config Docs](https://git-scm.com/docs/git-config)
