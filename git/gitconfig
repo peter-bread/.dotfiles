@@ -98,14 +98,6 @@
 [includeIf "hasconfig:remote.*.url:git@github.com:spe-uob/*"]
 	path = ~/.dotfiles/git/gitconfig-ak22112
 
-; This is probably obsolete due to the `includeIf.hasconfig:*.path` and `url.*.insteadOf`
-; directives above.
-;
-; ; Include secondary account if in specific directory.
-; ; TODO: Remove this if I ever delete this account.
-; ; [includeIf "gitdir:~/Developer/ak22112/"]
-; ; 	path = ~/.dotfiles/git/gitconfig-ak22112
-
 ; Any machine-specific config, not tracked in version control.
 ; If adding another account on a machine, put an `includeIf`
 ; directive in this file, then put the config for that account
