@@ -4,34 +4,37 @@ set number
 set relativenumber
 
 set autoindent
-set smartindent " I may remove this
+set smartindent " I may remove this.
 set expandtab
 set shiftwidth=2
 set tabstop=2
 set smarttab
 set shiftround
 
-set nowrap " I think I want this???
+set nowrap
 
 set splitbelow
 set splitright
 
-" Split below
+" Use Kitty keyboard protocol for Ghostty.
+set keyprotocol=ghostty:kitty
+
+" Split below.
 nnoremap <leader>- <C-w>s
 
-" Split right
+" Split right.
 nnoremap <leader><Bar> <C-w>v
 
-" Focus left pane
+" Focus left pane.
 nnoremap <C-h> <C-w>h
 
-" Focus lower pane
+" Focus lower pane.
 nnoremap <C-j> <C-w>j
 
-" Focus upper pane
+" Focus upper pane.
 nnoremap <C-k> <C-w>k
 
-" Focus right pane
+" Focus right pane.
 nnoremap <C-l> <C-w>l
 
 syntax on
