@@ -44,9 +44,9 @@ _has_top_level_dir() {
   local prefixes=$1
 
   local count
-  count=$(echo "$prefixes" | sed 's|^\./||' | awk -F/ 'NF { print $1 }' | sort -u | wc -l)
+  count=$(echo "$prefixes" | sed 's|^/||; s|^\./||' | awk -F/ 'NF { print $1 }' | sort -u | wc -l)
 
-  # count=$(echo "$prefixes" | sed 's|^\./||' | grep -v '^$' | cut -d/ -f1 | sort -u | wc -l)
+  # count=$(echo "$prefixes" | sed 's|^/||; s|^\./||' | grep -v '^$' | cut -d/ -f1 | sort -u | wc -l)
 
   # TODO: If there is a top-level directory, echo it so it can be captured and used for logging.
 
