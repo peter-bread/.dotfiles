@@ -8,6 +8,8 @@
 
 source "$DOTFILES/_helpers/general"
 
+source "$DOTFILES/zsh/env/non-interactive" # Provides ZSH_COMPLETIONS.
+
 info "Installing GHCup"
 
 export BOOTSTRAP_HASKELL_NONINTERACTIVE=1 # Non-interactive install.
@@ -31,7 +33,6 @@ info "Installing GHCup shell completions..."
 
 info "Installing GHCup Zsh completions..."
 
-# shellcheck disable=SC2153 # This is not a spelling mistake. ZSH_COMPLETIONS is inherited from environment.
 mkdir -p "$ZSH_COMPLETIONS"
 
 curl -fsSL https://raw.githubusercontent.com/haskell/ghcup-hs/refs/heads/master/scripts/shell-completions/zsh \
