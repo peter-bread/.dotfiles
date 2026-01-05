@@ -1,21 +1,38 @@
 # vi: ft=zsh
 
+# Source a file based on test condition.
+#
+# Example:
+#
+#   OLD: [ -f ./test.sh ] && source ./test.sh
+#   NEW: safe-source -f ./test.sh
+#
+safe-source() {
+  [ $# -eq 2 ] && test "$1" "$2" && source "$2"
+}
+
+################################################################################
+################################################################################
+################################################################################
+
+# General Settings =============================================================
+
 # Emacs bindings.
 bindkey -e
 
 
-# ZSH Plugin Manager (Zap) ====================================================
+# ZSH Plugin Manager (Zap) =====================================================
 
-# Install
+# Install.
 [ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/zap" ] && \
   zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) \
   --branch release-v1 --keep
 
-# Init
+# Init.
 [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && \
   source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
 
-# Plugins
+# Plugins.
 plug "zsh-users/zsh-autosuggestions"
 plug "zsh-users/zsh-completions"
 plug "zsh-users/zsh-syntax-highlighting"
@@ -23,7 +40,7 @@ plug "hlissner/zsh-autopair"
 plug "Aloxaf/fzf-tab"
 
 
-# History =====================================================================
+# History ======================================================================
 
 setopt hist_ignore_space    # Commands not saved if they are prepended with a space.
 setopt hist_ignore_all_dups # Remove all duplicate commands from history.
@@ -32,13 +49,17 @@ setopt hist_ignore_dups     # Ignore duplicate commands in history.
 setopt hist_find_no_dups    # Do not display duplicate commands during history search.
 
 
-# Keybinds ====================================================================
+# Keybinds =====================================================================
 
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
 
-# fzf Tab Completion ==========================================================
+
+# fzf Tab Completion ===========================================================
 
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # Case insensitive completion.
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
@@ -47,50 +68,50 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview \
   'eza --color=always --icons=always --group-directories-first --git $realpath'
 
 
-# Mise ========================================================================
+# Mise =========================================================================
 
 if command -v mise &>/dev/null; then
   eval "$(mise activate zsh)"
 fi
 
 
-# Starship Prompt =============================================================
+# Starship Prompt ==============================================================
 
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
 fi
 
 
-# GH CLI ======================================================================
+# GH CLI =======================================================================
 
 if command -v gamon3 &>/dev/null; then
   eval "$(gamon3 hook zsh)"
 fi
 
 
-# Aliases =====================================================================
+# Aliases ======================================================================
 
-[ -f "$DOTFILES/zsh/aliases" ] && source "$DOTFILES/zsh/aliases"
-[ -f "$DOTFILES/zsh/docker_aliases" ] && source "$DOTFILES/zsh/docker_aliases"
-
-
-# Functions ===================================================================
-
-[ -f "$DOTFILES/zsh/functions" ] && source "$DOTFILES/zsh/functions"
+safe-source -f "$DOTFILES"/zsh/aliases
+safe-source -f "$DOTFILES"/zsh/docker_aliases
 
 
-# Shell Integrations ==========================================================
+# Functions ====================================================================
+
+safe-source -f "$DOTFILES"/zsh/functions
+
+
+# Shell Integrations ===========================================================
 
 source <(fzf --zsh)
 
 
-# Completion ==================================================================
+# Completion ===================================================================
 
-# User-specifc Completion
+# User-specifc completion.
 mkdir -p "$ZSH_COMPLETIONS"
 fpath=("$ZSH_COMPLETIONS" $fpath)
 
-# Load Shell Completion
+# Load shell completion.
 autoload -Uz compinit
 compinit
 
@@ -100,19 +121,22 @@ if tree-sitter complete -h &>/dev/null; then
 fi
 
 
-# Browser =====================================================================
+# Browser ======================================================================
 
 case $(uname -s) in
 Darwin)
   # Actual default browser must be set manually:
   # System Settings -> Desktop & Dock -> Default Web Browser
+  #
+  # UPDATE: I can use 'browserctl'.
+  # See 'https://github.com/peter-bread/browserctl'.
   export BROWSER="open"
   ;;
 Linux) ;;
 esac
 
 
-# Extra Stuff =================================================================
+# Extra Stuff ==================================================================
 
 if [[ $TERM_PROGRAM == "ghostty" ]]; then
   export EZA_ICON_SPACING=2
@@ -122,3 +146,9 @@ fi
 if command -v nvim &>/dev/null; then
   export MANPAGER='nvim +Man!'
 fi
+
+################################################################################
+################################################################################
+################################################################################
+
+unfunction safe-source

@@ -1,10 +1,21 @@
 # vi: ft=zsh
 
-OS=$(uname -s)
-
+# Source a file based on test condition.
+#
+# Example:
+#
+#   OLD: [ -f ./test.sh ] && source ./test.sh
+#   NEW: safe-source -f ./test.sh
+#
 safe-source() {
   [ $# -eq 2 ] && test "$1" "$2" && source "$2"
 }
+
+################################################################################
+################################################################################
+################################################################################
+
+OS=$(uname -s)
 
 # OS-specific config.
 case $OS in
@@ -34,7 +45,11 @@ if command -v mise &>/dev/null; then
   eval "$(mise activate zsh --shims)"
 fi
 
-unset -f 'safe-source'
+################################################################################
+################################################################################
+################################################################################
+
+unfunction safe-source
 
 # WARN: When/if installing JetBrains Toolbox, it will likely try to append a PATH
 # modification below this. This is unnecessary and should be removed after it
