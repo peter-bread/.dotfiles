@@ -1,43 +1,31 @@
 # vi: ft=zsh
 
-OS="$(uname -s)"
+OS=$(uname -s)
 
-if [[ $OS == "Darwin" ]]; then
-  # Set up Homebrew.
-  #
-  # When run in a shell, this installation of Homebrew will
-  # be added to your $PATH, $MANPATH, and $INFOPATH.
-  #
-  # The variables $HOMEBREW_PREFIX, $HOMEBREW_CELLAR and $HOMEBREW_REPOSITORY
-  # are also exported to avoid querying them multiple times.
-  [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+safe-source() {
+  [ $# -eq 2 ] && test "$1" "$2" && source "$2"
+}
 
-  # Setup JetBrains Toolbox.
-  #
-  # This directory contains executables to launch installed JetBrains IDEs from
-  # the command line.
-  [ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ] &&
-    path+=("$HOME/Library/Application Support/JetBrains/Toolbox/scripts")
+# OS-specific config.
+case $OS in
+  Darwin) safe-source -f "$DOTFILES"/zsh/zprofile.macos ;;
+  Linux) ;;
+  *) echo "Unknown OS: $OS" ;;
+esac
 
-  # # Use Homebrew Ruby instead of MacOS Ruby.
-  # [[ -n $HOMEBREW_PREFIX && -d $HOMEBREW_PREFIX/opt/ruby/bin ]] &&
-  #   path=("$HOMEBREW_PREFIX/opt/ruby/bin" $path)
-fi
-
-# User-specific scripts and executables
+# User-specific scripts and executables.
 # mkdir -p "$HOME/bin"
 # path=("$HOME/bin" $path)
 
-# User-specific scripts and executables
+# User-specific scripts and executables.
 mkdir -p "$HOME/.local/bin"
 path=("$HOME/.local/bin" $path)
 
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] &&
-  source "$HOME/.sdkman/bin/sdkman-init.sh"
+safe-source -s "$HOME/.sdkman/bin/sdkman-init.sh"
 
-[[ -f "$HOME/.ghcup/env" ]] && source "$HOME/.ghcup/env"
+safe-source -f "$HOME/.ghcup/env"
 
-[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+safe-source -f "$HOME/.cargo/env"
 
 [[ -n $GOBIN ]] && path=("$GOBIN" $path)
 
@@ -46,6 +34,8 @@ if command -v mise &>/dev/null; then
   eval "$(mise activate zsh --shims)"
 fi
 
-# WARN: When installing JetBrains Toolbox, it will likely try to append a PATH
+unset -f 'safe-source'
+
+# WARN: When/if installing JetBrains Toolbox, it will likely try to append a PATH
 # modification below this. This is unnecessary and should be removed after it
 # has been installed.

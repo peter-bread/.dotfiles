@@ -1,0 +1,23 @@
+# vi: ft=zsh
+
+# Set up Homebrew.
+#
+# When run in a shell, this installation of Homebrew will
+# be added to your $PATH, $MANPATH, and $INFOPATH.
+#
+# The variables $HOMEBREW_PREFIX, $HOMEBREW_CELLAR and $HOMEBREW_REPOSITORY
+# are also exported to avoid querying them multiple times.
+#
+# This also assumes that you are using a Silicon Mac.
+[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Setup JetBrains Toolbox.
+#
+# This directory contains executables to launch installed JetBrains IDEs from
+# the command line.
+[ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ] &&
+  path+=("$HOME/Library/Application Support/JetBrains/Toolbox/scripts")
+
+# # Use Homebrew Ruby instead of MacOS Ruby.
+# [[ -n $HOMEBREW_PREFIX && -d $HOMEBREW_PREFIX/opt/ruby/bin ]] &&
+#   path=("$HOMEBREW_PREFIX/opt/ruby/bin" $path)
