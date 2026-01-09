@@ -23,6 +23,8 @@ brew "cmake"
 brew "cmake-docs"
 # GNU File, Shell, and Text utilities
 brew "coreutils" # To replace Mac defaults: PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+# Convert text between DOS, UNIX, and Mac formats
+brew "dos2unix"
 # Secure runtime for JavaScript and TypeScript
 brew "deno"
 # Functional metaprogramming aware language built on Erlang VM
