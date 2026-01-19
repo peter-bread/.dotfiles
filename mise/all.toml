@@ -5,6 +5,7 @@ experimental            = true
 default_config_filename = ".mise.toml"
 
 [tools]
+lua    = ["5.1"]
 node   = ["lts", "20", "18"]
 python = ["latest", "3.12", "3.11"]
 ruby   = "latest"
