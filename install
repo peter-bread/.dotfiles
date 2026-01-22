@@ -540,11 +540,18 @@ setup_personal_github() {
 
   # TODO: Add logging.
 
+  # --github-auth (and --add-keys, but this is because it depends on the other flag)
+  # requires manual intervention to copy and paste codes into a browser. This means
+  # it cannot be used in a headless environment.
+
   ./scripts/setup-github-account "$account" \
     --category "$category" \
-    --dir "${DEVELOPER:-$HOME/Developer}" \
+    --base-dir "${DEVELOPER:-$HOME/Developer}" \
     --email "145384599+peter-bread@users.noreply.github.com" \
-    --allowed-signers
+    --allowed-signers \
+    --gen-keys \
+    --github-auth \
+    --add-keys
 }
 
 setup_neovim() {
