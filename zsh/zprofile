@@ -40,6 +40,9 @@ safe-source -f "$HOME/.cargo/env"
 
 [[ -n $GOBIN ]] && path=("$GOBIN" $path)
 
+[[ -f "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh" ]] &&
+  . "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh"
+
 # Load mise shims early (for non-interactive & login shells).
 if command -v mise &>/dev/null; then
   eval "$(mise activate zsh --shims)"
