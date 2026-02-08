@@ -23,10 +23,10 @@ brew "cmake"
 brew "cmake-docs"
 # GNU File, Shell, and Text utilities
 brew "coreutils" # To replace Mac defaults: PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
-# Convert text between DOS, UNIX, and Mac formats
-brew "dos2unix"
 # Secure runtime for JavaScript and TypeScript
 brew "deno"
+# Convert text between DOS, UNIX, and Mac formats
+brew "dos2unix"
 # Functional metaprogramming aware language built on Erlang VM
 brew "elixir"
 # Programming language for highly scalable real-time systems
@@ -37,7 +37,7 @@ brew "eza"
 brew "fastfetch"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
-# Play, record, convert, and stream audio and video
+# Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
 # Command-line fuzzy finder written in Go
 brew "fzf"
@@ -69,10 +69,12 @@ brew "go-task"
 brew "goreleaser"
 # Command-line benchmarking tool
 brew "hyperfine"
-# Tools and libraries to manipulate images in many formats
+# Tools and libraries to manipulate images in select formats
 brew "imagemagick"
 # Serializes the output of command-line tools to structured JSON output
 brew "jc"
+# Handy way to save and run project-specific commands
+brew "just"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
 # Lazier way to manage everything docker
