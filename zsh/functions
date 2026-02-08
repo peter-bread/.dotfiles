@@ -108,6 +108,11 @@ p() {
   # cd "$final" && nvim "$final"
 }
 
+# Create and change to a temporary directory.
+temp() {
+  cd "$(mktemp -d)" || return
+}
+
 # Broken yazi function.
 # function y() {
 #   tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
