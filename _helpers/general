@@ -79,7 +79,7 @@ download_from_github() {
     version=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.tag_name')
   fi
 
-  "$DOTFILES"/scripts/download "https://github.com/$repo/releases/download/$version/$name.$ext" "$tmp/$name.$ext" || return
+  "$DOTFILES"/bin/download "https://github.com/$repo/releases/download/$version/$name.$ext" "$tmp/$name.$ext" || return
 
   tar xvf "$tmp/$name.$ext" -C "$tmp" &>/dev/null || return
 }

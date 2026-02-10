@@ -544,7 +544,7 @@ setup_personal_github() {
   # requires manual intervention to copy and paste codes into a browser. This means
   # it cannot be used in a headless environment.
 
-  ./scripts/setup-github-account "$account" \
+  ./bin/setup-github-account "$account" \
     --category "$category" \
     --base-dir "${DEVELOPER:-$HOME/Developer}" \
     --email "145384599+peter-bread@users.noreply.github.com" \
@@ -617,8 +617,8 @@ setup_neovim() {
 
   if available nvim; then
     info "Attempting Neovim headless setup..."
-    if [[ -x $dir/scripts/install ]]; then
-      if "$dir/scripts/install"; then
+    if [[ -x $dir/bin/install ]]; then
+      if "$dir/bin/install"; then
         success "Neovim headless setup successful"
       else
         error "Neovim headless setup failed"
