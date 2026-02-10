@@ -37,6 +37,9 @@ nnoremap <C-k> <C-w>k
 " Focus right pane.
 nnoremap <C-l> <C-w>l
 
+" Open file explorer.
+nnoremap - <cmd>Explore<cr>
+
 syntax on
 
 colorscheme habamax
