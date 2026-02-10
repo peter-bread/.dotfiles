@@ -41,6 +41,8 @@ wget -qO- https://raw.githubusercontent.com/peter-bread/.dotfiles/refs/heads/mai
 
 Read [install](./install) script help information.
 
+<!-- BEGIN CLI HELP -->
+
 ```text
 Bootstrap script.
 
@@ -90,6 +92,8 @@ Environment Variables:
     DEV_USE_LOCAL   Developer mode: do not attempt to clone/pull dotfiles repo.
                     Useful when testing WIP scripts in a Docker container.
 ```
+
+<!-- END CLI HELP -->
 
 Ensure `bash` is available.
 

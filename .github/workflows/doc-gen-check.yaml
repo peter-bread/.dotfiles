@@ -1,0 +1,14 @@
+---
+name: Check doc-gen
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 doc-insert-help.py
+      - run: git diff --exit-code
