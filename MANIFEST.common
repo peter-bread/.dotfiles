@@ -3,7 +3,7 @@
 dirs
 zsh
 bash
-scripts
+bin
 ghostty
 wezterm
 git
