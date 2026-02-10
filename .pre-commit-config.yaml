@@ -1,0 +1,9 @@
+---
+repos:
+  - repo: local
+    hooks:
+      - id: doc-install-help
+        name: Insert install help output into README
+        entry: python3 ./doc-insert-help.py
+        language: system
+        files: ^(README\.md|doc-insert-help\.py|install)$
