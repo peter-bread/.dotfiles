@@ -1,5 +1,4 @@
 tap "hashicorp/tap"
-tap "homebrew/test-bot"
 tap "koekeishiya/formulae"
 tap "peter-bread/tap"
 
