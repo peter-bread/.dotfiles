@@ -114,12 +114,13 @@
 # open mpv
 # cmd - m : open -na /Applications/mpv.app $(pbpaste)
 
-lctrl + lalt - space : open -a "$DESIRED_TERM_PROGRAM"
+lctrl + lalt - space  : open -a "$DESIRED_TERM_PROGRAM"
 
-lctrl + lalt - d : open -a "Discord"
+lctrl + lalt - d      : open -a "Discord"
 
-lctrl + lalt - s : open -a "Spotify"
+lctrl + lalt - s      : open -a "Spotify"
 
-lctrl + lalt - b : open -a "$("$HOME"/.local/bin/browserctl get --name-only)"
+lctrl + lalt - b      : open -a "$("$HOME"/.local/bin/browserctl get --name-only)"
 
-lctrl + lalt - o : open -a "Microsoft Outlook"
+# May change "o" to "e" for "email".
+lctrl + lalt - o      : open -a "Microsoft Outlook"
