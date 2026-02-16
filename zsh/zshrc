@@ -64,8 +64,13 @@ bindkey '^X^E' edit-command-line
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # Case insensitive completion.
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview \
-  'eza --color=always --icons=always --group-directories-first --git $realpath'
+
+if command -v fzf &>/dev/null; then
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview \
+    'eza --color=always --icons=always --group-directories-first --git $realpath'
+else
+  disable-fzf-tab
+fi
 
 
 # Mise =========================================================================
@@ -102,7 +107,9 @@ safe-source -f "$DOTFILES"/zsh/functions
 
 # Shell Integrations ===========================================================
 
-source <(fzf --zsh)
+if command -v fzf &>/dev/null; then
+  source <(fzf --zsh)
+fi
 
 
 # Completion ===================================================================
