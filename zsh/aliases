@@ -22,8 +22,10 @@ alias lzd='lazydocker'
 alias grep='grep --color=auto'
 alias tree='tree -I ".git"' # ignore .git directory
 
-alias ls='eza --color=always --icons=always --group-directories-first --git'
+command -v eza &>/dev/null &&
+  alias ls='eza --color=always --icons=always --group-directories-first --git'
+
 alias ll='ls -l'
 
 # Repository/Project Shortcuts ------------------------------------------------
-alias peter='cd $HOME/Developer/peter-bread/peter-bread'
+alias peter='cd ${DEVELOPER:-$HOME/Developer}/peter-bread/peter-bread'
