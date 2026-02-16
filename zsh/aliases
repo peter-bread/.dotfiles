@@ -5,7 +5,8 @@ alias c='clear'
 alias home='cd && clear'
 alias h='cd && clear'
 
-alias cat='bat'
+command -v bat &>/dev/null &&
+  alias cat='bat'
 
 if command -v delta >/dev/null 2>&1; then
   alias g='git'
