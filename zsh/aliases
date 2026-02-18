@@ -20,7 +20,9 @@ alias lzg='lazygit'
 alias lzd='lazydocker'
 
 # Default Flags for Commands --------------------------------------------------
-alias grep='grep --color=auto'
+alias grep='grep --color=auto -C5 -in'
+alias rgrep='grep -r'
+
 alias tree='tree -I ".git"' # ignore .git directory
 
 command -v eza &>/dev/null &&
