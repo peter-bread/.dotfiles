@@ -517,7 +517,7 @@ install_modules() {
 install_pkgs() {
   case $OS in
   Darwin)
-    cat ./packages/brew/Brewfile | head -n15
+    error 'Command to run: brew bundle --file=./packages/brew/Brewfile --verbose'
     error "TODO: Install packages on MacOS"
     return 1
     ;;
