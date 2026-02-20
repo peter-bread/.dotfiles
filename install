@@ -503,6 +503,8 @@ install_modules() {
     success "Installed modules from $manifest"
   }
 
+  # TODO: Use "$DOTFILES"/MANIFEST.* instead?
+
   install_from_manifest ./MANIFEST.common || return
 
   case $OS in
