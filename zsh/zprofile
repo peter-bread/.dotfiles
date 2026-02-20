@@ -51,6 +51,6 @@ fi
 
 unfunction safe-source
 
-# WARN: When/if installing JetBrains Toolbox, it will likely try to append a PATH
-# modification below this. This is unnecessary and should be removed after it
-# has been installed.
+# WARN: When/if installing JetBrains Toolbox, it will likely try to append a
+# PATH modification below this. This is unnecessary and should be removed after
+# it has been installed.
