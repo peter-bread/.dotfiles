@@ -18,7 +18,8 @@ fi
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] &&
   source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+[ -f /home/linuxbrew/.linuxbrew/bin/brew ] &&
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Mise-en-place ---------------------------------------------------------------
 
