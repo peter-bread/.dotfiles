@@ -1,0 +1,11 @@
+# vi: ft=zsh
+
+# Set up Homebrew (Linuxbrew).
+#
+# When run in a shell, this installation of Homebrew will
+# be added to your $PATH, $MANPATH, and $INFOPATH.
+#
+# The variables $HOMEBREW_PREFIX, $HOMEBREW_CELLAR and $HOMEBREW_REPOSITORY
+# are also exported to avoid querying them multiple times.
+[ -x /home/linuxbrew/.linuxbrew/bin/brew ] &&
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"

@@ -20,7 +20,7 @@ OS=$(uname -s)
 # OS-specific config.
 case $OS in
   Darwin) safe-source -f "$DOTFILES"/zsh/zprofile.macos ;;
-  Linux) ;;
+  Linux) safe-source -f "$DOTFILES"/zsh/zprofile.linux ;;
   *) echo "Unknown OS: $OS" ;;
 esac
 
