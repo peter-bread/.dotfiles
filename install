@@ -503,11 +503,11 @@ install_modules() {
     success "Installed modules from $manifest"
   }
 
-  install_from_manifest MANIFEST.common || return
+  install_from_manifest ./MANIFEST.common || return
 
   case $OS in
-  Darwin) install_from_manifest MANIFEST.macos || return ;;
-  Linux) install_from_manifest MANIFEST.linux || return ;;
+  Darwin) install_from_manifest ./MANIFEST.macos || return ;;
+  Linux) install_from_manifest ./MANIFEST.linux || return ;;
   # TODO: Use /etc/os-release for distro-specific manifests?
   esac
 
