@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+source "$DOTFILES"/_helpers/general
+source "$DOTFILES"/zsh/env/non-interactive # Provides ZSH_COMPLETIONS.
+
+install_zsh_completions() {
+  info "Installing Rustup zsh completions..."
+
+  mkdir -p "$ZSH_COMPLETIONS"
+
+  "$HOME"/.cargo/bin/rustup completions zsh >"$ZSH_COMPLETIONS"/_rustup
+
+  # Patch rustup zsh completion script.
+  # See 'https://github.com/rust-lang/rustup/issues/2268#issuecomment-2917376297'.
+  #
+  info "Patching... See https://github.com/rust-lang/rustup/issues/2268#issuecomment-2917376297."
+  local patch_file="$DOTFILES"/packages/manual/rustup/patches/_rustup_fix.patch
+  if ! patch --quiet --directory "$ZSH_COMPLETIONS" <"$patch_file"; then
+    error "Failed to apply patch to rustup zsh completion script"
+  fi
+
+  "$HOME"/.cargo/bin/rustup completions zsh cargo >"$ZSH_COMPLETIONS"/_cargo
+
+  success "Rustup zsh completions installed"
+}
+
+install_bash_completions() {
+  info "Installing Rustup bash completions..."
+
+  BASH_COMPLETIONS="${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions"
+  mkdir -p "$BASH_COMPLETIONS"
+
+  "$HOME"/.cargo/bin/rustup completions bash >"$BASH_COMPLETIONS"/rustup
+  "$HOME"/.cargo/bin/rustup completions bash cargo >"$BASH_COMPLETIONS"/cargo
+
+  success "Rustup bash completions installed"
+}
+
+need "$HOME"/.cargo/bin/rustup
+
+install_zsh_completions
+install_bash_completions

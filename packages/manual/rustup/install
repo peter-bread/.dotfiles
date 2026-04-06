@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Install Rustup:
+# - Non-interactive
+# - Does not modify shell rc
+# - Installs stable and nightly toolchains
+# - Uses stable toolchain as default
+
+source "$DOTFILES/_helpers/general"
+
+info "Installing Rustup"
+
+need curl
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs |
+  sh -s -- --no-modify-path --default-toolchain stable -y
+
+"$HOME"/.cargo/bin/rustup install nightly
+
+success "Rustup installed"

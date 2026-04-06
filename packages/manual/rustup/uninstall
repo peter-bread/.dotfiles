@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Uninstall Rustup:
+# - Non-interactive
+# - Does not modify shell rc
+# - Uninstalls stable and nightly toolchains
+# - Uninstalls all cargo packages
+
+source "$DOTFILES/_helpers/general"
+
+info "Uninstalling Rustup"
+
+need "$HOME"/.cargo/bin/rustup
+
+"$HOME"/.cargo/bin/rustup self uninstall --no-modify-path -y
+
+success "Rustup uninstalled"

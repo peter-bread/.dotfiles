@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Update Rustup:
+# - Updates all installed toochains
+# - Updates rustup itself
+
+source "$DOTFILES/_helpers/general"
+
+info "Updating Rustup"
+
+need "$HOME"/.cargo/bin/rustup
+
+if ! "$HOME"/.cargo/bin/rustup update; then
+  error "rustup failed to update"
+  exit 1
+fi
+
+success "Rustup updated"
