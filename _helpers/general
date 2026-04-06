@@ -44,6 +44,15 @@ unavailable() {
   ! available "$1"
 }
 
+need() {
+  local cmd=$1
+
+  if unavailable "$cmd"; then
+    error "$cmd is required"
+    exit 1
+  fi
+}
+
 # download() {
 #   local url="$1"
 #   local output="$2"
