@@ -61,6 +61,7 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # Case insensitive comple
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 
+# TODO: Check `eza` is installed.
 if command -v fzf &>/dev/null; then
   zstyle ':fzf-tab:complete:cd:*' fzf-preview \
     'eza --color=always --icons=always --group-directories-first --git $realpath'
