@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Update GHCup:
+# - Updates GHCup
+# - Does NOT make any changes to tools installed via GHCup
+
+source "$DOTFILES"/_helpers/general
+
+info "Updating GHCup"
+
+need "$HOME"/.ghcup/bin/ghcup
+
+if ! "$HOME"/.ghcup/bin/ghcup upgrade; then
+  error "ghcup failed to update"
+  exit 1
+fi
+
+success "GHCup updated"

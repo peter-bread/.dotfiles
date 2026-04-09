@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Install GHCup:
+# - Non-interactive
+# - Does not modify shell rc
+# - Installs recommended versions of GHC, Cabal, Stack and HLS
+# - (by default) stack integration is enabled
+#
+# See 'https://github.com/haskell/ghcup-hs/blob/master/scripts/bootstrap/bootstrap-haskell'.
+
+source "$DOTFILES"/_helpers/general
+
+info "Installing GHCup"
+
+need curl
+
+export BOOTSTRAP_HASKELL_NONINTERACTIVE=1 # Non-interactive install.
+export BOOTSTRAP_HASKELL_ADJUST_BASHRC=1  # Do NOT modify bashrc.
+
+export BOOTSTRAP_HASKELL_INSTALL_HLS=1 # Install HLS.
+
+export BOOTSTRAP_HASKELL_GHC_VERSION="recommended"
+export BOOTSTRAP_HASKELL_CABAL_VERSION="recommended"
+export BOOTSTRAP_HASKELL_STACK_VERSION="recommended"
+export BOOTSTRAP_HASKELL_HLS_VERSION="recommended"
+
+if ! curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh; then
+  error "GHCup installation failed"
+fi
+
+success "GHCup installed"

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Uninstall GHCup:
+# - Uninstalls everything
+
+source "$DOTFILES/_helpers/general"
+
+info "Uninstalling GHCup"
+
+need "$HOME"/.ghcup/bin/ghcup
+
+"$HOME"/.ghcup/bin/ghcup nuke
+
+success "GHCup uninstalled"
