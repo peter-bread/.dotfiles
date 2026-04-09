@@ -4,7 +4,7 @@
 # - Updates all installed toochains
 # - Updates rustup itself
 
-source "$DOTFILES/_helpers/general"
+source "$DOTFILES"/_helpers/general
 
 info "Updating Rustup"
 
