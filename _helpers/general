@@ -66,29 +66,3 @@ need() {
 #     return 1
 #   fi
 # }
-
-# Download (and extract) assets from GitHub Releases.
-# Args:
-#   tmp       Temporary directory to download into
-#   repo      Which GitHub repo to fetch assets from <owner/name>
-#   version   Either "latest" or a valid tag
-#   name      The name of the release asset (usually of the form <cmd>-<os>-<arch>)
-#   ext       Extension/archive format
-#
-# Currently this only works for tar.gz tarballs.
-# TODO: Support other archive formats: tar.xz, tbz, zip etc.
-download_from_github() {
-  local tmp=$1
-  local repo=$2
-  local version=$3 # Exact tag OR latest
-  local name=$4
-  local ext=$5
-
-  if [[ $version == "latest" ]]; then
-    version=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.tag_name')
-  fi
-
-  "$DOTFILES"/bin/download "https://github.com/$repo/releases/download/$version/$name.$ext" "$tmp/$name.$ext" || return
-
-  tar xvf "$tmp/$name.$ext" -C "$tmp" &>/dev/null || return
-}
