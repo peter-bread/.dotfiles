@@ -81,6 +81,8 @@ fi
 
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
+else
+  PROMPT=$'\n%~\n%B${SHELL:t}%b%(2L. %L.) [%?] %# '
 fi
 
 
