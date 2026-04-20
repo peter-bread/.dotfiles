@@ -10,6 +10,11 @@
 
 source "$DOTFILES"/_helpers/general
 
+if available "$HOME"/.ghcup/bin/ghcup; then
+  info "GHCup is already installed at $HOME/.ghcup/bin/ghcup"
+  exit
+fi
+
 info "Installing GHCup"
 
 need curl

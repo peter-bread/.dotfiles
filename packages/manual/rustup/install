@@ -8,6 +8,11 @@
 
 source "$DOTFILES/_helpers/general"
 
+if available "$HOME"/.cargo/bin/rustup; then
+  info "Rustup is already installed at $HOME/.cargo/bin/rustup"
+  exit
+fi
+
 info "Installing Rustup"
 
 need curl
