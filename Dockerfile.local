@@ -8,7 +8,9 @@ ENV DEBIAN_FRONTEND=non-interactive \
     DEV_USE_LOCAL=1
 
 RUN apt-get update && apt-get install -y \
-    sudo
+    sudo                                 \
+    vim                                  \
+    zsh
 
 COPY . /root/.dotfiles
 
