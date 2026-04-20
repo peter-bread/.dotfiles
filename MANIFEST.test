@@ -1,0 +1,10 @@
+# vi: ft=conf
+
+mod:bash
+mod:zsh
+mod:dirs
+
+# pkg:manual/rustup
+pkg:manual/zig
+pkg:brew/Brewfile
+# pkg:brew/Brewfile.cask
