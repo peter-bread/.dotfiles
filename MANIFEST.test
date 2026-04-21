@@ -6,5 +6,5 @@ mod:dirs
 
 # pkg:manual/rustup
 pkg:manual/zig
-pkg:brew/Brewfile
+pkg:brew/Brewfile.test
 # pkg:brew/Brewfile.cask
