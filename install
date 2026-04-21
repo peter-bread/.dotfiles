@@ -1,9 +1,71 @@
 #!/usr/bin/env bash
+#
+# This is a standalone script designed to bootstrap a MacOS or Linux machine.
+
+# TODO: Add some general documentation to this script.
+# See 'https://google.github.io/styleguide/shellguide.html'.
+#
+#                     GENERAL INFORMATION FOR MAINTENANCE
+#
+# Arguments and Options --------------------------------------------------------
+#
+# Positional arguments are stored in the ARGS array. The number of arguments
+# that should be provided is stored in the EXPECTED_ARGS variable.
+#
+# Options come in two forms, option flags and option arguments.
+#
+# An option flag is a toggle, i.e. it is either enabled (1) or disabled (0).
+# Option flags can be checked using the `flag` function.
+#
+# An option argument also toggles behaviour, but also accepts a single argument.
+# The value of this argument can be checked using the `flag_arg` function.
+#
+# Error Handling ---------------------------------------------------------------
+#
+# Using `set -e` causes the script to terminate on any unhandled, non-zero exit
+# code.
+#
+# Handled errors:
+#
+#   # Handle with an `if` (useful when mutiple steps are required).
+#   if false; then
+#     fallback
+#     then_do_this
+#     and_then_this
+#   fi
+#
+#   # Handle with a `||` (useful when a single step suffices).
+#   false || fallback
+#
+# Unhandled errors (triggers exit):
+#
+#   # Unhandled, caught by `set -e`.
+#   false
+#
+# The `error` function logs a custom message, then itself returns 1. We can use
+# it as the fallback for a handled error, then let `set -e` exit:
+#
+#   false || error "Something went wrong"
+#
+# This should be the main method used to exit this script in case of an error.
+#
+# ------------------------------------------------------------------------------
 
 set -Eeuo pipefail
 
+################################################################################
+# GLOBALS
+################################################################################
+
+# Raw information for logging purposes.
+SCRIPT_NAME="$0"
+SCRIPT_ARGS=("$@")
+
+# TODO: Export this?
+# TODO: Make DOTFILES readonly?
 DOTFILES="$HOME/.dotfiles"
 
+# TODO: Convert to lowercase (remember to modify checks whenever these are used)?
 # Get system info.
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -37,37 +99,167 @@ YELLOW="\e[33m"
 BLUE="\e[34m"
 CYAN="\e[36m"
 
-# Internal logging function.
+################################################################################
+# LOGGING
+################################################################################
+
+########################################
+# Internal logging function. Should not be called directly. See wrappers below.
+# Globals:
+#   DATE_FORMAT
+#   ENABLE_COLOR
+#   RESET
+# Arguments:
+#   Log level, a string, all caps.
+#   Message to be logged.
+#   Color to be used, ANSI escape sequence.
+#   (Optional) File descriptor to write to, an integer. Defaults to 1 (stdout).
+# Outputs:
+#   Writes message to file descriptor.
+########################################
 _log() {
-  local level="$1"
-  local msg="$2"
-  local color="$3"
-  local stream=${4:-1}
+  local level=$1
+  local msg=$2
+  local color=$3
+  local fd=${4:-1}
   local timestamp
   timestamp=$(date +"$DATE_FORMAT")
 
   if [[ $ENABLE_COLOR -eq 1 && -n "$color" ]]; then
-    printf "%s ${color}[%-7s]${RESET} %s\n" "$timestamp" "$level" "$msg" >&"$stream"
+    printf "%s ${color}[%-7s]${RESET} %s\n" "$timestamp" "$level" "$msg" >&"$fd"
   else
-    printf "%s [%-7s] %s\n" "$timestamp" "$level" "$msg" >&"$stream"
+    printf "%s [%-7s] %s\n" "$timestamp" "$level" "$msg" >&"$fd"
   fi
 }
 
-# Public logging functions.
+########################################
+# Write an information message to stdout.
+# Globals:
+#   BLUE
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stdout.
+########################################
 info() { _log "INFO" "$1" "$BLUE"; }
-warn() { _log "WARN" "$1" "$YELLOW" 2; }
-error() { _log "ERROR" "$1" "$RED" 2; }
-success() { _log "SUCCESS" "$1" "$GREEN"; }
-debug() { if [[ $ENABLE_DEBUG -eq 1 ]]; then _log "DEBUG" "$1" "$CYAN" 2; fi; }
 
-available() {
-  [[ -n "$1" ]] && command -v -- "$1" &>/dev/null
+########################################
+# Write a warning message to stderr.
+# Globals:
+#   YELLOW
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stderr.
+########################################
+warn() { _log "WARN" "$1" "$YELLOW" 2; }
+
+########################################
+# Write an error message to stderr. This should be used when an unrecoverable
+# error occurs and execution should terminate.
+# Globals:
+#   RED
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stderr.
+# Returns:
+#   1 to indicate that an error has occurred.
+########################################
+error() {
+  _log "ERROR" "$1" "$RED" 2
+  return 1
 }
 
+########################################
+# Write a success message to stdout.
+# Globals:
+#   GREEN
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stdout.
+########################################
+success() { _log "SUCCESS" "$1" "$GREEN"; }
+
+########################################
+# Write a debug message to stderr if ENABLE_DEBUG=1.
+# Globals:
+#   ENABLE_DEBUG
+#   CYAN
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stderr if ENABLE_DEBUG=1.
+########################################
+debug() { if [[ $ENABLE_DEBUG -eq 1 ]]; then _log "DEBUG" "$1" "$CYAN" 2; fi; }
+
+########################################
+# Check if a command exists.
+# Arguments:
+#   Command to check.
+# Returns:
+#   0 if command exists, 1 otherwise.
+########################################
+available() {
+  command -v -- "$1" &>/dev/null
+}
+
+########################################
+# Check if a command does not exist.
+# Arguments:
+#   Command to check.
+# Returns:
+#   0 if command does not exist, 1 otherwise.
+########################################
 unavailable() {
   ! available "$1"
 }
 
+########################################
+# Try to run an executable file that may or may not exist or be executable.
+# In this case, a file not running is not an error. The only error condition
+# is the file running and itself returning a non-zero exit code.
+# Arguments:
+#   File to run, a path.
+# Outputs:
+#   Debug messages to stderr if the file can not be run.
+#   Info message to stdout before running file.
+#   Any other output from the file if it runs.
+# Returns:
+#   0 if file is never run.
+#   Exit status of file if it is run.
+########################################
+run_optional_executable() {
+  local path=$1
+
+  if [[ ! -e $path ]]; then
+    debug "$path does not exist"
+    return
+  fi
+
+  if [[ ! -f $path ]]; then
+    debug "$path is not a regular file"
+    return
+  fi
+
+  if [[ ! -x $path ]]; then
+    debug "$path is not executable"
+    return
+  fi
+
+  info "Running $path"
+  "$path" # || error "Failed to run $path"
+  # success "Ran $path"
+}
+
+########################################
+# Print help and exit immediately.
+# Outputs:
+#   Help message to stdout.
+# Returns:
+#   0.
+########################################
 show_help() {
   cat <<'EOF'
 Bootstrap script.
@@ -83,7 +275,7 @@ Usage:
 Options:
   --prime       Ensure system has required packages installed
   --modules     Install modules from MANIFEST.* files
-  --pkgs        Install packages
+  --pkgs        Install packages from MANIFEST.* files
   --github      Authenticate with GitHub on this device
   --nvim        Clone Neovim config as specified by <repo_name>
 
@@ -104,7 +296,7 @@ Environment Variables:
   Option Flags (0 = disable, 1 = enable):
     PRIME       Enable system bootstrap to ensure required packages are installed
     MODULES     Install modules from MANIFEST.* files
-    PKGS        Install packages
+    PKGS        Install packages from MANIFEST.* files
     GITHUB      Authenticate with GitHub on this device
 
   Option Arguments (string; default = empty):
@@ -121,12 +313,30 @@ EOF
   exit 0
 }
 
+########################################
+# Parse command line arguments and options.
+# Globals:
+#   PRIME
+#   MODULES
+#   PKGS
+#   GITHUB
+#   NVIM
+#   ARGS
+#   EXPECTED_ARGS
+# Arguments:
+#   All arguments passed to the script.
+# Outputs:
+#   Writes error mesages to stderr.
+#   Writes help message to stdout (if -h | --help is provided).
+# Returns:
+#   0 if arguments are parsed successfully, 1 otherwise.
+########################################
 parse_args() {
 
   require_arg() {
-    local name="$1"
-    local token="$2"
-    local next="${3-}"
+    local name=$1
+    local token=$2
+    local next=${3-}
     local value=""
 
     # Handle --flag=value form.
@@ -137,13 +347,11 @@ parse_args() {
       value="$next"
     fi
 
-    if [[ -z $value ]]; then
-      error "$name requires a non-empty value"
-      return 1
-    fi
+    [[ -n $value ]] || error "$name requires a non-empty value"
 
     echo "$value"
   }
+
   while [[ $# -gt 0 ]]; do
     case $1 in
     --prime) PRIME=1 ;;
@@ -151,14 +359,11 @@ parse_args() {
     --pkgs) PKGS=1 ;;
     --github) GITHUB=1 ;;
     --nvim | --nvim=*)
-      NVIM=$(require_arg --nvim "$1" "${2-}") || return
+      NVIM=$(require_arg --nvim "$1" "${2-}")
       [[ $1 != *=* ]] && shift # Only shift extra if not --flag=value form.
       ;;
     -h | --help) show_help ;;
-    -*)
-      error "Unexpected option: $1"
-      return 1
-      ;;
+    -*) error "Unexpected option: $1" ;;
     *) ARGS+=("$1") ;;
     esac
     shift
@@ -166,16 +371,26 @@ parse_args() {
 
   if [[ ${#ARGS[@]} -lt $EXPECTED_ARGS ]]; then
     error "Expected $((EXPECTED_ARGS - ${#ARGS[@]})) more argument(s)"
-    return 1
   fi
 
   if [[ ${#ARGS[@]} -gt $EXPECTED_ARGS ]]; then
     error "Unexpected extra positional arguments: ${ARGS[*]:$((EXPECTED_ARGS))}"
-    return 1
   fi
 
 }
 
+########################################
+# Check if a flag is enabled (set to 1).
+# Globals:
+#   PRIME
+#   MODULES
+#   PKGS
+#   GITHUB
+# Arguments:
+#   Option flag.
+# Returns:
+#   0 if flag is enabled, 1 otherwise.
+########################################
 flag() {
   [[ $1 -eq 1 ]]
 }
@@ -206,12 +421,10 @@ prime_system() {
     case $ARCH in
     *arm*) PREFIX="/opt/homebrew" ;;
     *x86_64*) PREFIX="/usr/local" ;;
-    *)
-      error "$ARCH CPU architecture is not supported"
-      return 1
-      ;;
+    *) error "$ARCH CPU architecture is not supported" ;;
     esac
 
+    # TODO: Make this nicer.
     info "OS      : $OS"
     info "ARCH    : $ARCH"
     info "PREFIX  : $PREFIX"
@@ -226,11 +439,10 @@ prime_system() {
           -fsSL \
           https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
         error "Homebrew installation failed"
-        return 1
       fi
-    else
-      info "Homebrew already installed"
     fi
+
+    info "Homebrew already installed"
 
     info "Adding brew to PATH..."
     if unavailable brew; then
@@ -247,14 +459,12 @@ prime_system() {
       xz \
       gh
 
-    success "MacOS primed successfully"
+    success "MacOS primed"
   }
 
   prime_linux() {
-    if ! [[ -f /etc/os-release ]]; then
-      error "Couldn't determine Linux distro as /etc/os-release does not exist"
-      return 1
-    fi
+    # TODO: Fallback to checking known package managers.
+    [[ -f /etc/os-release ]] || error "Couldn't determine Linux distro as /etc/os-release does not exist"
 
     prime_ubuntu_debian() {
       sudo apt-get update -y
@@ -278,41 +488,37 @@ prime_system() {
 
     prime_fedora() {
       error "TODO: Implement Fedora"
-      return 1
     }
 
     prime_arch() {
       error "TODO: Implement Arch"
-      return 1
     }
 
     prime_alpine() {
       error "TODO: Implement Alpine"
-      return 1
     }
 
-    # Load all data about OS into environment variables.
-    # This is clean and avoids any weird parsing.
+    # Load all data about OS into environment variables. This is clean and
+    # avoids any weird parsing.
+    #
     # shellcheck disable=SC1091 # This file never exists on MacOS and the warning is annoying.
     . /etc/os-release
 
-    # This is mainly for package managers. While it would probably make sense to
-    # use ID_LIKE, this is an optional field in the systemd specification.
+    # This is mainly for package managers. While it would probably make sense
+    # to use ID_LIKE, this is an optional field in the systemd specification.
     # Therefore it is safer to just hardcode distros and use ID instead.
     # See 'https://www.freedesktop.org/software/systemd/man/latest/os-release.html#ID_LIKE='.
 
+    # TODO: Maybe check known package managers as well or instead?
     case $ID in
     ubuntu | debian) prime_ubuntu_debian ;;
     fedora) prime_fedora ;;
     arch) prime_arch ;;
     alpine) prime_alpine ;;
-    *)
-      error "Unsupported distro: $ID"
-      return 1
-      ;;
+    *) error "Unsupported distro: $ID" ;;
     esac
 
-    success "Linux primed successfully"
+    success "Linux primed"
   }
 
   case $OS in
@@ -320,7 +526,7 @@ prime_system() {
   Linux) prime_linux ;;
   esac
 
-  success "System primed successfully"
+  success "System primed"
 }
 
 # TODO: Including checking requirements under prime option?
@@ -392,11 +598,11 @@ check_requirements() {
 
   # Report missing essentials
   if [[ ${#missing[@]} -ne 0 ]]; then
-    error "the following required tools are missing:"
+    warn "The following required tools are missing:"
     for cmd in "${missing[@]}"; do
-      error "  - $cmd"
+      warn "  - $cmd"
     done
-    exit 1
+    error "Some required tools are missing."
   fi
 
   success "All essential tools are installed"
@@ -416,12 +622,11 @@ setup_dotfiles_repo() {
 
     before=$(git -C "$DOTFILES" rev-parse HEAD)
 
-    if ! git -C "$DOTFILES" pull; then #--rebase?
-      error "Pulling latest changes failed"
-      return 1
-    fi
+    # TODO: Should this be a rebase?
+    # git -C "$DOTFILES" pull --rebase
+    git -C "$DOTFILES" pull || error "Pulling latest changes failed"
 
-    success "Dotfiles repo updated successfully"
+    success "Dotfiles repo updated"
 
     after=$(git -C "$DOTFILES" rev-parse HEAD)
 
@@ -437,99 +642,121 @@ setup_dotfiles_repo() {
     info "Dotfiles do not exist locally at $DOTFILES"
     info "Cloning $url into $DOTFILES"
 
-    if ! git clone --branch=main "$url" "$DOTFILES"; then
-      error "Cloning dotfiles failed"
-      return 1
-    fi
+    git clone --branch=main "$url" "$DOTFILES" || error "Cloning dotfiles failed"
 
-    success "Dotfiles repo cloned successfully"
+    success "Dotfiles repo cloned"
 
   fi
 
-  success "Dotfiles repo setup successfully"
+  success "Dotfiles repo setup"
+}
+
+install_module() {
+  local module=$1
+
+  local module_dir="$DOTFILES/${module}"
+  local module_install="$module_dir/install"
+
+  [[ -d $module_dir ]] || error "$module module does not exist"
+
+  # If the module exists but has no install script, it is likely a
+  # "special" module. In this case, documentation should be consulted.
+  if [[ ! -f $module_install ]]; then
+    warn "$module module does not contain an install script. Skipping..."
+    return
+  fi
+
+  if [[ ! -x $module_install ]]; then
+    warn "$module module contains a non-executable install script. Skipping..."
+    return
+  fi
+
+  info "Installing $module module..."
+
+  "$module_install" || error "Failed to install $module module"
+
+  success "Installed $module module"
+}
+
+install_package_manual() {
+  local package=$1
+  local dir=$DOTFILES/packages/manual/$package
+
+  info "Installing $package package"
+
+  [[ -d $dir ]] || error "$dir is not a directory"
+
+  run_optional_executable "$dir"/install || error "Failed to run $package install"
+  run_optional_executable "$dir"/postinstall || error "Failed to run $package postinstall"
+  run_optional_executable "$dir"/completions || error "Failed to run $package completions"
+
+  success "Installed $package package"
+}
+
+install_package_brew() {
+  local brewfile=$1
+  local dir=$DOTFILES/packages/brew
+
+  info "Installing packages from $dir/$brewfile"
+
+  # TODO: Should this use `--upgrade` or `--no-upgrade` flag?
+  # By default, packages *are* upgraded.
+  brew bundle --file="$dir/$brewfile" --verbose || error "Brewfile installation failed"
+
+  success "Installed packages from $dir/$brewfile"
+}
+
+install_package() {
+  local package=$1
+
+  case $package in
+  manual/*) install_package_manual "${package#manual/}" ;;
+  brew/*) install_package_brew "${package#brew/}" ;;
+  *) warn "Unknown package format: $package" ;;
+  esac
+}
+
+install_from_manifest() {
+  local manifest=$1
+  local mode=$2
+
+  info "Installing $mode from $manifest"
+
+  [[ -f $manifest ]] || error "$manifest does not exist"
+
+  while IFS= read -r item; do
+    [[ -n $item && $item != \#* ]] || continue
+
+    case $mode:$item in
+    modules:mod:*) install_module "${item#mod:}" ;;
+    packages:pkg:*) install_package "${item#pkg:}" ;;
+    modules:* | packages:*) debug "Skipping $item in $mode mode" ;;
+    *) warn "Unknown: $item" ;;
+    esac
+
+  done <"$manifest"
+
+  success "Installed $mode from $manifest"
+}
+
+install_from_all_manifests() {
+  local mode=$1
+
+  install_from_manifest "$DOTFILES"/MANIFEST.common "$mode"
+
+  case $OS in
+  Darwin) install_from_manifest "$DOTFILES"/MANIFEST.macos "$mode" ;;
+  Linux) install_from_manifest "$DOTFILES"/MANIFEST.linux "$mode" ;;
+  # TODO: Use /etc/os-release or package manager for distro-specific manifests?
+  esac
 }
 
 install_modules() {
-
-  dot_install() {
-    local module=$1
-
-    local module_dir="$DOTFILES/${module}"
-    local module_install="$module_dir/install"
-
-    if [[ ! -d $module_dir ]]; then
-      error "$module module does not exist"
-      return 1
-    fi
-
-    # If the module exists but has no install script, it is likely a
-    # "special" module. In this case, documentation should be consulted.
-    if [[ ! -f $module_install ]]; then
-      warn "$module module does not contain an install script. Skipping..."
-      return
-    fi
-
-    if [[ ! -x $module_install ]]; then
-      warn "$module module contains a non-executable install script. Skipping..."
-      return
-    fi
-
-    info "Installing $module module..."
-
-    if "$module_install"; then
-      success "Installed $module module successfully"
-    else
-      error "Failed to install $module module"
-      return 1
-    fi
-
-  }
-
-  install_from_manifest() {
-    local manifest=$1
-
-    info "Attempting to install modules from $manifest"
-
-    if ! [[ -f $manifest ]]; then
-      error "$manifest does not exist"
-      return 1
-    fi
-
-    while IFS= read -r item; do
-      [[ -n $item && $item != \#* ]] || continue
-      dot_install "$item" || return
-    done <"$manifest"
-
-    success "Installed modules from $manifest"
-  }
-
-  # TODO: Use "$DOTFILES"/MANIFEST.* instead?
-
-  install_from_manifest ./MANIFEST.common || return
-
-  case $OS in
-  Darwin) install_from_manifest ./MANIFEST.macos || return ;;
-  Linux) install_from_manifest ./MANIFEST.linux || return ;;
-  # TODO: Use /etc/os-release for distro-specific manifests?
-  esac
-
-  success "Modules installed successfully"
+  install_from_all_manifests modules
 }
 
 install_pkgs() {
-  case $OS in
-  Darwin)
-    error 'Command to run: brew bundle --file=./packages/brew/Brewfile --verbose'
-    error "TODO: Install packages on MacOS"
-    return 1
-    ;;
-  Linux)
-    error "TODO: Install packages on Linux"
-    return 1
-    ;;
-  esac
-
-  success "Packages installed successfully"
+  install_from_all_manifests packages
 }
 
 setup_personal_github() {
@@ -592,54 +819,75 @@ setup_neovim() {
     info "$dir already exists"
     info "Pulling latest changes..."
 
-    if ! git -C "$dir" pull; then
-      error "Pulling latest changes failed"
-      return 1
-    fi
+    git -C "$dir" pull || error "Pulling latest changes failed"
 
-    success "Neovim config updated successfully"
+    success "Neovim config updated"
 
   else
 
     info "$dir does not exist"
+
+    # We set GIT_TERMINAL_PROMPT=0 so if authentication fails the user will not
+    # be prompted to enter their credentials.
+    #
+    # This means the Git repository containing the Neovim configuration must
+    # either be public, or private with the current user already having Git
+    # authentication set up.
+    #
+    export GIT_TERMINAL_PROMPT=0
+
+    info "Checking if $url is an accessible Git repository"
+
+    git ls-remote "$url" &>/dev/null || error "Git repository $url: no access or does not exist"
+
     info "Cloning $url into $dir"
 
-    if ! git clone --branch=main "$url" "$dir"; then
-      error "Cloning neovim config failed"
-      return 1
-    fi
+    git clone --branch=main "$url" "$dir" || error "Cloning neovim config failed"
 
-    success "Neovim config ($repo) cloned successfully"
+    unset -v GIT_TERMINAL_PROMPT
+
+    success "Neovim config ($repo) cloned"
 
   fi
 
-  if available nvim; then
-    info "Attempting Neovim headless setup..."
-    if [[ -x $dir/scripts/install ]]; then
-      if "$dir/scripts/install"; then
-        success "Neovim headless setup successful"
-      else
-        error "Neovim headless setup failed"
-        return 1
-      fi
-    else
-      warn "Neovim headless installation script could not be found"
-    fi
-  else
+  if unavailable nvim; then
     warn "Neovim not installed"
     warn "Skipping headless setup"
+    return
   fi
 
+  local nvim_install_script=$dir/scripts/install
+
+  info "Attempting Neovim headless setup..."
+
+  if [[ ! -x $nvim_install_script ]]; then
+    warn "Neovim headless installation script could not be found"
+    warn "Skipping headless setup"
+    return
+  fi
+
+  "$nvim_install_script" || error "Neovim headless setup failed"
+
+  success "Neovim headless setup successful"
+}
+
+final_message() {
+  local status=$1
+  local msg=""
+
+  msg+="$SCRIPT_NAME"
+  ((${#SCRIPT_ARGS[@]})) && msg+=" ${SCRIPT_ARGS[*]}"
+  msg+=" $status"
+
+  echo "$msg"
 }
 
 main() {
-  parse_args "$@" || return
+  parse_args "$@"
 
-  if flag "$PRIME"; then
-    prime_system || return
-  fi
+  flag "$PRIME" && prime_system
 
-  check_requirements || return
+  check_requirements
 
   # Skip pulling changes if testing local development version.
   if flag "$DEV_USE_LOCAL"; then
@@ -647,32 +895,68 @@ main() {
     warn "Skipping dotfiles repo setup"
     warn "Assuming local dotfiles repo exists"
   else
-    setup_dotfiles_repo "$@" || return
+    setup_dotfiles_repo "$@"
   fi
 
-  cd "$DOTFILES" || return
+  cd "$DOTFILES" || error "Could not cd into $DOTFILES"
 
   # Export shell-agnostic, non-interactive environment variables.
   source ./env/non-interactive
 
-  if flag "$MODULES"; then
-    install_modules || return
-  fi
+  flag "$MODULES" && install_modules
 
-  if flag "$PKGS"; then
-    # TODO: Install packages.
-    install_pkgs || return
-  fi
+  flag "$PKGS" && install_pkgs
 
-  if flag "$GITHUB"; then
-    setup_personal_github || return
-  fi
+  flag "$GITHUB" && setup_personal_github
 
-  if flag_arg "$NVIM"; then
-    setup_neovim || return
-  fi
+  flag_arg "$NVIM" && setup_neovim
 
-  success "$0 ${*:+${*} }completed successfully"
+  success "$(final_message completed)"
 }
 
-main "$@" || exit
+error_handler() {
+  local exit_code=$?
+  local cmd="$BASH_COMMAND"
+  local script="${BASH_SOURCE[0]}"
+  local abs_script
+
+  abs_script="$(cd "$(dirname "$script")" && pwd)/$(basename "$script")"
+
+  printf "\n"
+  printf "============================== ERROR REPORT ==============================\n"
+
+  printf "Summary:\n"
+  printf "  Command:   %s\n" "$cmd"
+  printf "  Exit code: %s\n" "$exit_code"
+  printf "\n"
+
+  printf "Location:\n"
+  printf "  Script: %s\n" "$abs_script"
+  printf "  File:   %s\n" "${BASH_SOURCE[1]}"
+  printf "  Line:   %s\n" "${BASH_LINENO[0]}"
+  printf "\n"
+
+  printf "Stack trace:\n"
+
+  for i in "${!FUNCNAME[@]}"; do
+    [[ $i -eq 0 ]] && continue
+
+    local func="${FUNCNAME[$i]}"
+    local file="${BASH_SOURCE[$i]}"
+    local line="${BASH_LINENO[$((i - 1))]}"
+
+    printf "  at %s (%s:%s)\n" \
+      "${func:-MAIN}" \
+      "$file" \
+      "${line:-?}"
+  done
+
+  printf "==========================================================================\n"
+
+  printf "\n"
+  error "$(final_message failed)"
+}
+
+trap error_handler ERR
+
+main "$@"

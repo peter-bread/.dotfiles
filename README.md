@@ -57,7 +57,7 @@ Usage:
 Options:
   --prime       Ensure system has required packages installed
   --modules     Install modules from MANIFEST.* files
-  --pkgs        Install packages
+  --pkgs        Install packages from MANIFEST.* files
   --github      Authenticate with GitHub on this device
   --nvim        Clone Neovim config as specified by <repo_name>
 
@@ -78,7 +78,7 @@ Environment Variables:
   Option Flags (0 = disable, 1 = enable):
     PRIME       Enable system bootstrap to ensure required packages are installed
     MODULES     Install modules from MANIFEST.* files
-    PKGS        Install packages
+    PKGS        Install packages from MANIFEST.* files
     GITHUB      Authenticate with GitHub on this device
 
   Option Arguments (string; default = empty):
