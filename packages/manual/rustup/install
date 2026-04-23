@@ -6,6 +6,8 @@
 # - Installs stable and nightly toolchains
 # - Uses stable toolchain as default
 
+set -Eeuo pipefail
+
 source "$DOTFILES"/_helpers/core
 
 if available "$HOME"/.cargo/bin/rustup; then

@@ -6,6 +6,8 @@
 # - Uninstalls stable and nightly toolchains
 # - Uninstalls all cargo packages
 
+set -Eeuo pipefail
+
 source "$DOTFILES"/_helpers/core
 
 info "Uninstalling Rustup"

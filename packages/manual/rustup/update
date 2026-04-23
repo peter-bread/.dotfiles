@@ -4,6 +4,8 @@
 # - Updates all installed toochains
 # - Updates rustup itself
 
+set -Eeuo pipefail
+
 source "$DOTFILES"/_helpers/core
 
 info "Updating Rustup"
