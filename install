@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 #
 # This is a standalone script designed to bootstrap a MacOS or Linux machine.
-
-# TODO: Add some general documentation to this script.
-# See 'https://google.github.io/styleguide/shellguide.html'.
+# Handles "normal" systems, so NixOS and nix-darwin are not supported, though
+# maybe they will be one day.
 #
-#                     GENERAL INFORMATION FOR MAINTENANCE
+# It reads from declarative MANIFEST files, which desrcribe what modules and
+# packages should be installed on a system.
+
+# ==============================================================================
+# =================== GENERAL INFORMATION FOR MAINTENANCE ======================
+#
+# Documentation is inspired by Google's Bash style guide.
+# See 'https://google.github.io/styleguide/shellguide.html'.
 #
 # Arguments and Options --------------------------------------------------------
 #
@@ -82,6 +88,11 @@ ARGS=()
 
 # OPTION ARGUMENTS
 : "${NVIM:=}"
+
+################################################################################
+# WARNING! THE FOLLOWING CODE IS AUTOMATICALLY INJECTED ########################
+################################################################################
+### BEGIN HELPERS ###
 
 # Logging options.
 : "${ENABLE_COLOR:=1}" # 1 = colored output,      0 = plain
@@ -192,7 +203,7 @@ success() { _log "SUCCESS" "$1" "$GREEN"; }
 # Outputs:
 #   Writes message to stderr if ENABLE_DEBUG=1.
 ########################################
-debug() { if [[ $ENABLE_DEBUG -eq 1 ]]; then _log "DEBUG" "$1" "$CYAN" 2; fi; }
+debug() { [[ $ENABLE_DEBUG -eq 1 ]] && _log "DEBUG" "$1" "$CYAN" 2; }
 
 ########################################
 # Check if a command exists.
@@ -215,6 +226,29 @@ available() {
 unavailable() {
   ! available "$1"
 }
+
+########################################
+# Check if a command exists and log an error if it does not.
+# Use this when a command not existing is an unrecoverable error.
+# Ensure `set -e` is enabled otherwise you are respobsible for exiting if this
+# function returns 1.
+# Arguments:
+#   Command to check.
+# Outputs:
+#   Message to stderr if command does not exist.
+# Returns:
+#   0 if command exists, 1 otherwise.
+########################################
+need() {
+  local cmd=$1
+
+  available "$cmd" || error "Needs $cmd"
+}
+
+### END HELPERS ###
+################################################################################
+# WARNING! THE ABOVE CODE IS AUTOMATICALLY INJECTED ############################
+################################################################################
 
 ########################################
 # Try to run an executable file that may or may not exist or be executable.
@@ -380,7 +414,7 @@ parse_args() {
 }
 
 ########################################
-# Check if a flag is enabled (set to 1).
+# Check if an option flag is enabled (set to 1).
 # Globals:
 #   PRIME
 #   MODULES
@@ -395,6 +429,15 @@ flag() {
   [[ $1 -eq 1 ]]
 }
 
+########################################
+# Check if an option argument is provided (non empty or unset).
+# Globals:
+#   NVIM
+# Arguments:
+#   Option argument.
+# Returns:
+#   0 if argument is given, 1 otherwise.
+########################################
 flag_arg() {
   [[ -n $1 ]]
 }

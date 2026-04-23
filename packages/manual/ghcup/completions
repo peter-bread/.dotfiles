@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$DOTFILES"/_helpers/general
+source "$DOTFILES"/_helpers/core
 source "$DOTFILES"/zsh/env/non-interactive # Provides ZSH_COMPLETIONS.
 
 GHCUP_COMP_DIR_URL=https://raw.githubusercontent.com/haskell/ghcup-hs/refs/heads/master/scripts/shell-completions

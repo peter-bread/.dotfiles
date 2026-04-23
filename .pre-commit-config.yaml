@@ -2,8 +2,16 @@
 repos:
   - repo: local
     hooks:
-      - id: doc-install-help
-        name: Insert install help output into README
-        entry: python3 ./doc-insert-help.py
+      - id: sync-install-readme
+        name: Inject `install --help` output into `README.md`
+        entry: python3 ./update-generated.py install-readme
         language: system
-        files: ^(README\.md|doc-insert-help\.py|install)$
+        pass_filenames: false
+        files: ^(update-generated\.py|install|README\.md)$
+
+      - id: sync-helpers-install
+        name: Inject core helper functions and variables into `install` script
+        entry: python3 ./update-generated.py helpers-install
+        language: system
+        pass_filenames: false
+        files: ^(update-generated\.py|_helpers/core|install)$

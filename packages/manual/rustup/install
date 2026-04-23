@@ -6,7 +6,7 @@
 # - Installs stable and nightly toolchains
 # - Uses stable toolchain as default
 
-source "$DOTFILES/_helpers/general"
+source "$DOTFILES"/_helpers/core
 
 if available "$HOME"/.cargo/bin/rustup; then
   info "Rustup is already installed at $HOME/.cargo/bin/rustup"

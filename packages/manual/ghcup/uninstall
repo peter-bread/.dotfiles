@@ -3,7 +3,7 @@
 # Uninstall GHCup:
 # - Uninstalls everything
 
-source "$DOTFILES/_helpers/general"
+source "$DOTFILES"/_helpers/core
 
 info "Uninstalling GHCup"
 
