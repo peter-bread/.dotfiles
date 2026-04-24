@@ -203,7 +203,7 @@ success() { _log "SUCCESS" "$1" "$GREEN"; }
 # Outputs:
 #   Writes message to stderr if ENABLE_DEBUG=1.
 ########################################
-debug() { [[ $ENABLE_DEBUG -eq 1 ]] && _log "DEBUG" "$1" "$CYAN" 2; }
+debug() { if [[ $ENABLE_DEBUG -eq 1 ]]; then _log "DEBUG" "$1" "$CYAN" 2; fi; }
 
 ########################################
 # Check if a command exists.
