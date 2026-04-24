@@ -98,7 +98,7 @@ def sync_helpers_and_install():
     block = extract_shell_script_contents(Path("./_helpers/core"))
 
     if inject_between_markers(FILE, START, END, block):
-        print(f"Updated CLI help in {str(FILE)}")
+        print(f"Updated helper functions in {str(FILE)}")
 
 
 def main():
