@@ -5,9 +5,6 @@
 : "${ENABLE_DEBUG:=0}" # 1 = show debug messages, 0 = hide
 DATE_FORMAT="%Y-%m-%d %H:%M:%S"
 
-# Developer Options
-: "${DEV_USE_LOCAL:=0}"
-
 # ANSI color codes.
 RESET="\e[0m"
 RED="\e[31m"
@@ -149,4 +146,17 @@ need() {
   local cmd=$1
 
   available "$cmd" || error "Needs $cmd"
+}
+
+########################################
+# Check if a file is a regular executable file.
+# Arguments:
+#   File to check, a path.
+# Returns:
+#   0 if file is a regular executable file, 1 otherwise.
+########################################
+is_executable_file() {
+  local file=$1
+
+  [[ -f $file && -x $file ]]
 }

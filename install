@@ -64,8 +64,8 @@ set -Eeuo pipefail
 ################################################################################
 
 # Raw information for logging purposes.
-SCRIPT_NAME="$0"
-SCRIPT_ARGS=("$@")
+readonly SCRIPT_NAME="$0"
+readonly SCRIPT_ARGS=("$@")
 
 # TODO: Export this?
 # TODO: Make DOTFILES readonly?
@@ -89,6 +89,10 @@ ARGS=()
 # OPTION ARGUMENTS
 : "${NVIM:=}"
 
+# Developer Options
+: "${DEV_USE_LOCAL:=0}"
+: "${DEV_USE_TEST:=0}"
+
 ################################################################################
 # WARNING! THE FOLLOWING CODE IS AUTOMATICALLY INJECTED ########################
 ################################################################################
@@ -98,9 +102,6 @@ ARGS=()
 : "${ENABLE_COLOR:=1}" # 1 = colored output,      0 = plain
 : "${ENABLE_DEBUG:=0}" # 1 = show debug messages, 0 = hide
 DATE_FORMAT="%Y-%m-%d %H:%M:%S"
-
-# Developer Options
-: "${DEV_USE_LOCAL:=0}"
 
 # ANSI color codes.
 RESET="\e[0m"
@@ -245,47 +246,23 @@ need() {
   available "$cmd" || error "Needs $cmd"
 }
 
+########################################
+# Check if a file is a regular executable file.
+# Arguments:
+#   File to check, a path.
+# Returns:
+#   0 if file is a regular executable file, 1 otherwise.
+########################################
+is_executable_file() {
+  local file=$1
+
+  [[ -f $file && -x $file ]]
+}
+
 ### END HELPERS ###
 ################################################################################
 # WARNING! THE ABOVE CODE IS AUTOMATICALLY INJECTED ############################
 ################################################################################
-
-########################################
-# Try to run an executable file that may or may not exist or be executable.
-# In this case, a file not running is not an error. The only error condition
-# is the file running and itself returning a non-zero exit code.
-# Arguments:
-#   File to run, a path.
-# Outputs:
-#   Debug messages to stderr if the file can not be run.
-#   Info message to stdout before running file.
-#   Any other output from the file if it runs.
-# Returns:
-#   0 if file is never run.
-#   Exit status of file if it is run.
-########################################
-run_optional_executable() {
-  local path=$1
-
-  if [[ ! -e $path ]]; then
-    debug "$path does not exist"
-    return
-  fi
-
-  if [[ ! -f $path ]]; then
-    debug "$path is not a regular file"
-    return
-  fi
-
-  if [[ ! -x $path ]]; then
-    debug "$path is not executable"
-    return
-  fi
-
-  info "Running $path"
-  "$path" # || error "Failed to run $path"
-  # success "Ran $path"
-}
 
 ########################################
 # Print help and exit immediately.
@@ -343,6 +320,7 @@ Environment Variables:
   Developer / Advanced:
     DEV_USE_LOCAL   Developer mode: do not attempt to clone/pull dotfiles repo.
                     Useful when testing WIP scripts in a Docker container.
+    DEV_USE_TEST    Developer mode: only use MANIFEST.test.
 EOF
   exit 0
 }
@@ -729,11 +707,56 @@ install_package_manual() {
 
   [[ -d $dir ]] || error "$dir is not a directory"
 
-  run_optional_executable "$dir"/install || error "Failed to run $package install"
-  run_optional_executable "$dir"/postinstall || error "Failed to run $package postinstall"
-  run_optional_executable "$dir"/completions || error "Failed to run $package completions"
+  local install=$dir/install
+  local postinstall=$dir/postinstall
+  local completions=$dir/completions
 
-  success "Installed $package package"
+  local did_install=0
+
+  local run_count=0
+  local total=3
+
+  # TODO: Improve logging and general structure.
+
+  run_step() {
+    local file=$1
+
+    debug "Running $file"
+    "$file" || error "Failed to run $file"
+    # WARN: If (( expr )) evaluates to 0, ERR trap is triggered.
+    # Using pre-increment means it will always be incremented above 0 before it
+    # is evaluated. If this every could evaluate to 0, use:
+    #   run_count=$((run_count + 1))
+    # instead.
+    ((++run_count))
+    debug "Ran $file"
+  }
+
+  if is_executable_file "$install"; then
+    run_step "$install"
+    did_install=1
+  else
+    debug "Skipping $install"
+  fi
+
+  # Postinstall only runs if install runs successfully.
+  if [[ $did_install -eq 1 ]] && is_executable_file "$postinstall"; then
+    run_step "$postinstall"
+  else
+    debug "Skipping $postinstall"
+  fi
+
+  if is_executable_file "$completions"; then
+    run_step "$completions"
+  else
+    debug "Skipping $completions"
+  fi
+
+  if ((run_count == 0)); then
+    warn "Nothing to install: $run_count/$total scripts were run for $package package installation"
+  else
+    success "Installed $package package (ran $run_count/$total scripts)"
+  fi
 }
 
 install_package_brew() {
@@ -784,6 +807,17 @@ install_from_manifest() {
 
 install_from_all_manifests() {
   local mode=$1
+
+  # Don't validate $mode here; let install_from_manifest error.
+
+  # Use MANIFEST.test instead of other MANIFEST files for testing purposes.
+  if flag "$DEV_USE_TEST"; then
+    debug "DEV_USE_TEST is a Developer-only option"
+    debug "Only MANIFEST.test will be used"
+    debug "All other MANIFEST.* files will be ignored"
+    install_from_manifest "$DOTFILES"/MANIFEST.test "$mode"
+    return
+  fi
 
   install_from_manifest "$DOTFILES"/MANIFEST.common "$mode"
 
@@ -934,9 +968,9 @@ main() {
 
   # Skip pulling changes if testing local development version.
   if flag "$DEV_USE_LOCAL"; then
-    warn "DEV_USE_LOCAL is a Developer-only option"
-    warn "Skipping dotfiles repo setup"
-    warn "Assuming local dotfiles repo exists"
+    debug "DEV_USE_LOCAL is a Developer-only option"
+    debug "Skipping dotfiles repo setup"
+    debug "Assuming local dotfiles repo exists"
   else
     setup_dotfiles_repo "$@"
   fi

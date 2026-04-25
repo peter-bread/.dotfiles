@@ -91,6 +91,7 @@ Environment Variables:
   Developer / Advanced:
     DEV_USE_LOCAL   Developer mode: do not attempt to clone/pull dotfiles repo.
                     Useful when testing WIP scripts in a Docker container.
+    DEV_USE_TEST    Developer mode: only use MANIFEST.test.
 ```
 
 <!-- END CLI HELP -->
