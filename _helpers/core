@@ -160,3 +160,41 @@ is_executable_file() {
 
   [[ -f $file && -x $file ]]
 }
+
+########################################
+# Check if current OS is MacOS.
+# Returns:
+#   0 if on MacOS, 1 otherwise.
+########################################
+is_macos() {
+  [[ $(uname -s) == *Darwin* ]]
+}
+
+########################################
+# Check if current OS is Linux.
+# Returns:
+#   0 if on Linux, 1 otherwise.
+########################################
+is_linux() {
+  [[ $(uname -s) == *Linux* ]]
+}
+
+########################################
+# Replace a file with another file only if they are different.
+# Arguments:
+#   Source file to copy.
+#   Destination file to be overwritten.
+#   (Optional) Message to print if src and dst are the same.
+########################################
+replace_if_different() {
+  local src=$1
+  local dst=$2
+  local msg=${3:-$src and $dst are the same}
+
+  if cmp -s "$src" "$dst"; then
+    debug "$msg"
+  else
+    mkdir -p "$(dirname "$dst")"
+    mv "$src" "$dst"
+  fi
+}

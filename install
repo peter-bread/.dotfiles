@@ -6,12 +6,22 @@
 #
 # It reads from declarative MANIFEST files, which desrcribe what modules and
 # packages should be installed on a system.
-
+#
 # ==============================================================================
 # =================== GENERAL INFORMATION FOR MAINTENANCE ======================
+# ==============================================================================
 #
 # Documentation is inspired by Google's Bash style guide.
 # See 'https://google.github.io/styleguide/shellguide.html'.
+#
+# Introduction -----------------------------------------------------------------
+#
+# This script MUST be COMPATIBLE with Bash 3.2. This is because MacOS ships
+# with this version by default (though newer versions can be installed via
+# Homebrew). However, this script will likely be run with the default version,
+# so that is what should be targeted. In practice, this just means that
+# certain, newer features can't be used, namely: associative arrays, mapfile,
+# readarray and globstar.
 #
 # Arguments and Options --------------------------------------------------------
 #
@@ -259,6 +269,44 @@ is_executable_file() {
   [[ -f $file && -x $file ]]
 }
 
+########################################
+# Check if current OS is MacOS.
+# Returns:
+#   0 if on MacOS, 1 otherwise.
+########################################
+is_macos() {
+  [[ $(uname -s) == *Darwin* ]]
+}
+
+########################################
+# Check if current OS is Linux.
+# Returns:
+#   0 if on Linux, 1 otherwise.
+########################################
+is_linux() {
+  [[ $(uname -s) == *Linux* ]]
+}
+
+########################################
+# Replace a file with another file only if they are different.
+# Arguments:
+#   Source file to copy.
+#   Destination file to be overwritten.
+#   (Optional) Message to print if src and dst are the same.
+########################################
+replace_if_different() {
+  local src=$1
+  local dst=$2
+  local msg=${3:-$src and $dst are the same}
+
+  if cmp -s "$src" "$dst"; then
+    debug "$msg"
+  else
+    mkdir -p "$(dirname "$dst")"
+    mv "$src" "$dst"
+  fi
+}
+
 ### END HELPERS ###
 ################################################################################
 # WARNING! THE ABOVE CODE IS AUTOMATICALLY INJECTED ############################
@@ -420,23 +468,27 @@ flag_arg() {
   [[ -n $1 ]]
 }
 
+########################################
+# Prime the system so it is in a state where the main bootstrapping process can
+# begin.
+#
+# Since MacOS ships with Bash 3.2, this section must be compatible with that
+# and must not use newer Bash features.
+#
+# This essentially boils down to making sure a few essential packages are
+# installed:
+# - git
+# - python3
+# - curl/wget
+# - tar/unzip/bzip2/xz
+#
+# For MacOS it is a bit more involved as some of these things are not available
+# OOTB, and there isn't even a builtin package manager.
+#
+# For Linux, it should just be a case of determining which package manager to
+# use and then installing the software.
+########################################
 prime_system() {
-
-  # The purpose of this script is to prime a system, MacOS or Linux, so it is in
-  # a state where the main bootstrapping process can begin.
-  #
-  # This essentially boils down to making sure a few essential packages are
-  # installed:
-  # - git
-  # - python3
-  # - curl/wget
-  # - tar/unzip/bzip2/xz
-  #
-  # For MacOS it is a bit more involved as some of these things are not available
-  # OOTB, and there isn't even a builtin package manager.
-  #
-  # For Linux, it should just be a case of determining which package manager to
-  # use and then installing the software.
 
   prime_macos() {
     case $ARCH in
