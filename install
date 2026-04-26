@@ -294,10 +294,10 @@ is_linux() {
 #   Destination file to be overwritten.
 #   (Optional) Message to print if src and dst are the same.
 ########################################
-replace_if_different() {
+install_if_different() {
   local src=$1
   local dst=$2
-  local msg=${3:-$src and $dst are the same}
+  local msg=${3:-Files are the same; no changes to be made}
 
   if cmp -s "$src" "$dst"; then
     debug "$msg"
