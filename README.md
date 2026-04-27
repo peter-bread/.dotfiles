@@ -323,7 +323,11 @@ installed.
 
 > [!NOTE]
 >
-> In the future
+> In the future I may also create a small CLI interface for interacting with
+> manually managed packages. (I could even then use that in the main install
+> script when installing from a manifest).
+>
+> TODO: Open an issue to track this.
 
 #### Brew
 
