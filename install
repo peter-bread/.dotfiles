@@ -449,6 +449,16 @@ EOF
 ########################################
 parse_args() {
 
+  ########################################
+  # Extract the value for an option that requires an argument.
+  # Supports both `--flag=value` and `--flag value`.
+  # Arguments:
+  #   Flag name
+  #   Current token being processed (e.g. --foo or --foo=bar)
+  #   (Optional) Next value if using space-separated form.
+  # Outputs:
+  #   Writes extracted value to stdout.
+  ########################################
   require_arg() {
     local name=$1
     local token=$2
