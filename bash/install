@@ -1,3 +1,38 @@
 #!/usr/bin/env bash
 
 ln -sfn "$DOTFILES/bash/bashrc" "$HOME/.bashrc"
+
+# set -Eeuo pipefail
+#
+# source "$DOTFILES"/_helpers/core
+#
+# Allow user on MacOS to use Homebrew Bash as a shell.
+
+# is_macos || exit 0
+#
+# if [[ -x $HOMEBREW_PREFIX/bin/bash ]]; then
+#
+#   readonly SHELLS=/etc/shells
+#
+#   if grep -qx "$HOMEBREW_PREFIX/bin/bash" "$SHELLS"; then
+#     debug "Already present in $SHELLS"
+#     exit 0
+#   fi
+#
+#   if ! grep -qx "/bin/bash" "$SHELLS"; then
+#     error "/bin/bash not found in $SHELLS (unexpected)."
+#   fi
+#
+#   TMP=$(mktemp)
+#   trap 'rm -f $TMP' EXIT
+#
+#   awk -v new="$HOMEBREW_PREFIX/bin/bash" '
+#     $0 == "/bin/bash" && !inserted {
+#         print new
+#         inserted=1
+#     }
+#     { print }
+# ' "$SHELLS" >"$TMP"
+#
+# # Still need to copy $TMP back into $SHELLS.
+# fi

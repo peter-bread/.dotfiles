@@ -1,3 +1,9 @@
 # vi: ft=conf
 
-skhd
+mod:skhd
+
+# pkg:brew/Brewfile
+# pkg:brew/Brewfile.cask
+# pkg:brew/Brewfile.mas
+
+# pkg:brew/Brewfile.vscode

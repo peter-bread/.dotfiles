@@ -1,0 +1,288 @@
+#!/usr/bin/env bash
+
+# Logging options.
+: "${ENABLE_COLOR:=1}" # 1 = colored output,      0 = plain
+: "${ENABLE_DEBUG:=0}" # 1 = show debug messages, 0 = hide
+DATE_FORMAT="%Y-%m-%d %H:%M:%S"
+
+# ANSI color codes.
+RESET="\e[0m"
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+CYAN="\e[36m"
+
+################################################################################
+# LOGGING
+################################################################################
+
+########################################
+# Internal logging function. Should not be called directly. See wrappers below.
+# Globals:
+#   DATE_FORMAT
+#   ENABLE_COLOR
+#   RESET
+# Arguments:
+#   Log level, a string, all caps.
+#   Message to be logged.
+#   Color to be used, ANSI escape sequence.
+#   (Optional) File descriptor to write to, an integer. Defaults to 1 (stdout).
+# Outputs:
+#   Writes message to file descriptor.
+########################################
+_log() {
+  local level=$1
+  local msg=$2
+  local color=$3
+  local fd=${4:-1}
+  local timestamp
+  timestamp=$(date +"$DATE_FORMAT")
+
+  if [[ $ENABLE_COLOR -eq 1 && -n "$color" ]]; then
+    printf "%s ${color}[%-7s]${RESET} %s\n" "$timestamp" "$level" "$msg" >&"$fd"
+  else
+    printf "%s [%-7s] %s\n" "$timestamp" "$level" "$msg" >&"$fd"
+  fi
+}
+
+########################################
+# Write an information message to stdout.
+# Globals:
+#   BLUE
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stdout.
+########################################
+info() { _log "INFO" "$1" "$BLUE"; }
+
+########################################
+# Write a warning message to stderr.
+# Globals:
+#   YELLOW
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stderr.
+########################################
+warn() { _log "WARN" "$1" "$YELLOW" 2; }
+
+########################################
+# Write an error message to stderr. This should be used when an unrecoverable
+# error occurs and execution should terminate.
+# Globals:
+#   RED
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stderr.
+# Returns:
+#   1 to indicate that an error has occurred.
+# Examples:
+#   # Log an error
+#   foo || error "Foo failed"
+#
+#   # Print multiline error
+#   error "Line 1" || true
+#   error "Line 2" || true
+#   error "Line 3"
+########################################
+error() {
+  _log "ERROR" "$1" "$RED" 2
+  return 1
+}
+
+########################################
+# Write a success message to stdout.
+# Globals:
+#   GREEN
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stdout.
+########################################
+success() { _log "SUCCESS" "$1" "$GREEN"; }
+
+########################################
+# Write a debug message to stderr if ENABLE_DEBUG=1.
+# Globals:
+#   ENABLE_DEBUG
+#   CYAN
+# Arguments:
+#   Message to be logged.
+# Outputs:
+#   Writes message to stderr if ENABLE_DEBUG=1.
+########################################
+debug() { if [[ $ENABLE_DEBUG -eq 1 ]]; then _log "DEBUG" "$1" "$CYAN" 2; fi; }
+
+########################################
+# Check if a command exists.
+# Arguments:
+#   Command to check.
+# Returns:
+#   0 if command exists, 1 otherwise.
+########################################
+available() {
+  command -v -- "$1" &>/dev/null
+}
+
+########################################
+# Check if a command does not exist.
+# Arguments:
+#   Command to check.
+# Returns:
+#   0 if command does not exist, 1 otherwise.
+########################################
+unavailable() {
+  ! available "$1"
+}
+
+########################################
+# Check if a command exists and log an error if it does not.
+# Use this when a command not existing is an unrecoverable error.
+# Ensure `set -e` is enabled otherwise you are respobsible for exiting if this
+# function returns 1.
+# Arguments:
+#   Command to check.
+# Outputs:
+#   Message to stderr if command does not exist.
+# Returns:
+#   0 if command exists, 1 otherwise.
+########################################
+need() {
+  local cmd=$1
+
+  available "$cmd" || error "Needs $cmd"
+}
+
+########################################
+# Check if any of a list of commands exists.
+# Arguments:
+#   Commands to check.
+# Outputs:
+#   First command that exists to stdout if a command does exist.
+#   Message to stderr if none of the commands exist.
+# Returns:
+#   0 if a command exists, 1 if none exist.
+########################################
+need_any() {
+  local cmds=("$@")
+
+  for cmd in "${cmds[@]}"; do
+    if available "$cmd"; then
+      echo "$cmd"
+      return 0
+    fi
+  done
+
+  error "Needs one of: ${cmds[*]}"
+}
+
+########################################
+# Check if all of a list of commands exists.
+# Arguments:
+#   Commands to check.
+# Outputs:
+#   Message to stderr if reported any missing commands.
+# Returns:
+#   0 if all commands exist, 1 if any do not exist.
+########################################
+need_all() {
+  local cmds=("$@")
+  local missing=()
+
+  for cmd in "${cmds[@]}"; do
+    available "$cmd" || missing+=("$cmd")
+  done
+
+  if ((${#missing[@]})); then
+    error "Missing required commands: ${missing[*]}"
+  fi
+
+  return 0
+}
+
+########################################
+# Given a list of commands, report which ones are available and which are
+# missing.
+# Arguments:
+#   Commands to check.
+# Outputs:
+#   Reports found and missing commands to stderr.
+# Returns:
+#   0.
+########################################
+check_tools() {
+  local found=()
+  local missing=()
+
+  for cmd in "$@"; do
+    if available "$cmd"; then
+      found+=("$cmd")
+    else
+      missing+=("$cmd")
+    fi
+  done
+
+  if ((${#found[@]})); then
+    debug "Available: ${found[*]}"
+  fi
+
+  if ((${#missing[@]})); then
+    warn "Unavailable: ${missing[*]}"
+  fi
+
+  return 0
+}
+
+########################################
+# Check if a file is a regular executable file.
+# Arguments:
+#   File to check, a path.
+# Returns:
+#   0 if file is a regular executable file, 1 otherwise.
+########################################
+is_executable_file() {
+  local file=$1
+
+  [[ -f $file && -x $file ]]
+}
+
+########################################
+# Check if current OS is MacOS.
+# Returns:
+#   0 if on MacOS, 1 otherwise.
+########################################
+is_macos() {
+  [[ $(uname -s) == *Darwin* ]]
+}
+
+########################################
+# Check if current OS is Linux.
+# Returns:
+#   0 if on Linux, 1 otherwise.
+########################################
+is_linux() {
+  [[ $(uname -s) == *Linux* ]]
+}
+
+########################################
+# Replace a file with another file only if they are different.
+# Arguments:
+#   Source file to copy.
+#   Destination file to be overwritten.
+#   (Optional) Message to print if src and dst are the same.
+########################################
+install_if_different() {
+  local src=$1
+  local dst=$2
+  local msg=${3:-Files are the same; no changes to be made}
+
+  if cmp -s "$src" "$dst"; then
+    debug "$msg"
+  else
+    mkdir -p "$(dirname "$dst")"
+    mv "$src" "$dst"
+  fi
+}
