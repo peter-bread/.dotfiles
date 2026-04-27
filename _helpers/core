@@ -79,6 +79,14 @@ warn() { _log "WARN" "$1" "$YELLOW" 2; }
 #   Writes message to stderr.
 # Returns:
 #   1 to indicate that an error has occurred.
+# Examples:
+#   # Log an error
+#   foo || error "Foo failed"
+#
+#   # Print multiline error
+#   error "Line 1" || true
+#   error "Line 2" || true
+#   error "Line 3"
 ########################################
 error() {
   _log "ERROR" "$1" "$RED" 2
