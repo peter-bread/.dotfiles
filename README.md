@@ -285,6 +285,10 @@ methods.
 > too. Alternatively, have a `list` category, and each file inside can
 > correspond to a package manager.
 >
+> There could also be ways to manage package managers for programming
+> languages, e.g. `cargo`, `npm`, `uv` etc. Some of these can be handled with
+> Brewfiles, but I will work out exactly how to handle it in the future.
+>
 > Potentially some kind of Nix packages but this will likely go in its own
 > module directory or even a separate repository.
 >
