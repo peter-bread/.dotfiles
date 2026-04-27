@@ -270,8 +270,9 @@ can be used by using the `--pkgs` option with the top-level `install` script.
 Packages to install are declared in manifest files using the `pkg:` prefix. The
 data that follows is a relative path from [`packages/`](./packages/) pointing
 to the file or directory that describes how a package or packages should be
-installed (TODO: or updated). In the packages directory, there is a subdirectory
-for each installation method.
+installed ([TODO: or
+updated](https://github.com/peter-bread/.dotfiles/issues/93)). In the packages
+directory, there is a subdirectory for each installation method.
 
 The following sections go into more detail about the supported installation
 methods.
@@ -292,7 +293,7 @@ methods.
 > Potentially some kind of Nix packages but this will likely go in its own
 > module directory or even a separate repository.
 >
-> TODO: Open an issue to track this.
+> See [tracking issue](https://github.com/peter-bread/.dotfiles/issues/90).
 
 #### Manual
 
@@ -317,13 +318,18 @@ just that no failures occur. This is because some packages, for example Zig,
 can be installed and upgraded via Homebrew, but completions need to be manually
 installed.
 
+In most cases, the `install` script should check if a package is already
+installed, and if it is, exit cleanly. This means any out of date packages will
+be left as they are and will not be updated. See [this
+issue](https://github.com/peter-bread/.dotfiles/issues/93).
+
 > [!NOTE]
 >
 > I may in the future add the ability to only run certain scripts, for example
 > maybe on MacOS I only want Zig completions, but on Linux I also want to run
 > an actual install script too.
 >
-> TODO: Open an issue to track this.
+> See [tracking issue](https://github.com/peter-bread/.dotfiles/issues/91).
 
 > [!NOTE]
 >
@@ -331,7 +337,7 @@ installed.
 > manually managed packages. (I could even then use that in the main install
 > script when installing from a manifest).
 >
-> TODO: Open an issue to track this.
+> See [tracking issue](https://github.com/peter-bread/.dotfiles/issues/92).
 
 #### Brew
 
@@ -353,6 +359,9 @@ run:
 ```bash
 brew bundle --file="packages/brew/Brewfile" --verbose
 ```
+
+This command will install any missing packages and, by default, upgrade out of
+date packages. See [this issue](https://github.com/peter-bread/.dotfiles/issues/93).
 
 ## Neovim
 
