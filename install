@@ -306,7 +306,39 @@ need_all() {
 
   if ((${#missing[@]})); then
     error "Missing required commands: ${missing[*]}"
-    return 1
+  fi
+
+  return 0
+}
+
+########################################
+# Given a list of commands, report which ones are available and which are
+# missing.
+# Arguments:
+#   Commands to check.
+# Outputs:
+#   Reports found and missing commands to stderr.
+# Returns:
+#   0.
+########################################
+check_tools() {
+  local found=()
+  local missing=()
+
+  for cmd in "$@"; do
+    if available "$cmd"; then
+      found+=("$cmd")
+    else
+      missing+=("$cmd")
+    fi
+  done
+
+  if ((${#found[@]})); then
+    debug "Available: ${found[*]}"
+  fi
+
+  if ((${#missing[@]})); then
+    warn "Unavailable: ${missing[*]}"
   fi
 
   return 0
@@ -669,89 +701,21 @@ prime_system() {
 }
 
 # TODO: Including checking requirements under prime option?
-
 check_requirements() {
 
   info "Checking required tools are available..."
 
-  ################################################################################
-  ### DECLARE REQUIRED TOOLS
-  ################################################################################
+  # Required.
+  need_all git python3 gh
 
-  # Array to track missing essentials.
-  missing=()
+  # At least one downloader.
+  need_any curl wget &>/dev/null
 
-  # All of these are required.
-  # TODO: Can probably remove python3 since I'm not using Ansible.
-  required=(git python3 gh)
-
-  # At least one of these is required.
-  downloaders=(curl wget)
-
-  # These are recommended.
-  archive_tools=(tar unzip xz bzip2)
-
-  ################################################################################
-  ### CHECK TOOLS
-  ################################################################################
-
-  ### Essential #############################################################
-  # (all required)
-
-  for cmd in "${required[@]}"; do
-    if unavailable "$cmd"; then
-      missing+=("$cmd")
-    fi
-  done
-
-  ### Downloader ############################################################
-  # (require at least one)
-
-  found=0
-
-  for cmd in "${downloaders[@]}"; do
-    if available "$cmd"; then
-      found=1
-      break
-    fi
-  done
-
-  if [[ $found -eq 0 ]]; then
-    missing+=("curl or wget")
-  fi
-
-  unset -v found
-
-  ### Archive Tools #########################################################
-  # (optional, just warn)
-
-  for cmd in "${archive_tools[@]}"; do
-    if unavailable "$cmd"; then
-      warn "$cmd is not installed"
-    fi
-  done
-
-  ################################################################################
-  ### REPORT RESULTS
-  ################################################################################
-
-  # Report missing essentials
-  if [[ ${#missing[@]} -ne 0 ]]; then
-    error "The following required tools are missing:" || true
-    for cmd in "${missing[@]}"; do
-      error "  - $cmd" || true
-    done
-    error "Cannot continue without required tools"
-  fi
+  # Optional archive tools.
+  check_tools tar unzip xz bzip2
 
   success "All essential tools are installed"
 }
-
-################################################################################
-################################################################################
-################################################################################
-################################################################################
-################################################################################
 
 setup_dotfiles_repo() {
   if [[ -d $DOTFILES ]]; then

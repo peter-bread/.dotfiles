@@ -198,7 +198,39 @@ need_all() {
 
   if ((${#missing[@]})); then
     error "Missing required commands: ${missing[*]}"
-    return 1
+  fi
+
+  return 0
+}
+
+########################################
+# Given a list of commands, report which ones are available and which are
+# missing.
+# Arguments:
+#   Commands to check.
+# Outputs:
+#   Reports found and missing commands to stderr.
+# Returns:
+#   0.
+########################################
+check_tools() {
+  local found=()
+  local missing=()
+
+  for cmd in "$@"; do
+    if available "$cmd"; then
+      found+=("$cmd")
+    else
+      missing+=("$cmd")
+    fi
+  done
+
+  if ((${#found[@]})); then
+    debug "Available: ${found[*]}"
+  fi
+
+  if ((${#missing[@]})); then
+    warn "Unavailable: ${missing[*]}"
   fi
 
   return 0
