@@ -149,6 +149,54 @@ need() {
 }
 
 ########################################
+# Check if any of a list of commands exists.
+# Arguments:
+#   Commands to check.
+# Outputs:
+#   First command that exists to stdout if a command does exist.
+#   Message to stderr if none of the commands exist.
+# Returns:
+#   0 if a command exists, 1 if none exist.
+########################################
+need_any() {
+  local cmds=("$@")
+
+  for cmd in "${cmds[@]}"; do
+    if available "$cmd"; then
+      echo "$cmd"
+      return 0
+    fi
+  done
+
+  error "Needs one of: ${cmds[*]}"
+}
+
+########################################
+# Check if all of a list of commands exists.
+# Arguments:
+#   Commands to check.
+# Outputs:
+#   Message to stderr if reported any missing commands.
+# Returns:
+#   0 if all commands exist, 1 if any do not exist.
+########################################
+need_all() {
+  local cmds=("$@")
+  local missing=()
+
+  for cmd in "${cmds[@]}"; do
+    available "$cmd" || missing+=("$cmd")
+  done
+
+  if ((${#missing[@]})); then
+    error "Missing required commands: ${missing[*]}"
+    return 1
+  fi
+
+  return 0
+}
+
+########################################
 # Check if a file is a regular executable file.
 # Arguments:
 #   File to check, a path.
