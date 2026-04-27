@@ -719,11 +719,11 @@ check_requirements() {
 
   # Report missing essentials
   if [[ ${#missing[@]} -ne 0 ]]; then
-    warn "The following required tools are missing:"
+    error "The following required tools are missing:" || true
     for cmd in "${missing[@]}"; do
-      warn "  - $cmd"
+      error "  - $cmd" || true
     done
-    error "Some required tools are missing."
+    error "Cannot continue without required tools"
   fi
 
   success "All essential tools are installed"
