@@ -593,7 +593,7 @@ flag_arg() {
 # Returns:
 #   0 if system primes successfully, 1 otherwise.
 ########################################
-prime_system() {
+prime() {
 
   ########################################
   # Prime a MacOS system.
@@ -603,7 +603,7 @@ prime_system() {
   #   OS
   #   ARCH
   ########################################
-  prime_macos() {
+  prime::macos() {
     info "Priming MacOS..."
 
     case $ARCH in
@@ -655,12 +655,15 @@ prime_system() {
     success "MacOS primed"
   }
 
-  prime_linux() {
+  ########################################
+  # Prime a Linux system. Determine Linix distro and install necessary packages.
+  ########################################
+  prime::linux() {
     # TODO: Fallback to checking known package managers.
     [[ -f /etc/os-release ]] || error "Couldn't determine Linux distro as /etc/os-release does not exist"
 
-    prime_ubuntu_debian() {
-      sudo apt-get update -y
+    prime::linux::apt() {
+      sudo apt-get update
       sudo apt-get upgrade -y
       sudo apt-get install -y \
         git python3 \
@@ -679,35 +682,47 @@ prime_system() {
         sudo apt install gh -y
     }
 
-    prime_fedora() {
-      error "TODO: Implement Fedora"
+    prime::linux::dnf() {
+      error "TODO: Implement dnf"
     }
 
-    prime_arch() {
-      error "TODO: Implement Arch"
+    prime::linux::pacman() {
+      error "TODO: Implement pacman"
     }
 
-    prime_alpine() {
-      error "TODO: Implement Alpine"
+    prime::linux::apk() {
+      error "TODO: Implement apk"
+    }
+
+    prime::linux::xbps() {
+      error "TODO: Implement xbps"
     }
 
     # Load all data about OS into environment variables. This is clean and
     # avoids any weird parsing.
     #
-    # shellcheck disable=SC1091 # This file never exists on MacOS and the warning is annoying.
+    # shellcheck disable=SC1091
+    # This file never exists on MacOS and the warning is annoying.
     . /etc/os-release
 
     # This is mainly for package managers. While it would probably make sense
     # to use ID_LIKE, this is an optional field in the systemd specification.
     # Therefore it is safer to just hardcode distros and use ID instead.
     # See 'https://www.freedesktop.org/software/systemd/man/latest/os-release.html#ID_LIKE='.
+    #
+    # It would be possible to combine ID and ID_LIKE:
+    #
+    #   case $ID:$ID_LIKE in
+    #   ubuntu:* | debian:* | *:debian) prime::linux::apt ;;
+    #   esac
 
     # TODO: Maybe check known package managers as well or instead?
     case $ID in
-    ubuntu | debian) prime_ubuntu_debian ;;
-    fedora) prime_fedora ;;
-    arch) prime_arch ;;
-    alpine) prime_alpine ;;
+    ubuntu | debian) prime::linux::apt ;;
+    fedora) prime::linux::dnf ;;
+    arch) prime::linux::pacman ;;
+    alpine) prime::linux::apk ;;
+    void) prime::linux::xbps ;;
     *) error "Unsupported distro: $ID" ;;
     esac
 
@@ -715,8 +730,8 @@ prime_system() {
   }
 
   case $OS in
-  Darwin) prime_macos ;;
-  Linux) prime_linux ;;
+  Darwin) prime::macos ;;
+  Linux) prime::linux ;;
   esac
 
   success "System primed"
@@ -745,6 +760,7 @@ setup_dotfiles_repo() {
     info "Dotfiles already exist locally at $DOTFILES"
     info "Pulling latest changes..."
 
+    local before
     before=$(git -C "$DOTFILES" rev-parse HEAD)
 
     # TODO: Should this be a rebase?
@@ -753,6 +769,7 @@ setup_dotfiles_repo() {
 
     success "Dotfiles repo updated"
 
+    local after
     after=$(git -C "$DOTFILES" rev-parse HEAD)
 
     if [[ $before != "$after" ]]; then
@@ -1066,7 +1083,7 @@ final_message() {
 main() {
   parse_args "$@"
 
-  flag "$PRIME" && prime_system
+  flag "$PRIME" && prime
 
   check_requirements
 
@@ -1082,7 +1099,7 @@ main() {
   cd "$DOTFILES" || error "Could not cd into $DOTFILES"
 
   # Export shell-agnostic, non-interactive environment variables.
-  source ./env/non-interactive
+  source "$DOTFILES"/env/non-interactive
 
   flag "$MODULES" && install_modules
 
