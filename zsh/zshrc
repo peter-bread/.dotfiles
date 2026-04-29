@@ -127,6 +127,17 @@ if tree-sitter complete -h &>/dev/null; then
 fi
 
 
+# ZSH Help =====================================================================
+
+# Source - https://superuser.com/a/1563859
+# Posted by glenn jackman, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-04-28, License - CC BY-SA 4.0
+unalias run-help
+autoload run-help
+HELPDIR=/usr/share/zsh/${ZSH_VERSION}/help
+alias help=run-help
+
+
 # Browser ======================================================================
 
 case $(uname -s) in
