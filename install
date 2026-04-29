@@ -585,40 +585,62 @@ flag_arg() {
 #
 # For Linux, it should just be a case of determining which package manager to
 # use and then installing the software.
+#
+# Globals:
+#   OS
+#   ARCH
+#
+# Returns:
+#   0 if system primes successfully, 1 otherwise.
 ########################################
 prime_system() {
 
+  ########################################
+  # Prime a MacOS system.
+  # Installs Xcode Command Line Tools and Homebrew package manager.
+  #
+  # Globals:
+  #   OS
+  #   ARCH
+  ########################################
   prime_macos() {
+    info "Priming MacOS..."
+
     case $ARCH in
-    *arm*) PREFIX="/opt/homebrew" ;;
-    *x86_64*) PREFIX="/usr/local" ;;
+    *arm*) PREFIX=/opt/homebrew ;;
+    *x86_64*) PREFIX=/usr/local ;; # TODO: Realistically I can drop support for Intel Macs.
     *) error "$ARCH CPU architecture is not supported" ;;
     esac
 
-    # TODO: Make this nicer.
-    info "OS      : $OS"
-    info "ARCH    : $ARCH"
-    info "PREFIX  : $PREFIX"
+    debug "OS    : $OS"
+    debug "ARCH  : $ARCH"
+    debug "PREFIX: $PREFIX"
 
     info "Checking if Homebrew is already installed..."
 
-    if unavailable "$PREFIX/bin/brew"; then
+    # TODO: Is letting Homebrew install command line tools the best approach or
+    # should it be done manually?
+
+    if unavailable "$PREFIX"/bin/brew; then
       warn "Homebrew not installed"
       info "Installing Homebrew. This will also install Xcode Command Line Tools if required..."
       if ! /bin/bash -c \
-        "$(curl \
-          -fsSL \
-          https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+        "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
         error "Homebrew installation failed"
       fi
     fi
 
     info "Homebrew already installed"
 
-    info "Adding brew to PATH..."
+    debug "Checking if brew is in PATH"
+
     if unavailable brew; then
-      eval "$("$PREFIX/bin/brew" shellenv)"
+      debug "brew is not in PATH"
+      info "Adding brew to PATH..."
+      eval "$("$PREFIX"/bin/brew shellenv)"
     fi
+
+    debug "brew is in PATH"
 
     # Default: curl bzip2 tar unzip
     # Xcode Command Line Tools: git python3
