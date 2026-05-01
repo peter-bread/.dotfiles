@@ -77,7 +77,7 @@ def sync_install_and_readme():
     FILE = Path("./README.md")
     START = "<!-- BEGIN CLI HELP -->"
     END = "<!-- END CLI HELP -->"
-    COMMAND = ["./install", "--help"]
+    COMMAND = ["./install", "-h"]
 
     try:
         help_text = run_command(COMMAND)

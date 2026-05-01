@@ -27,14 +27,14 @@ For [me](https://github.com/peter-bread), on a new system run the following:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/peter-bread/.dotfiles/refs/heads/main/install |
-  bash -s -- --prime --modules --pkgs --github --nvim peter.nvim
+  bash -s -- -Pmpgn peter.nvim
 ```
 
 Or:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/peter-bread/.dotfiles/refs/heads/main/install |
-  bash -s -- --prime --modules --pkgs --github --nvim peter.nvim
+  bash -s -- -Pmpgn peter.nvim
 ```
 
 ### Details
@@ -52,23 +52,21 @@ installed and will then clone or pull dotfiles repository to ~/.dotfiles.
 Options can be provided to enable extra functionality.
 
 Usage:
-  ./install [--prime] [--modules] [--pkgs] [--github] [--nvim <repo_name>] [-h | --help]
+  ./install [-P] [-m] [-p] [-g] [-n <repo>] [-h]
 
 Options:
-  --prime       Ensure system has required packages installed
-  --modules     Install modules from MANIFEST.* files
-  --pkgs        Install packages from MANIFEST.* files
-  --github      Authenticate with GitHub on this device
-  --nvim        Clone Neovim config as specified by <repo_name>
-
-                The <repo_name> argument can be one of:
-                  - A short name (e.g. "peter.nvim"), resolved as:
-                      https://github.com/peter-bread/<repo_name>.git
-                  - A full "owner/repo" pair (e.g. "someone/other.nvim"), resolved as:
-                      https://github.com/<owner>/<repo_name>.git
-                  - A full Git URL (e.g. "https://github.com/user/repo.git"), HTTPS or SSH, used as-is
-
-  -h, --help    Print this help message
+  -P          Prime system to ensure system has required packages installed.
+  -m          Install modules from MANIFEST.* files.
+  -p          Install packages from MANIFEST.* files.
+  -g          Authenticate with GitHub on this device.
+  -n <repo>   Clone Neovim config as specified by <repo>.
+              <repo> can be one of three forms:
+                - A short name (e.g. "peter.nvim"), resolved as:
+                    https://github.com/peter-bread/<repo>.git
+                - A full "owner/repo" pair (e.g. "someone/other.nvim"), resolved as:
+                    https://github.com/<repo>.git
+                - A full Git URL (e.g. "https://github.com/user/repo.git"), HTTPS or SSH, used as-is
+  -h          Print this help message.
 
 Environment Variables:
   These variables mirror the options above. Flags provided on the command line
@@ -76,13 +74,13 @@ Environment Variables:
   (disabled) unless otherwise noted.
 
   Option Flags (0 = disable, 1 = enable):
-    PRIME       Enable system bootstrap to ensure required packages are installed
-    MODULES     Install modules from MANIFEST.* files
-    PKGS        Install packages from MANIFEST.* files
-    GITHUB      Authenticate with GitHub on this device
+    PRIME       -P
+    MODULES     -m
+    PKGS        -p
+    GITHUB      -g
 
   Option Arguments (string; default = empty):
-    NVIM        Neovim configuration repository to clone.
+    NVIM        -n <repo>
 
   Logging and Output:
     ENABLE_COLOR  Enable colored logging output (default: 1)

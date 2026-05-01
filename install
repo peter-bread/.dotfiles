@@ -417,23 +417,21 @@ installed and will then clone or pull dotfiles repository to ~/.dotfiles.
 Options can be provided to enable extra functionality.
 
 Usage:
-  ./install [--prime] [--modules] [--pkgs] [--github] [--nvim <repo_name>] [-h | --help]
+  ./install [-P] [-m] [-p] [-g] [-n <repo>] [-h]
 
 Options:
-  --prime       Ensure system has required packages installed
-  --modules     Install modules from MANIFEST.* files
-  --pkgs        Install packages from MANIFEST.* files
-  --github      Authenticate with GitHub on this device
-  --nvim        Clone Neovim config as specified by <repo_name>
-
-                The <repo_name> argument can be one of:
-                  - A short name (e.g. "peter.nvim"), resolved as:
-                      https://github.com/peter-bread/<repo_name>.git
-                  - A full "owner/repo" pair (e.g. "someone/other.nvim"), resolved as:
-                      https://github.com/<owner>/<repo_name>.git
-                  - A full Git URL (e.g. "https://github.com/user/repo.git"), HTTPS or SSH, used as-is
-
-  -h, --help    Print this help message
+  -P          Prime system to ensure system has required packages installed.
+  -m          Install modules from MANIFEST.* files.
+  -p          Install packages from MANIFEST.* files.
+  -g          Authenticate with GitHub on this device.
+  -n <repo>   Clone Neovim config as specified by <repo>.
+              <repo> can be one of three forms:
+                - A short name (e.g. "peter.nvim"), resolved as:
+                    https://github.com/peter-bread/<repo>.git
+                - A full "owner/repo" pair (e.g. "someone/other.nvim"), resolved as:
+                    https://github.com/<repo>.git
+                - A full Git URL (e.g. "https://github.com/user/repo.git"), HTTPS or SSH, used as-is
+  -h          Print this help message.
 
 Environment Variables:
   These variables mirror the options above. Flags provided on the command line
@@ -441,13 +439,13 @@ Environment Variables:
   (disabled) unless otherwise noted.
 
   Option Flags (0 = disable, 1 = enable):
-    PRIME       Enable system bootstrap to ensure required packages are installed
-    MODULES     Install modules from MANIFEST.* files
-    PKGS        Install packages from MANIFEST.* files
-    GITHUB      Authenticate with GitHub on this device
+    PRIME       -P
+    MODULES     -m
+    PKGS        -p
+    GITHUB      -g
 
   Option Arguments (string; default = empty):
-    NVIM        Neovim configuration repository to clone.
+    NVIM        -n <repo>
 
   Logging and Output:
     ENABLE_COLOR  Enable colored logging output (default: 1)
@@ -475,57 +473,35 @@ EOF
 #   All arguments passed to the script.
 # Outputs:
 #   Writes error mesages to stderr.
-#   Writes help message to stdout (if -h | --help is provided).
+#   Writes help message to stdout (if -h is provided).
 # Returns:
 #   0 if arguments are parsed successfully, 1 otherwise.
 ########################################
 parse_args() {
 
-  ########################################
-  # Extract the value for an option that requires an argument.
-  # Supports both `--flag=value` and `--flag value`.
-  # Arguments:
-  #   Flag name
-  #   Current token being processed (e.g. --foo or --foo=bar)
-  #   (Optional) Next value if using space-separated form.
-  # Outputs:
-  #   Writes extracted value to stdout.
-  ########################################
-  require_arg() {
-    local name=$1
-    local token=$2
-    local next=${3-}
-    local value=""
-
-    # Handle --flag=value form.
-    if [[ $token == *=* ]]; then
-      value="${token#*=}"
-    else
-      # Handle --flag value form.
-      value="$next"
-    fi
-
-    [[ -n $value ]] || error "$name requires a non-empty value"
-
-    echo "$value"
-  }
-
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-    --prime) PRIME=1 ;;
-    --modules) MODULES=1 ;;
-    --pkgs) PKGS=1 ;;
-    --github) GITHUB=1 ;;
-    --nvim | --nvim=*)
-      NVIM=$(require_arg --nvim "$1" "${2-}")
-      [[ $1 != *=* ]] && shift # Only shift extra if not --flag=value form.
-      ;;
-    -h | --help) show_help ;;
-    -*) error "Unexpected option: $1" ;;
-    *) ARGS+=("$1") ;;
+  while getopts ":Pmpgn:h" opt; do
+    case $opt in
+    P) PRIME=1 ;;
+    m) MODULES=1 ;;
+    p) PKGS=1 ;;
+    g) GITHUB=1 ;;
+    n) NVIM=$OPTARG ;;
+    h) show_help ;;
+    :) error "-$OPTARG requires a value" ;;
+    \?) error "Unknown option: -$OPTARG" ;;
     esac
-    shift
   done
+
+  shift $((OPTIND - 1))
+
+  debug "Options parsed"
+  debug "PRIME=$PRIME"
+  debug "MODULES=$MODULES"
+  debug "PKGS=$PKGS"
+  debug "GITHUB=$GITHUB"
+  debug "NVIM=$NVIM"
+
+  ARGS+=("$@")
 
   if [[ ${#ARGS[@]} -lt $EXPECTED_ARGS ]]; then
     error "Expected $((EXPECTED_ARGS - ${#ARGS[@]})) more argument(s)"
