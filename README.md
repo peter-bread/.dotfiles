@@ -76,7 +76,7 @@ Environment Variables:
   Option Flags (0 = disable, 1 = enable):
     PRIME       -P
     MODULES     -m
-    PKGS        -p
+    PACKAGES    -p
     GITHUB      -g
 
   Option Arguments (string; default = empty):

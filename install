@@ -93,7 +93,7 @@ ARGS=()
 # OPTIONS
 : "${PRIME:=0}"
 : "${MODULES:=0}"
-: "${PKGS:=0}"
+: "${PACKAGES:=0}"
 : "${GITHUB:=0}"
 
 # OPTION ARGUMENTS
@@ -441,7 +441,7 @@ Environment Variables:
   Option Flags (0 = disable, 1 = enable):
     PRIME       -P
     MODULES     -m
-    PKGS        -p
+    PACKAGES    -p
     GITHUB      -g
 
   Option Arguments (string; default = empty):
@@ -464,7 +464,7 @@ EOF
 # Globals:
 #   PRIME
 #   MODULES
-#   PKGS
+#   PACKAGES
 #   GITHUB
 #   NVIM
 #   ARGS
@@ -483,7 +483,7 @@ parse_args() {
     case $opt in
     P) PRIME=1 ;;
     m) MODULES=1 ;;
-    p) PKGS=1 ;;
+    p) PACKAGES=1 ;;
     g) GITHUB=1 ;;
     n) NVIM=$OPTARG ;;
     h) show_help ;;
@@ -497,7 +497,7 @@ parse_args() {
   debug "Options parsed"
   debug "PRIME=$PRIME"
   debug "MODULES=$MODULES"
-  debug "PKGS=$PKGS"
+  debug "PACKAGES=$PACKAGES"
   debug "GITHUB=$GITHUB"
   debug "NVIM=$NVIM"
 
@@ -518,7 +518,7 @@ parse_args() {
 # Globals:
 #   PRIME
 #   MODULES
-#   PKGS
+#   PACKAGES
 #   GITHUB
 # Arguments:
 #   Option flag.
@@ -543,6 +543,154 @@ flag_arg() {
 }
 
 ########################################
+# Prime a MacOS system.
+# Installs Xcode Command Line Tools and Homebrew package manager.
+# Ensures required packages are installed.
+#
+# Globals:
+#   OS
+#   ARCH
+########################################
+prime::macos() {
+  info "Priming MacOS..."
+
+  case $ARCH in
+  *arm*) PREFIX=/opt/homebrew ;;
+  *x86_64*) PREFIX=/usr/local ;; # TODO: Realistically I can drop support for Intel Macs.
+  *) error "$ARCH CPU architecture is not supported" ;;
+  esac
+
+  debug "OS    : $OS"
+  debug "ARCH  : $ARCH"
+  debug "PREFIX: $PREFIX"
+
+  info "Checking if Homebrew is already installed..."
+
+  # TODO: Is letting Homebrew install command line tools the best approach or
+  # should it be done manually?
+
+  if unavailable "$PREFIX"/bin/brew; then
+    warn "Homebrew not installed"
+    info "Installing Homebrew. This will also install Xcode Command Line Tools if required..."
+    if ! /bin/bash -c \
+      "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+      error "Homebrew installation failed"
+    fi
+  fi
+
+  info "Homebrew already installed"
+
+  debug "Checking if brew is in PATH"
+
+  if unavailable brew; then
+    debug "brew is not in PATH"
+    info "Adding brew to PATH..."
+    eval "$("$PREFIX"/bin/brew shellenv)"
+  fi
+
+  debug "brew is in PATH"
+
+  # Default: curl bzip2 tar unzip
+  # Xcode Command Line Tools: git python3
+
+  brew update
+  brew install wget xz gh
+
+  success "MacOS primed"
+}
+
+########################################
+# Install required packages from APT (Debian-based).
+########################################
+prime::linux::apt() {
+  sudo apt-get update
+  sudo apt-get install -y \
+    git python3 \
+    curl wget \
+    tar unzip bzip2 xz-utils
+
+  # Install latest version of GitHub CLI.
+  (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) &&
+    sudo mkdir -p -m 755 /etc/apt/keyrings &&
+    out=$(mktemp) && wget -nv -O"$out" https://cli.github.com/packages/githubcli-archive-keyring.gpg &&
+    cat "$out" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null &&
+    sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg &&
+    sudo mkdir -p -m 755 /etc/apt/sources.list.d &&
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null &&
+    sudo apt update &&
+    sudo apt install gh -y
+}
+
+########################################
+# Install required packages from DNF (Fedora-based).
+########################################
+prime::linux::dnf() {
+  error "TODO: Implement dnf"
+}
+
+########################################
+# Install required packages from pacman (Arch-based).
+########################################
+prime::linux::pacman() {
+  error "TODO: Implement pacman"
+}
+
+########################################
+# Install required packages from APK (Alpine-based).
+########################################
+prime::linux::apk() {
+  error "TODO: Implement apk"
+}
+
+########################################
+# Install required packages from XBPS (Void).
+########################################
+prime::linux::xbps() {
+  error "TODO: Implement xbps"
+}
+
+########################################
+# Prime a Linux system. Determine Linix distro and install necessary packages.
+########################################
+prime::linux() {
+  # TODO: Fallback to checking known package managers.
+  [[ -f /etc/os-release ]] || error "Couldn't determine Linux distro as /etc/os-release does not exist"
+
+  # Load all data about OS into environment variables. This is clean and
+  # avoids any weird parsing.
+  #
+  # shellcheck disable=SC1091
+  # This file never exists on MacOS and the warning is annoying.
+  # TODO: Source this in a subshell to not leak variables?
+  . /etc/os-release
+
+  # This is mainly for package managers. While it would probably make sense
+  # to use ID_LIKE, this is an optional field in the systemd specification.
+  # Therefore it is safer to just hardcode distros and use ID instead.
+  # See 'https://www.freedesktop.org/software/systemd/man/latest/os-release.html#ID_LIKE='.
+  #
+  # It would be possible to combine ID and ID_LIKE:
+  #
+  #   case $ID:$ID_LIKE in
+  #   ubuntu:* | debian:* | *:debian) prime::linux::apt ;;
+  #   esac
+
+  # TODO: Switch to platform detection script if it gets implemented?
+  # See 'https://github.com/peter-bread/.dotfiles/issues/94'.
+
+  case $ID in
+  ubuntu | debian) prime::linux::apt ;;
+  fedora) prime::linux::dnf ;;
+  arch) prime::linux::pacman ;;
+  alpine) prime::linux::apk ;;
+  void) prime::linux::xbps ;;
+  *) error "Unsupported distro: $ID" ;;
+  esac
+
+  success "Linux primed"
+}
+
+########################################
 # Prime the system so it is in a state where the main bootstrapping process can
 # begin.
 #
@@ -562,6 +710,12 @@ flag_arg() {
 # For Linux, it should just be a case of determining which package manager to
 # use and then installing the software.
 #
+# In any case, this should update package repositories and install required packages.
+# It SHOULD NOT upgrade all installed packages.
+#
+# TODO: Add an option to upgrade packages that are already installed.
+# See 'https://github.com/peter-bread/.dotfiles/issues/95'.
+#
 # Globals:
 #   OS
 #   ARCH
@@ -571,140 +725,6 @@ flag_arg() {
 ########################################
 prime() {
 
-  ########################################
-  # Prime a MacOS system.
-  # Installs Xcode Command Line Tools and Homebrew package manager.
-  #
-  # Globals:
-  #   OS
-  #   ARCH
-  ########################################
-  prime::macos() {
-    info "Priming MacOS..."
-
-    case $ARCH in
-    *arm*) PREFIX=/opt/homebrew ;;
-    *x86_64*) PREFIX=/usr/local ;; # TODO: Realistically I can drop support for Intel Macs.
-    *) error "$ARCH CPU architecture is not supported" ;;
-    esac
-
-    debug "OS    : $OS"
-    debug "ARCH  : $ARCH"
-    debug "PREFIX: $PREFIX"
-
-    info "Checking if Homebrew is already installed..."
-
-    # TODO: Is letting Homebrew install command line tools the best approach or
-    # should it be done manually?
-
-    if unavailable "$PREFIX"/bin/brew; then
-      warn "Homebrew not installed"
-      info "Installing Homebrew. This will also install Xcode Command Line Tools if required..."
-      if ! /bin/bash -c \
-        "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
-        error "Homebrew installation failed"
-      fi
-    fi
-
-    info "Homebrew already installed"
-
-    debug "Checking if brew is in PATH"
-
-    if unavailable brew; then
-      debug "brew is not in PATH"
-      info "Adding brew to PATH..."
-      eval "$("$PREFIX"/bin/brew shellenv)"
-    fi
-
-    debug "brew is in PATH"
-
-    # Default: curl bzip2 tar unzip
-    # Xcode Command Line Tools: git python3
-
-    brew update
-    # brew upgrade
-    brew install \
-      wget \
-      xz \
-      gh
-
-    success "MacOS primed"
-  }
-
-  ########################################
-  # Prime a Linux system. Determine Linix distro and install necessary packages.
-  ########################################
-  prime::linux() {
-    # TODO: Fallback to checking known package managers.
-    [[ -f /etc/os-release ]] || error "Couldn't determine Linux distro as /etc/os-release does not exist"
-
-    prime::linux::apt() {
-      sudo apt-get update
-      sudo apt-get upgrade -y
-      sudo apt-get install -y \
-        git python3 \
-        curl wget \
-        tar unzip bzip2 xz-utils
-
-      # Install latest version of GitHub CLI.
-      (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) &&
-        sudo mkdir -p -m 755 /etc/apt/keyrings &&
-        out=$(mktemp) && wget -nv -O"$out" https://cli.github.com/packages/githubcli-archive-keyring.gpg &&
-        cat "$out" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null &&
-        sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg &&
-        sudo mkdir -p -m 755 /etc/apt/sources.list.d &&
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null &&
-        sudo apt update &&
-        sudo apt install gh -y
-    }
-
-    prime::linux::dnf() {
-      error "TODO: Implement dnf"
-    }
-
-    prime::linux::pacman() {
-      error "TODO: Implement pacman"
-    }
-
-    prime::linux::apk() {
-      error "TODO: Implement apk"
-    }
-
-    prime::linux::xbps() {
-      error "TODO: Implement xbps"
-    }
-
-    # Load all data about OS into environment variables. This is clean and
-    # avoids any weird parsing.
-    #
-    # shellcheck disable=SC1091
-    # This file never exists on MacOS and the warning is annoying.
-    . /etc/os-release
-
-    # This is mainly for package managers. While it would probably make sense
-    # to use ID_LIKE, this is an optional field in the systemd specification.
-    # Therefore it is safer to just hardcode distros and use ID instead.
-    # See 'https://www.freedesktop.org/software/systemd/man/latest/os-release.html#ID_LIKE='.
-    #
-    # It would be possible to combine ID and ID_LIKE:
-    #
-    #   case $ID:$ID_LIKE in
-    #   ubuntu:* | debian:* | *:debian) prime::linux::apt ;;
-    #   esac
-
-    # TODO: Maybe check known package managers as well or instead?
-    case $ID in
-    ubuntu | debian) prime::linux::apt ;;
-    fedora) prime::linux::dnf ;;
-    arch) prime::linux::pacman ;;
-    alpine) prime::linux::apk ;;
-    void) prime::linux::xbps ;;
-    *) error "Unsupported distro: $ID" ;;
-    esac
-
-    success "Linux primed"
-  }
-
   case $OS in
   Darwin) prime::macos ;;
   Linux) prime::linux ;;
@@ -713,7 +733,9 @@ prime() {
   success "System primed"
 }
 
-# TODO: Including checking requirements under prime option?
+########################################
+# Check all tools required for the bootstrapping process are installed.
+########################################
 check_requirements() {
 
   info "Checking required tools are available..."
@@ -730,6 +752,16 @@ check_requirements() {
   success "All essential tools are installed"
 }
 
+########################################
+# Setup dotfiles repository locally. If it already exists, pull any changes and
+# execute the latest install script in place of the current one. If it doesn't,
+# clone it.
+# Globals:
+#   DOTFILES
+# Arguments:
+#   Options and arguments to be passed to install if the script is re-executed;
+#   these should be the same as the options given to the script initially.
+########################################
 setup_dotfiles_repo() {
   if [[ -d $DOTFILES ]]; then
 
@@ -769,34 +801,48 @@ setup_dotfiles_repo() {
   success "Dotfiles repo setup"
 }
 
-install_module() {
+########################################
+# Install a module.
+# Globals:
+#   DOTFILES
+# Arguments:
+#   Module name, which should be a top-level directory in $DOTFILES.
+########################################
+install::module() {
   local module=$1
 
-  local module_dir="$DOTFILES/${module}"
-  local module_install="$module_dir/install"
+  local dir=$DOTFILES/$module
+  local install=$dir/install
 
-  [[ -d $module_dir ]] || error "$module module does not exist"
+  [[ -d $dir ]] || error "$module module does not exist"
 
   # If the module exists but has no install script, it is likely a
   # "special" module. In this case, documentation should be consulted.
-  if [[ ! -f $module_install ]]; then
+  if [[ ! -f $install ]]; then
     warn "$module module does not contain an install script. Skipping..."
     return
   fi
 
-  if [[ ! -x $module_install ]]; then
+  if [[ ! -x $install ]]; then
     warn "$module module contains a non-executable install script. Skipping..."
     return
   fi
 
   info "Installing $module module..."
 
-  "$module_install" || error "Failed to install $module module"
+  "$install" || error "Failed to install $module module"
 
   success "Installed $module module"
 }
 
-install_package_manual() {
+########################################
+# Install a manual package.
+# Globals:
+#   DOTFILES
+# Arguments:
+#   Package name, should be a directory relative to $DOTFILES/packages/manual/.
+########################################
+install::package::manual() {
   local package=$1
   local dir=$DOTFILES/packages/manual/$package
 
@@ -813,8 +859,6 @@ install_package_manual() {
   local run_count=0
   local total=3
 
-  # TODO: Improve logging and general structure.
-
   run_step() {
     local file=$1
 
@@ -828,6 +872,13 @@ install_package_manual() {
     ((++run_count))
     debug "Ran $file"
   }
+
+  # TODO: Should this run the `upgrade` script instead of `install` if it
+  # exists and the package is already installed?
+  # By default, packages *are not* upgraded.
+  # See 'https://github.com/peter-bread/.dotfiles/issues/93'
+
+  # TODO: Improve logging and general structure.
 
   if is_executable_file "$install"; then
     run_step "$install"
@@ -856,30 +907,50 @@ install_package_manual() {
   fi
 }
 
-install_package_brew() {
+########################################
+# Install packages from a Brewfile.
+# Globals:
+#   DOTFILES
+# Arguments:
+#   Path to Brewfile relative to $DOTFILES/packages/brew/.
+########################################
+install::package::brew() {
   local brewfile=$1
   local dir=$DOTFILES/packages/brew
+  local full=$dir/$brewfile
 
-  info "Installing packages from $dir/$brewfile"
+  info "Installing packages from $full"
 
   # TODO: Should this use `--upgrade` or `--no-upgrade` flag?
   # By default, packages *are* upgraded.
-  brew bundle --file="$dir/$brewfile" --verbose || error "Brewfile installation failed"
+  # See 'https://github.com/peter-bread/.dotfiles/issues/93'
+  brew bundle --file="$full" --verbose || error "Brewfile installation failed"
 
-  success "Installed packages from $dir/$brewfile"
+  success "Installed packages from $full"
 }
 
-install_package() {
+########################################
+# Install packages by delegating to a dedicated handler.
+# Arguments:
+#   Package, in the form <method>:<name>.
+########################################
+install::package() {
   local package=$1
 
   case $package in
-  manual/*) install_package_manual "${package#manual/}" ;;
-  brew/*) install_package_brew "${package#brew/}" ;;
+  manual/*) install::package::manual "${package#manual/}" ;;
+  brew/*) install::package::brew "${package#brew/}" ;;
   *) warn "Unknown package format: $package" ;;
   esac
 }
 
-install_from_manifest() {
+########################################
+# Install items from a manifest file.
+# Arguments:
+#   Manifest file, a path.
+#   Mode, i.e. which manifest items should be considered. One of <modules|packages>.
+########################################
+install::from_manifest() {
   local manifest=$1
   local mode=$2
 
@@ -891,10 +962,10 @@ install_from_manifest() {
     [[ -n $item && $item != \#* ]] || continue
 
     case $mode:$item in
-    modules:mod:*) install_module "${item#mod:}" ;;
-    packages:pkg:*) install_package "${item#pkg:}" ;;
+    modules:mod:*) install::module "${item#mod:}" ;;
+    packages:pkg:*) install::package "${item#pkg:}" ;;
     modules:* | packages:*) debug "Skipping $item in $mode mode" ;;
-    *) warn "Unknown: $item" ;;
+    *) warn "Unknown manifest item: $item" ;;
     esac
 
   done <"$manifest"
@@ -902,7 +973,21 @@ install_from_manifest() {
   success "Installed $mode from $manifest"
 }
 
-install_from_all_manifests() {
+########################################
+# Install items from all manifest files, i.e. MANIFEST.common unconditionally,
+# and then OS-specific ones.
+# If DEV_USE_TEST=1, only MANIFEST.test will be used and all others will be
+# ignored.
+#
+# Globals:
+#   DOTFILES
+#   DEV_USE_TEST
+#   OS
+#
+# Arguments:
+#   Mode, i.e. which manifest items should be considered. One of <modules|packages>.
+########################################
+install::from_all_manifests() {
   local mode=$1
 
   # Don't validate $mode here; let install_from_manifest error.
@@ -912,62 +997,81 @@ install_from_all_manifests() {
     debug "DEV_USE_TEST is a Developer-only option"
     debug "Only MANIFEST.test will be used"
     debug "All other MANIFEST.* files will be ignored"
-    install_from_manifest "$DOTFILES"/MANIFEST.test "$mode"
+    install::from_manifest "$DOTFILES"/MANIFEST.test "$mode"
     return
   fi
 
-  install_from_manifest "$DOTFILES"/MANIFEST.common "$mode"
+  install::from_manifest "$DOTFILES"/MANIFEST.common "$mode"
 
   case $OS in
-  Darwin) install_from_manifest "$DOTFILES"/MANIFEST.macos "$mode" ;;
-  Linux) install_from_manifest "$DOTFILES"/MANIFEST.linux "$mode" ;;
+  Darwin) install::from_manifest "$DOTFILES"/MANIFEST.macos "$mode" ;;
+  Linux) install::from_manifest "$DOTFILES"/MANIFEST.linux "$mode" ;;
   # TODO: Use /etc/os-release or package manager for distro-specific manifests?
   esac
 }
 
-install_modules() {
-  install_from_all_manifests modules
+########################################
+# Install modules from manifest files.
+########################################
+install::modules() {
+  install::from_all_manifests modules
 }
 
-install_pkgs() {
-  install_from_all_manifests packages
+########################################
+# Install packages from manifest files.
+########################################
+install::packages() {
+  install::from_all_manifests packages
 }
 
+########################################
+# Set up personal GitHub account.
+# Globals:
+#   DOTFILES
+#   DEVELOPER
+########################################
 setup_personal_github() {
-  local account="peter-bread"
-  local category="personal"
+  local account=peter-bread
+  local category=personal
+  local base_dir=${DEVELOPER:-$HOME/Developer}
+  local email=145384599+peter-bread@users.noreply.github.com
 
-  # TODO: Add logging.
+  info "Setting up GitHub account: $account"
 
-  # --github-auth (and --add-keys, but this is because it depends on the other flag)
+  # --github-auth (and --add-keys, but this is because it depends on the former)
   # requires manual intervention to copy and paste codes into a browser. This means
   # it cannot be used in a headless environment.
 
-  ./bin/setup-github-account "$account" \
+  "$DOTFILES"/bin/setup-github-account "$account" \
     --category "$category" \
-    --base-dir "${DEVELOPER:-$HOME/Developer}" \
-    --email "145384599+peter-bread@users.noreply.github.com" \
+    --base-dir "$base_dir" \
+    --email "$email" \
     --allowed-signers \
     --gen-keys \
     --github-auth \
-    --add-keys
+    --add-keys ||
+    error "Failed"
+
+  success "GitHub account set up"
 }
 
+########################################
+# Set up Neovim configuration.
+# Globals:
+#   NVIM
+#   XDG_CONFIG_HOME
+########################################
 setup_neovim() {
-
   info "Downloading Neovim config..."
 
-  is_full_url() {
-    local input="$1"
-    [[ "$input" =~ ^(https://|git@) ]]
-  }
+  local full_url_regex='^(https://|git@)'
 
-  local input="$NVIM"
+  local input=${NVIM:-}
   local url
 
-  if is_full_url "$input"; then
-    url="$input"
-  elif [[ "$input" == */* ]]; then
+  if [[ $input =~ $full_url_regex ]]; then
+    url=$input
+  elif [[ $input == */* ]]; then
     url="https://github.com/$input"
   else
     url="https://github.com/peter-bread/$input"
@@ -1045,6 +1149,14 @@ setup_neovim() {
   success "Neovim headless setup successful"
 }
 
+########################################
+# Construct final message to indicate overall success or failure.
+# Globals:
+#   SCRIPT_NAME
+#   SCRIPT_ARGS
+# Outputs:
+#   Final message to stdout.
+########################################
 final_message() {
   local status=$1
   local msg=""
@@ -1056,9 +1168,21 @@ final_message() {
   echo "$msg"
 }
 
+########################################
+# Entry point.
+# Globals:
+#   PRIME
+#   DEV_USE_LOCAL
+#   DOTFILES
+#   MODULES
+#   PACKAGES
+#   GITHUB
+#   NVIM
+########################################
 main() {
   parse_args "$@"
 
+  # TODO: Check requirements before and after priming?
   flag "$PRIME" && prime
 
   check_requirements
@@ -1077,9 +1201,9 @@ main() {
   # Export shell-agnostic, non-interactive environment variables.
   source "$DOTFILES"/env/non-interactive
 
-  flag "$MODULES" && install_modules
+  flag "$MODULES" && install::modules
 
-  flag "$PKGS" && install_pkgs
+  flag "$PACKAGES" && install::packages
 
   flag "$GITHUB" && setup_personal_github
 
@@ -1088,6 +1212,9 @@ main() {
   success "$(final_message completed)"
 }
 
+########################################
+# Pritn stack trace if an error occurs.
+########################################
 error_handler() {
   local exit_code=$?
   local cmd="$BASH_COMMAND"
@@ -1128,7 +1255,7 @@ error_handler() {
   printf "==========================================================================\n"
 
   printf "\n"
-  error "$(final_message failed)"
+  error "$(final_message failed)" # || true
 }
 
 trap error_handler ERR
