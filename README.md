@@ -244,7 +244,7 @@ Most modules are Config modules, however there are some Special modules.
 #### Data
 
 [Packages](./packages/) contains files and scripts used to install software. It
-can be used by using the `--pkgs` option with the top-level `install` script.
+can be used by using the `-p` option with the top-level `install` script.
 See [below](#packages) for more information.
 
 [Env](./env/) provides a unified environment layer that centralises
@@ -263,7 +263,7 @@ work environment.
 ### Packages
 
 [Packages](./packages/) contains files and scripts used to install software. It
-can be used by using the `--pkgs` option with the top-level `install` script.
+can be used by using the `-p` option with the top-level `install` script.
 
 Packages to install are declared in manifest files using the `pkg:` prefix. The
 data that follows is a relative path from [`packages/`](./packages/) pointing
@@ -366,5 +366,5 @@ date packages. See [this issue](https://github.com/peter-bread/.dotfiles/issues/
 My Neovim configuration is in its own repository
 [here](https://github.com/peter-bread/peter.nvim).
 
-It can be cloned manually or by using the `--nvim` option with the top-level
+It can be cloned manually or by using the `-n` option with the top-level
 `install` script.

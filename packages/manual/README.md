@@ -19,8 +19,8 @@ moment:
 These scripts must be executable.
 
 Packages should be declared in MANIFEST files with `pkg:manual/<name>`. If the
-`--pkgs` option is passed to the top-level `install` script, it will attempt to
-run `install`, `postinstall` and `completions`.
+`-p` option is passed to the top-level `install` script, it will attempt to run
+`install`, `postinstall` and `completions`.
 
 ### Future
 
