@@ -3,7 +3,9 @@
 # Uninstall GHCup:
 # - Uninstalls everything
 
-source "$DOTFILES/_helpers/general"
+set -Eeuo pipefail
+
+source "$DOTFILES"/_helpers/core
 
 info "Uninstalling GHCup"
 

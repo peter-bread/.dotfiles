@@ -31,5 +31,10 @@ local:
 	docker build -f Dockerfile.local -t $(IMAGE) .
 	docker run --rm -it $(IMAGE)
 
+.PHONY: update-generated
+update-generated:
+	./update-generated.py install-readme
+	./update-generated.py helpers-install
+
 # TODO: Target with a separate Dockerfile that will download and run latest
 # install script from GitHub.

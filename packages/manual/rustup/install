@@ -6,8 +6,12 @@
 # - Installs stable and nightly toolchains
 # - Uses stable toolchain as default
 
-source "$DOTFILES/_helpers/general"
+set -Eeuo pipefail
 
+source "$DOTFILES"/_helpers/core
+
+# TODO: Check if the installer handles rustup already being installed
+# gracefully.
 if available "$HOME"/.cargo/bin/rustup; then
   info "Rustup is already installed at $HOME/.cargo/bin/rustup"
   exit

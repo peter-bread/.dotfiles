@@ -4,7 +4,9 @@
 # - Updates GHCup
 # - Does NOT make any changes to tools installed via GHCup
 
-source "$DOTFILES"/_helpers/general
+set -Eeuo pipefail
+
+source "$DOTFILES"/_helpers/core
 
 info "Updating GHCup"
 

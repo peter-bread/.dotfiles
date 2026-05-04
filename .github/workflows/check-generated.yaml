@@ -1,5 +1,5 @@
 ---
-name: Check doc-gen
+name: Check Generated
 
 on:
   push:
@@ -10,5 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: python3 doc-insert-help.py
+      - run: make update-generated # Checks all generated content in a single step.
       - run: git diff --exit-code

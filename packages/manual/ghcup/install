@@ -8,8 +8,12 @@
 #
 # See 'https://github.com/haskell/ghcup-hs/blob/master/scripts/bootstrap/bootstrap-haskell'.
 
-source "$DOTFILES"/_helpers/general
+set -Eeuo pipefail
 
+source "$DOTFILES"/_helpers/core
+
+# TODO: I think the installer handles ghcup already being installed gracefully
+# so this guard is not needed.
 if available "$HOME"/.ghcup/bin/ghcup; then
   info "GHCup is already installed at $HOME/.ghcup/bin/ghcup"
   exit

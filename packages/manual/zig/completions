@@ -2,17 +2,22 @@
 
 # See 'https://codeberg.org/ziglang/shell-completions'.
 
-source "$DOTFILES"/_helpers/general
+set -Eeuo pipefail
+
+source "$DOTFILES"/_helpers/core
 source "$DOTFILES"/zsh/env/non-interactive # Provides ZSH_COMPLETIONS.
+
+TMP=$(mktemp -d) || error "Failed to create temporary directory"
+trap 'rm -rf "$TMP"' EXIT
 
 ZIG_COMP_DIR_URL=https://codeberg.org/ziglang/shell-completions/raw/branch/master
 
 install_zsh_completions() {
   info "Installing Zig Zsh completions..."
 
-  mkdir -p "$ZSH_COMPLETIONS"
+  "$DOTFILES"/bin/download "$ZIG_COMP_DIR_URL"/_zig "$TMP"/_zig || error "Download failed"
 
-  "$DOTFILES"/bin/download "$ZIG_COMP_DIR_URL"/_zig "$ZSH_COMPLETIONS"/_zig
+  install_if_different "$TMP"/_zig "$ZSH_COMPLETIONS"/_zig || error "Installation failed"
 
   success "Zig Zsh completions installed"
 }
@@ -21,9 +26,10 @@ install_bash_completions() {
   info "Installing Zig Bash completions..."
 
   BASH_COMPLETIONS="${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions"
-  mkdir -p "$BASH_COMPLETIONS"
 
-  "$DOTFILES"/bin/download "$ZIG_COMP_DIR_URL"/_zig.bash "$BASH_COMPLETIONS"/zig
+  "$DOTFILES"/bin/download "$ZIG_COMP_DIR_URL"/_zig.bash "$TMP"/zig || error "Download failed"
+
+  install_if_different "$TMP"/zig "$BASH_COMPLETIONS"/zig || error "Installation failed"
 
   success "Zig Bash completions installed"
 }
