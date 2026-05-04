@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+# Install Neovim `VERSION` into `PREFIX`.
+
+# Get Helper Functions #########################################################
+
+source "$DOTFILES/_helpers/general"
+
+# Get System Info ##############################################################
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+# Prepare temporary directory ##################################################
+
+TMP=$(mktemp -d)
+
+cleanup() {
+  info "Cleaning up"
+  rm -rf "$TMP"
+}
+
+trap cleanup EXIT
+
+case $OS in
+Linux)
+
+  NAME=swiftly-$ARCH.tar.gz
+
+  cd "$TMP" || exit
+
+  "$DOTFILES"/scripts/download https://download.swift.org/swiftly/linux/"$NAME" "$NAME"
+
+  curl https://www.swift.org/keys/all-keys.asc | gpg --import -
+  curl -O https://download.swift.org/swiftly/linux/"$NAME".sig
+  gpg --verify "$NAME".sig "$NAME"
+
+  tar zxf "$NAME"
+
+  ./swiftly init --no-modify-profile --quiet-shell-followup -y
+
+  # shellcheck disable=SC1091 # This is annoying.
+  . "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh"
+
+  hash -r
+
+  ;;
+Darwin) ;;
+*) ;;
+esac
