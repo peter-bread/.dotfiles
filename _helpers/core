@@ -18,6 +18,17 @@ CYAN="\e[36m"
 ################################################################################
 
 ########################################
+# Printf wrapper that automatically adds a newline.
+########################################
+println() {
+  if [[ $# -gt 0 ]]; then
+    # shellcheck disable=SC2059
+    printf "$@"
+  fi
+  printf "\n"
+}
+
+########################################
 # Internal logging function. Should not be called directly. See wrappers below.
 # Globals:
 #   DATE_FORMAT
@@ -40,9 +51,9 @@ _log() {
   timestamp=$(date +"$DATE_FORMAT")
 
   if [[ $ENABLE_COLOR -eq 1 && -n "$color" ]]; then
-    printf "%s ${color}[%-7s]${RESET} %s\n" "$timestamp" "$level" "$msg" >&"$fd"
+    println "%s ${color}[%-7s]${RESET} %s" "$timestamp" "$level" "$msg" >&"$fd"
   else
-    printf "%s [%-7s] %s\n" "$timestamp" "$level" "$msg" >&"$fd"
+    println "%s [%-7s] %s" "$timestamp" "$level" "$msg" >&"$fd"
   fi
 }
 
@@ -171,7 +182,7 @@ need_any() {
 
   for cmd in "${cmds[@]}"; do
     if available "$cmd"; then
-      echo "$cmd"
+      println "$cmd"
       return 0
     fi
   done
