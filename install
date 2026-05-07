@@ -278,19 +278,36 @@ need() {
 ########################################
 # Check if any of a list of commands exists.
 # Arguments:
+#   Option -p to print first command found.
 #   Commands to check.
 # Outputs:
-#   First command that exists to stdout if a command does exist.
+#   First command that exists to stdout if -p is used.
 #   Message to stderr if none of the commands exist.
 # Returns:
 #   0 if a command exists, 1 if none exist.
 ########################################
 need_any() {
+  local print=0
+  local opt
+
+  local OPTIND
+
+  while getopts ":p" opt; do
+    case $opt in
+    p) print=1 ;;
+    \?) error "Unknown option: -$OPTARG" ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+
   local cmds=("$@")
 
   for cmd in "${cmds[@]}"; do
     if available "$cmd"; then
-      println "$cmd"
+      if [[ $print -eq 1 ]]; then
+        println "$cmd"
+      fi
       return 0
     fi
   done
@@ -749,14 +766,13 @@ prime() {
 # Check all tools required for the bootstrapping process are installed.
 ########################################
 check_requirements() {
-
   info "Checking required tools are available..."
 
   # Required.
   need_all git python3 gh
 
   # At least one downloader.
-  need_any curl wget &>/dev/null
+  need_any curl wget
 
   # Optional archive tools.
   check_tools tar unzip xz bzip2
