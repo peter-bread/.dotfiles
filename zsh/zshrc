@@ -107,7 +107,10 @@ safe-source -f "$DOTFILES"/zsh/functions
 # Shell Integrations ===========================================================
 
 if command -v fzf &>/dev/null; then
-  source <(fzf --zsh)
+  # Check to see whether --zsh flag is available.
+  if fzf --help | grep -q -- --zsh; then
+    source <(fzf --zsh)
+  fi
 fi
 
 
