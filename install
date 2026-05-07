@@ -619,7 +619,7 @@ prime::macos() {
   debug "brew is in PATH"
 
   # Default: curl bzip2 tar unzip
-  # Xcode Command Line Tools: git python3
+  # Xcode Command Line Tools: git python3 clang
 
   brew update
   brew install wget xz gh
@@ -634,6 +634,7 @@ prime::linux::apt() {
   sudo apt-get update
   sudo apt-get install -y \
     git python3 \
+    build-essential \
     curl wget \
     tar unzip bzip2 xz-utils
 
@@ -730,6 +731,7 @@ prime::linux() {
 # installed:
 # - git
 # - python3
+# - a C compiler
 # - curl/wget
 # - tar/unzip/bzip2/xz
 #
@@ -770,6 +772,9 @@ check_requirements() {
 
   # Required.
   need_all git python3 gh
+
+  # At least one C compiler.
+  need_any cc gcc clang
 
   # At least one downloader.
   need_any curl wget
