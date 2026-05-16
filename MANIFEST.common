@@ -17,6 +17,7 @@ mod:neomutt
 mod:gamon3
 mod:newsboat
 mod:vim
+mod:my
 
 pkg:manual/ghcup
 pkg:manual/rustup

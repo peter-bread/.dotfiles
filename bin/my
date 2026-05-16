@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+REQUIRED_BASH_MAJOR=4
+
+if [[ "${BASH_VERSINFO[0]}" -lt $REQUIRED_BASH_MAJOR ]]; then
+  echo "Need Bash $REQUIRED_BASH_MAJOR or later"
+  exit 1
+fi
+
+unset REQUIRED_BASH_MAJOR
+
+MY_CONF_DIR=${MY_CONF_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/my}
+MY_CONF_FILE=$MY_CONF_DIR/my.conf
+
+if [[ ! -f $MY_CONF_FILE ]]; then
+  echo "$MY_CONF_FILE does not exist"
+  exit 1
+fi
+
+usage() {
+  cat <<'EOF'
+Go to my important places.
+
+Usage: my [-h] [-l] <place>
+
+Places are defined in $MY_CONF_DIR/my.conf.
+By default, MY_CONF_DIR=${XDG_CONFIG_HOME:-$HOME/.config}/my.
+
+Example:
+  # Maps 'd', 'dots' and 'dotfiles' to cd to $DOTFILES.
+  d|dots|dotfiles : $DOTFILES
+
+Options:
+  -h    Show help
+  -l    List mappings
+
+Bash 4 is required for associative arrays.
+EOF
+}
+
+MY_OPT_LIST=0
+
+MY_OPTSTRING=":hl"
+while getopts "$MY_OPTSTRING" opt; do
+  case $opt in
+  h)
+    usage >&2
+    exit 0
+    ;;
+  l) MY_OPT_LIST=1 ;;
+  \?)
+    echo "Unknown option: -$OPTARG" >&2
+    exit 1
+    ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
+declare -A map
+
+while IFS=":" read -r keys dir; do
+  [[ -n $keys && $keys != \#* ]] || continue
+
+  keys=$(echo "$keys" | xargs)
+  dir=$(echo "$dir" | xargs | envsubst)
+
+  # if [[ $MY_OPT_LIST -eq 1 ]]; then
+  #   printf "%-20s %s\n" "$keys" "$dir" >&2
+  # fi
+
+  IFS="|" read -ra key_array <<<"$keys"
+
+  for key in "${key_array[@]}"; do
+    key=$(echo "$key" | xargs)
+    map["$key"]="$dir"
+  done
+done <"$MY_CONF_FILE"
+
+# if [[ $MY_OPT_LIST -eq 1 ]]; then
+#   exit 0
+# fi
+
+if [[ $MY_OPT_LIST -eq 1 ]]; then
+  {
+    for key in "${!map[@]}"; do
+      printf "%-20s %s\n" "$key" "${map[$key]}"
+    done | sort
+  } >&2
+  exit 0
+fi
+
+MY_INPUT=${1:-}
+
+if [[ -z $MY_INPUT ]]; then
+  usage >&2
+  exit 1
+fi
+
+if [[ -n "${map[$MY_INPUT]}" ]]; then
+  echo "${map["$MY_INPUT"]}"
+else
+  echo "No mapping for: $MY_INPUT" >&2
+  exit 1
+fi

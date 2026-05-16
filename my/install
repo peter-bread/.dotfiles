@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+MY_CONF_DIR=${MY_CONF_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/my}
+MY_CONF_FILE=$MY_CONF_DIR/my.conf
+
+mkdir -p "$MY_CONF_DIR"
+ln -sfn "$DOTFILES"/my/my.conf "$MY_CONF_FILE"

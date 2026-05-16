@@ -23,35 +23,12 @@ function dev() {
   esac
 }
 
-# TODO: Probably rewrite this in Go, then use a YAML file
-# to map aliases to directories. Could combine with `dev`.
-function my() {
-  function _show_help_my() {
-    echo -e "Go to \e[1mmy\e[0m important places."
-    echo
-    echo -e "\e[1;4mUsage\e[0m: my <place>"
-    echo
-    echo -e "\e[1;4mPlaces\e[0m:"
-    echo "  d, dots, dotfiles     cd to \$DOTFILES"
-    echo "  n, nvim, neovim       cd to nvim config"
-    echo "  t, todo               cd to ~/.todo"
-  }
-
-  if [[ -z $1 ]]; then
-    _show_help_my
-    return 1
+my() {
+  local dir
+  dir=$(command my "$@") || return
+  if [[ -d $dir  ]]; then
+    builtin cd "$dir"
   fi
-
-  case $1 in
-  h | -h | help | --help) _show_help_my                                 ;;
-  d | dots | dotfiles)    cd "$DOTFILES"                      || return ;;
-  n | nvim | neovim)      cd "$XDG_CONFIG_HOME/$NVIM_APPNAME" || return ;;
-  t | todo)               cd "$HOME/.todo"                    || return ;;
-  *)
-    echo -e "\e[31mError: Not a valid option right now :(\n\nSee 'my help'.\e[0m"
-    return 1
-    ;;
-  esac
 }
 
 # cd to root of git repo.
