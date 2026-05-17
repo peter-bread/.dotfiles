@@ -4,7 +4,6 @@ format = """
 $directory\
 $sudo\
 $python\
-$fill\
 $git_branch\
 $git_commit\
 $git_state\
@@ -25,6 +24,8 @@ success_symbol = "n/a"                    # This is only set to get status to ap
 format         = '[\[$status\]]($style) '
 
 [character]
+# success_symbol = '[\$](bold green)'
+# error_symbol   = '[!](bold red)'
 success_symbol = '[󰶻 ](bold green)'
 error_symbol   = '[ ](bold red)'
 # success_symbol = '[»](bold green)'
@@ -43,11 +44,11 @@ symbol = '─'
 style  = 'bold #666666'
 
 [git_branch]
-format = ' on [$symbol$branch(:$remote_branch)]($style) '
+format = 'on [$symbol$branch(:$remote_branch)]($style) '
 symbol = " "
 
 [git_status]
-format    = '([\[ $all_status$ahead_behind\]]($style) )'
+format    = '[\[ $all_status$ahead_behind\]]($style) '
 untracked = '[?$count](bold #cfcf15) '
 modified  = '[!$count](bold #d4d481) '
 staged    = '[+$count](bold #16a307) '
@@ -76,4 +77,10 @@ symbol   = 'root'
 
 [python]
 # Show currently active virtual environment.
-format = '[(\($virtualenv\) )]($style)'
+format         = '[(\(${virtualenv} ${version}\))]($style) '
+version_format = '${major}.${minor}'
+# Disable extension/file/folder detection so only an active virtual environment
+# triggers the module.
+detect_extensions = []
+detect_files      = []
+detect_folders    = []
