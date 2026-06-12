@@ -38,7 +38,7 @@ function cdgit() {
 
 # Create new directory and cd into it.
 function mkcd() {
-  builtin mkdir "$@" && builtin cd || return
+  mkdir "$@" && builtin cd || return
 }
 
 
@@ -80,7 +80,7 @@ p() {
   full_path=$(find "$prefix" -mindepth 1 -maxdepth 1 -type d)
   selection=$(echo "$full_path" | sed "s|$prefix/||" | fzf)
   final="$prefix/$selection"
- 
+
   cd "$final" && clear
   # cd "$final" && nvim "$final"
 }
