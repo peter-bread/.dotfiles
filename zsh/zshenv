@@ -1,14 +1,15 @@
-# DO NOT set PATH in this file: https://gist.github.com/Linerre/f11ad4a6a934dcf01ee8415c9457e7b2
+# DO NOT set PATH in this file.
+# See 'https://gist.github.com/Linerre/f11ad4a6a934dcf01ee8415c9457e7b2'.
 # Use $ZDOTDIR/.zshrc instead
 
 safe_source() {
   [[ -f $1 ]] && source "$1"
 }
 
-DOTFILES="$HOME/.dotfiles"
+DOTFILES=$HOME/.dotfiles
 
-safe_source "$DOTFILES/env/non-interactive"
-safe_source "$DOTFILES/env/interactive"
+safe_source "$DOTFILES"/env/non-interactive
+safe_source "$DOTFILES"/env/interactive
 
-safe_source "$DOTFILES/zsh/env/non-interactive"
-safe_source "$DOTFILES/zsh/env/interactive"
+safe_source "$DOTFILES"/zsh/env/non-interactive
+safe_source "$DOTFILES"/zsh/env/interactive
