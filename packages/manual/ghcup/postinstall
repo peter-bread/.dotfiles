@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#
+# Apply GHCup configuration.
+# The ~/.ghcup/config.yaml file is managed by GHCup, which makes it difficult
+# to version control. Instead, we apply settings using the CLI tool.
+#
+# See 'https://github.com/haskell/ghcup-hs/blob/master/data/config.yaml'.
+
+set -Eeuo pipefail
+
+source "$DOTFILES"/_helpers/core
+
+GHCUP=$HOME/.ghcup/bin/ghcup
+
+need "$GHCUP"
+
+"$GHCUP" config set '{
+  key-bindings: {
+    down:      { KChar: j },
+    up:        { KChar: k },
+    uninstall: { KChar: x },
+  }
+}'
