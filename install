@@ -885,6 +885,8 @@ install::package::manual() {
 
   [[ -d $dir ]] || error "$dir is not a directory"
 
+  local env=$dir/env
+
   local install=$dir/install
   local postinstall=$dir/postinstall
   local completions=$dir/completions
@@ -915,31 +917,38 @@ install::package::manual() {
 
   # TODO: Improve logging and general structure.
 
-  if is_executable_file "$install"; then
-    run_step "$install"
-    did_install=1
-  else
-    debug "Skipping $install"
-  fi
+  # Run in a subshell so we can setup a build environment without polluting
+  # current environment.
+  (
+    # shellcheck disable=SC1090
+    [[ -f $env ]] && . "$env"
 
-  # Postinstall only runs if install runs successfully.
-  if [[ $did_install -eq 1 ]] && is_executable_file "$postinstall"; then
-    run_step "$postinstall"
-  else
-    debug "Skipping $postinstall"
-  fi
+    if is_executable_file "$install"; then
+      run_step "$install"
+      did_install=1
+    else
+      debug "Skipping $install"
+    fi
 
-  if is_executable_file "$completions"; then
-    run_step "$completions"
-  else
-    debug "Skipping $completions"
-  fi
+    # Postinstall only runs if install runs successfully.
+    if [[ $did_install -eq 1 ]] && is_executable_file "$postinstall"; then
+      run_step "$postinstall"
+    else
+      debug "Skipping $postinstall"
+    fi
 
-  if ((run_count == 0)); then
-    warn "Nothing to install: $run_count/$total scripts were run for $package package installation"
-  else
-    success "Installed $package package (ran $run_count/$total scripts)"
-  fi
+    if is_executable_file "$completions"; then
+      run_step "$completions"
+    else
+      debug "Skipping $completions"
+    fi
+
+    if ((run_count == 0)); then
+      warn "Nothing to install: $run_count/$total scripts were run for $package package installation"
+    else
+      success "Installed $package package (ran $run_count/$total scripts)"
+    fi
+  )
 }
 
 ########################################

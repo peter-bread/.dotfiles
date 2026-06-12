@@ -8,7 +8,8 @@ set -Eeuo pipefail
 
 source "$DOTFILES"/_helpers/core
 
-GHCUP=$HOME/.ghcup/bin/ghcup
+# shellcheck source=./packages/manual/ghcup/env
+. /dev/null
 
 info "Updating GHCup"
 

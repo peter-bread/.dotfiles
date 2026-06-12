@@ -12,10 +12,13 @@ set -Eeuo pipefail
 
 source "$DOTFILES"/_helpers/core
 
+# shellcheck source=./packages/manual/ghcup/env
+. /dev/null
+
 # TODO: I think the installer handles ghcup already being installed gracefully
 # so this guard is not needed.
-if available "$HOME"/.ghcup/bin/ghcup; then
-  info "GHCup is already installed at $HOME/.ghcup/bin/ghcup"
+if available "$GHCUP"; then
+  info "GHCup is already installed at $GHCUP"
   exit
 fi
 
@@ -36,5 +39,8 @@ export BOOTSTRAP_HASKELL_HLS_VERSION="recommended"
 if ! curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh; then
   error "GHCup installation failed"
 fi
+
+# Test install.
+[[ -x "$GHCUP" ]] || error "Could not find an executable file at $GHCUP"
 
 success "GHCup installed"

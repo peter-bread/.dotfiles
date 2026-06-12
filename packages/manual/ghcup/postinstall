@@ -10,14 +10,18 @@ set -Eeuo pipefail
 
 source "$DOTFILES"/_helpers/core
 
-GHCUP=$HOME/.ghcup/bin/ghcup
+# shellcheck source=./packages/manual/ghcup/env
+. /dev/null
 
 need "$GHCUP"
 
-"$GHCUP" config set '{
+"$GHCUP" config set "{
   key-bindings: {
-    down:      { KChar: j },
-    up:        { KChar: k },
-    uninstall: { KChar: x },
+    down:      { KChar: j   },
+    up:        { KChar: k   },
+    left:      { KChar: h   },
+    right:     { KChar: l   },
+    help:      { KChar: '?' },
+    uninstall: { KChar: x   },
   }
-}'
+}"
