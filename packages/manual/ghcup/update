@@ -8,11 +8,13 @@ set -Eeuo pipefail
 
 source "$DOTFILES"/_helpers/core
 
+GHCUP=$HOME/.ghcup/bin/ghcup
+
 info "Updating GHCup"
 
-need "$HOME"/.ghcup/bin/ghcup
+need "$GHCUP"
 
-if ! "$HOME"/.ghcup/bin/ghcup upgrade; then
+if ! "$GHCUP" upgrade; then
   error "ghcup failed to update"
   exit 1
 fi

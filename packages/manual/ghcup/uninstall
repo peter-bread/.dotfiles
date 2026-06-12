@@ -7,10 +7,12 @@ set -Eeuo pipefail
 
 source "$DOTFILES"/_helpers/core
 
+GHCUP=$HOME/.ghcup/bin/ghcup
+
 info "Uninstalling GHCup"
 
-need "$HOME"/.ghcup/bin/ghcup
+need "$GHCUP"
 
-"$HOME"/.ghcup/bin/ghcup nuke
+"$GHCUP" nuke
 
 success "GHCup uninstalled"
