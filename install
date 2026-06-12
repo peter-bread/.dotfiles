@@ -901,7 +901,7 @@ install::package::manual() {
     "$file" || error "Failed to run $file"
     # WARN: If (( expr )) evaluates to 0, ERR trap is triggered.
     # Using pre-increment means it will always be incremented above 0 before it
-    # is evaluated. If this every could evaluate to 0, use:
+    # is evaluated. If this ever could evaluate to 0, use:
     #   run_count=$((run_count + 1))
     # instead.
     ((++run_count))
