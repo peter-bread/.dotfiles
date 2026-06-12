@@ -125,9 +125,9 @@ autoload -Uz compinit
 compinit
 
 # Only source tree-sitter completions if the complete subcommand exists.
-if tree-sitter complete -h &>/dev/null; then
-  source <(tree-sitter complete --shell zsh)
-fi
+# if tree-sitter complete -h &>/dev/null; then
+#   source <(tree-sitter complete --shell zsh)
+# fi
 
 
 # ZSH Help =====================================================================
