@@ -507,7 +507,9 @@ EOF
 ########################################
 parse_args() {
 
-  while getopts ":Pmpgn:h" opt; do
+  DOTFILES_OPTSTRING=":Pmpgn:h"
+
+  while getopts "$DOTFILES_OPTSTRING" opt; do
     case $opt in
     P) PRIME=1 ;;
     m) MODULES=1 ;;
