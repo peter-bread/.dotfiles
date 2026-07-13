@@ -4,8 +4,6 @@ set -Eeuo pipefail
 
 source "${DOTFILES:?}"/_helpers/core
 
-warn "This script ($0) is unfinished"
-
 need_all git swift make install mktemp dirname
 
 TMP=$(mktemp -d) || error "Failed to create temporary directory"
@@ -13,16 +11,14 @@ trap 'rm -rf "$TMP"' EXIT
 
 REPO_URL=https://github.com/peter-bread/browserctl
 BUILD_DIR=$TMP/browserctl
-BIN_PATH=$BUILD_DIR/.build/release/browserctl
-DEST=$HOME/.local/bin/browserctl
+PREFIX=$HOME/.local
 
 git clone --depth=1 "$REPO_URL" "$BUILD_DIR"
+cd "$BUILD_DIR"
+make release || error "Build failed"
+make install PREFIX="$PREFIX" || error "Installation failed"
 
-make -C "$BUILD_DIR" release || error "Build failed"
+# Test
+[[ -x $PREFIX/bin/browserctl ]] || error "Could not find executable at $PREFIX/bin/browserctl"
 
-[[ -x "$BIN_PATH" ]] || error "Build succeeded but binary not found at $BIN_PATH"
-
-# TODO: Remove echo.
-warn "TODO: Remove echo from following lines to actually run commands"
-echo mkdir -p "$(dirname "$DEST")"
-echo install -m 0755 "$BIN_PATH" "$DEST"
+success "Browserctl installed"
