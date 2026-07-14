@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+source "$DOTFILES"/_helpers/core
+source "$DOTFILES"/zsh/env/non-interactive # Provides ZSH_COMPLETIONS.
+
+BROWSERCTL=$PREFIX/bin/browserctl
+
+install_zsh_completions() {
+  info "Installing Browserctl zsh completions..."
+
+  mkdir -p "$ZSH_COMPLETIONS"
+
+  "$BROWSERCTL" --generate-completion-script zsh >"$ZSH_COMPLETIONS"/_browserctl
+
+  success "Browerctl zsh completions installed"
+}
+
+install_bash_completions() {
+  info "Installing Browserctl bash completions..."
+
+  BASH_COMPLETIONS="${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions"
+  mkdir -p "$BASH_COMPLETIONS"
+
+  "$BROWSERCTL" --generate-completion-script bash >"$BASH_COMPLETIONS"/_browserctl
+
+  success "Browserctl bash completions installed"
+}
+
+need "$BROWSERCTL"
+
+install_zsh_completions
+install_bash_completions
