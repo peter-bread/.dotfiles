@@ -2,6 +2,35 @@
 
 # Launch default browser.
 
+usage() {
+  cat <<'EOF'
+Launch default browser.
+
+Usage: open-browser [-h]
+
+Options:
+  -h    Show help
+
+Browserctl is required on MacOS.
+EOF
+}
+
+OPTSTRING=":h"
+while getopts "$OPTSTRING" opt; do
+  case $opt in
+  h)
+    usage
+    exit 0
+    ;;
+  \?)
+    echo "Unknown option: -$OPTARG" >&2
+    exit 1
+    ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
 OS=$(uname -s)
 
 case $OS in
