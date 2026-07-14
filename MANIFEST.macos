@@ -2,6 +2,8 @@
 
 mod:skhd
 
+pkg:manual/browserctl
+
 # pkg:brew/Brewfile
 # pkg:brew/Brewfile.cask
 # pkg:brew/Brewfile.mas
