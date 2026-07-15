@@ -39,7 +39,7 @@ Darwin)
     echo "Error: browserctl not installed"
     exit 1
   fi
-  open -a "$(browserctl get --name-only)"
+  browserctl launch
   ;;
 Linux)
   echo "Error: not implemented yet"
