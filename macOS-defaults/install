@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Set user defaults
+#
+# See https://macos-defaults.com/
+
+# Autohides the Dock
+defaults write com.apple.dock "autohide" -bool "true" && killall Dock
+
+# Show all file extensions in the Finder
+defaults write NSGlobalDomain "AppleShowAllExtensions" -bool "true" && killall Finder
+
+# Show hidden files in the Finder
+defaults write com.apple.finder "AppleShowAllFiles" -bool "true" && killall Finder
+
+# Show path bar in the bottom of the Finder windows
+defaults write com.apple.finder "ShowPathbar" -bool "true" && killall Finder
+
+# Set the default view style for folders without custom setting to column view
+defaults write com.apple.finder "FXPreferredViewStyle" -string "clmv" && killall Finder
