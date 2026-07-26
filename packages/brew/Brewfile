@@ -74,4 +74,5 @@ brew "zig"
 
 brew "hashicorp/tap/terraform"
 brew "koekeishiya/formulae/skhd"
+brew "peter-bread/tap/browserctl"
 brew "peter-bread/tap/gamon3"

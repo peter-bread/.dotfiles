@@ -1,3 +1,7 @@
 # Browserctl
 
-This module may be deprecated if/when I release browserctl in my Homebrew tap.
+> [!WARNING]
+>
+> This package is now deprecated in favour of using a Homebrew formula.
+>
+> https://github.com/peter-bread/homebrew-tap/blob/main/Formula/browserctl.rb
