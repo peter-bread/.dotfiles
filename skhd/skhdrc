@@ -120,7 +120,7 @@ lctrl + lalt - d      : open -a "Discord"
 
 lctrl + lalt - s      : open -a "Spotify"
 
-lctrl + lalt - b      : "$HOME"/.local/bin/browserctl launch
+lctrl + lalt - b      : /opt/homebrew/bin/browserctl launch
 
 # May change "o" to "e" for "email".
 lctrl + lalt - o      : open -a "Microsoft Outlook"
