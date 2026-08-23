@@ -18,6 +18,7 @@ mod:gamon3
 mod:newsboat
 mod:vim
 mod:my
+mod:btop
 
 pkg:manual/ghcup
 pkg:manual/rustup

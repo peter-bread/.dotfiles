@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+mkdir -p "$XDG_CONFIG_HOME"/btop
+
+ln -sfn "$DOTFILES"/btop/btop.conf "$XDG_CONFIG_HOME"/btop/btop.conf
+ln -sfn "$DOTFILES"/btop/themes "$XDG_CONFIG_HOME"/btop/themes
