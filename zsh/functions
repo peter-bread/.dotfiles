@@ -90,6 +90,14 @@ temp() {
   cd "$(mktemp -d)" || return
 }
 
+# Run local source build of neovim
+nn() {
+  local dir
+  dir="$DEVELOPER/thirdparty/neovim"
+
+  VIMRUNTIME="$dir/runtime" "$dir/build/bin/nvim" "$@"
+}
+
 # Broken yazi function.
 # function y() {
 #   tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
