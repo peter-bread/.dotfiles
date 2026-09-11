@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+source "$DOTFILES"/_helpers/core
+
+info "Installing Neovim"
+
+need_all ninja cmake gettext curl git
+
+TMP=$(mktemp -d) || error "Failed to create temporary directory"
+trap 'rm -rf "$TMP"' EXIT
+
+REPO=https://github.com/neovim/neovim
+DIR=$TMP/neovim
+
+git clone "$REPO" "$DIR"
+cd "$DIR"
+
+get fetch --tags
+
+git checkout master
+
+BUILD_TYPE=Release
+INSTALL_PREFIX=$HOME/opt/nvim
+
+rm -rf build/
+
+make \
+  CMAKE_BUILD_TYPE="$BUILD_TYPE" \
+  CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX" ||
+  error "Build failed"
+
+make install || error "Install failed"
+
+success "Installed neovim"
