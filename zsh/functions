@@ -92,10 +92,7 @@ temp() {
 
 # Run local source build of neovim
 nn() {
-  local dir
-  dir="$DEVELOPER/thirdparty/neovim"
-
-  VIMRUNTIME="$dir/runtime" "$dir/build/bin/nvim" "$@"
+  "$HOME/opt/nvim/bin/nvim" "$@"
 }
 
 # Broken yazi function.
