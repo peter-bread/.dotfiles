@@ -14,12 +14,13 @@ trap 'rm -rf "$TMP"' EXIT
 REPO=https://github.com/neovim/neovim
 DIR=$TMP/neovim
 
-git clone "$REPO" "$DIR"
+# Branch or tag
+BRANCH=master
+
+# Use --revision=<rev> for a specific arbitrary commit.
+# This is incompatible with --branch=<branch>.
+git clone --branch "$BRANCH" --depth=1 "$REPO" "$DIR"
 cd "$DIR"
-
-get fetch --tags
-
-git checkout master
 
 BUILD_TYPE=Release
 INSTALL_PREFIX=$HOME/opt/nvim
