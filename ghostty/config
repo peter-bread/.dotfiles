@@ -23,7 +23,40 @@ adjust-cell-width             = -4%
 
 cursor-style                  = block
 cursor-style-blink            = false
-shell-integration-features    = no-cursor
+
+# https://ghostty.org/docs/config/reference#shell-integration-features
+#
+# (As of ghostty 1.4.0)
+#
+# https://ghostty.org/docs/install/release-notes/1-4-0#shell-integration
+#
+# no-cursor - Do not set the cursor to a bar at the prompt.
+#
+# ssh-env - Enable SSH environment variable compatibility. Automatically
+# converts TERM from xterm-ghostty to xterm-256color when connecting to remote
+# hosts and propagates COLORTERM, TERM_PROGRAM, and TERM_PROGRAM_VERSION.
+# Whether or not these variables will be accepted by the remote host(s) will
+# depend on whether or not the variables are allowed in their sshd_config.
+# (Available since: 1.2.0)
+#
+# ssh-terminfo - Enable automatic terminfo installation on remote hosts.
+# Attempts to install Ghostty's terminfo entry using infocmp and tic when
+# connecting to hosts that lack it. Requires infocmp to be available locally
+# and tic to be available on remote hosts. Once terminfo is installed on a
+# remote host, it will be automatically "cached" to avoid repeat installations.
+# If desired, the +ssh-cache CLI action can be used to manage the installation
+# cache manually using various arguments. (Available since: 1.2.0)
+#
+# SSH features work independently and can be combined for optimal experience:
+# when both ssh-env and ssh-terminfo are enabled, Ghostty will install its
+# terminfo on remote hosts and use xterm-ghostty as TERM, falling back to
+# xterm-256color with environment variables if terminfo installation fails.
+#
+# NOTE: By enabling the ssh shell integration, the `ssh` command is now a
+# wrapper function, not the actual `ssh` executable. This means just typing
+# `ssh` will show help for `ghostty +ssh`, not `ssh` itself.
+# Instead, type `ssh --`.
+shell-integration-features    = no-cursor,ssh-terminfo,ssh-env
 
 window-width                  = 1000
 window-height                 = 1000
